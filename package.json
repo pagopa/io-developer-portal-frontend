@@ -2,7 +2,8 @@
   "name": "italia-backoffice",
   "version": "0.0.1",
   "scripts": {
-    "start": "npx parcel index.html"
+    "start": "npx parcel index.html",
+    "start:proxy": "node api-proxy.js"
   },
   "dependencies": {
     "bootstrap-italia": "^0.9.6",
@@ -16,6 +17,9 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-runtime": "^6.26.0",
-    "parcel-bundler": "^1.9.6"
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "parcel-bundler": "^1.9.6",
+    "request": "^2.87.0"
   }
 }
