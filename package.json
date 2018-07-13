@@ -6,6 +6,7 @@
     "start:proxy": "node api-proxy.js"
   },
   "dependencies": {
+    "@callstack/async-storage": "^1.1.0",
     "bootstrap-italia": "^0.9.6",
     "design-react-kit": "^2.2.0",
     "react": "^16.4.1",

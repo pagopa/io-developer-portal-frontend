@@ -1,12 +1,6 @@
 import React, { Component } from "react";
 
-import {
-  Navbar,
-  Collapse,
-  Nav,
-  NavItem,
-  NavLink
-} from "design-react-kit";
+import { Navbar, Collapse, Nav, NavItem, NavLink } from "design-react-kit";
 
 class Header extends Component {
   render() {
@@ -16,7 +10,10 @@ class Header extends Component {
           <Collapse isOpen navbar>
             <Nav navbar>
               <NavItem>
-                <NavLink href="/home">IO Backoffice</NavLink>
+                <NavLink href="/home">
+                  <i className="it-app mr-3" />
+                  IO Backoffice
+                </NavLink>
               </NavItem>
             </Nav>
           </Collapse>

@@ -1,0 +1,9 @@
+.icon-rotate-45deg:before
+{
+  transform: rotate(45deg)
+}
+
+.cursor-pointer
+{
+  cursor: pointer;
+}

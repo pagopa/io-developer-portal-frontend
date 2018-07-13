@@ -16,6 +16,7 @@ import Home from "./src/pages/Home";
 
 import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
+import "./index.css"
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
