@@ -1,0 +1,10 @@
+
+# Logs
+*.log
+
+# Dependency directories
+node_modules/
+
+# Parcel (https://parceljs.org/)
+dist
+.cache
