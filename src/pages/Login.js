@@ -19,22 +19,22 @@ import "./Login.css";
 
 class Login extends Component {
   state = {
-    apiKey: ""
+    serviceKey: ""
   };
 
   onPasswordChange = ({ target: { value } }) => {
     this.setState({
-      apiKey: value
+      serviceKey: value
     });
   };
 
   onStoreCredentials = e => {
     e.preventDefault();
 
-    const { apiKey } = this.state;
+    const { serviceKey } = this.state;
     
-    if (!!apiKey) {
-      localStorage.setItem("apiKey", apiKey);
+    if (!!serviceKey) {
+      localStorage.setItem("serviceKey", serviceKey);
 
       this.goHome();
     }
@@ -56,8 +56,8 @@ class Login extends Component {
             <Form className="form-row">
               <Col lg="11">
                 <FormGroup>
-                  <PasswordInput id="login--apiKey" onChange={this.onPasswordChange} />
-                  <Label for="login--apiKey">API Key</Label>
+                  <PasswordInput id="login--serviceKey" onChange={this.onPasswordChange} />
+                  <Label for="login--serviceKey">API Key</Label>
                   <FormText color="muted">
                     inserisci le credenziali per il tuo servizio
                   </FormText>

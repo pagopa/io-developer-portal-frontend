@@ -1,5 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
+import { PouchDB } from "react-pouchdb/browser";
 
 import {
   BrowserRouter as Router,
@@ -22,7 +23,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      !!localStorage.getItem("apiKey") ? (
+      !!localStorage.getItem("serviceKey") ? (
         <Component {...props} />
       ) : (
         <Redirect
@@ -36,17 +37,21 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 );
 
-const Root = () => (
-  <section>
-    <Header />
-    <Router>
-      <Switch>
-        <Route exact path="/login" component={Login} />
-        <PrivateRoute exact path="/" component={Home} />
-        <PrivateRoute exact path="/home" component={Home} />
-      </Switch>
-    </Router>
-  </section>
-);
+const Root = () => {
+  const dbName = localStorage.getItem("serviceKey") || "anonymous";
+
+  return (
+    <PouchDB name={dbName}>
+      <Header />
+      <Router>
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <PrivateRoute exact path="/" component={Home} />
+          <PrivateRoute exact path="/home" component={Home} />
+        </Switch>
+      </Router>
+    </PouchDB>
+  );
+};
 
 render(<Root />, document.getElementById("root"));

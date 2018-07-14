@@ -4,7 +4,7 @@ const PROXIED_URL = "http://localhost:3000";
 const OPTIONS = {
   headers: {
     "Content-Type": "application/json",
-    "Ocp-Apim-Subscription-Key": localStorage.getItem("apiKey")
+    "Ocp-Apim-Subscription-Key": localStorage.getItem("serviceKey")
   }
 };
 
