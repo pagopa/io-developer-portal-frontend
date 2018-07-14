@@ -9,8 +9,15 @@ app.use(cors());
 
 app.use("/", function(req, res) {
   const url = `${BASE_URL}${req.url}`;
-  console.info("Proxied", req.url, "to", url);
-  req.pipe(request(url)).pipe(res);
+  console.info("Proxied", req.method, req.url, "to", url);
+  req
+    .pipe(
+      request({
+        method: req.method,
+        url
+      })
+    )
+    .pipe(res);
 });
 
 app.listen(process.env.PORT || 3000);

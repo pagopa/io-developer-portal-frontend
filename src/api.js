@@ -3,6 +3,7 @@ const PROXIED_URL = "http://localhost:3000";
 
 const OPTIONS = {
   headers: {
+    "Content-Type": "application/json",
     "Ocp-Apim-Subscription-Key": localStorage.getItem("apiKey")
   }
 };
@@ -10,15 +11,16 @@ const OPTIONS = {
 module.exports.get = ({ path, options }) => {
   return fetch(`${PROXIED_URL}/${path}`, {
     ...OPTIONS,
-    method: "GET",
-    ...options
+    ...options,
+    method: "GET"
   }).then(response => response.json());
 };
 
 module.exports.post = ({ path, options }) => {
   return fetch(`${PROXIED_URL}/${path}`, {
     ...OPTIONS,
+    ...options,
     method: "POST",
-    ...options
+    body: JSON.stringify(options.body)
   }).then(response => response.json());
 };

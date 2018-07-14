@@ -27,6 +27,7 @@ class Login extends Component {
       apiKey: value
     });
   };
+
   onStoreCredentials = e => {
     e.preventDefault();
 
@@ -35,13 +36,17 @@ class Login extends Component {
     if (!!apiKey) {
       localStorage.setItem("apiKey", apiKey);
 
-      const { history } = this.props;
-      const location = {
-        pathname: "/home"
-      };
-      history.replace(location);
+      this.goHome();
     }
   };
+
+  goHome = () => {
+    const { history } = this.props;
+    const location = {
+      pathname: "/home"
+    };
+    history.replace(location);
+  }
 
   render() {
     return (
@@ -51,8 +56,8 @@ class Login extends Component {
             <Form className="form-row">
               <Col lg="11">
                 <FormGroup>
-                  <PasswordInput id="apiKey" onChange={this.onPasswordChange} />
-                  <Label for="apiKey">API Key</Label>
+                  <PasswordInput id="login--apiKey" onChange={this.onPasswordChange} />
+                  <Label for="login--apiKey">API Key</Label>
                   <FormText color="muted">
                     inserisci le credenziali per il tuo servizio
                   </FormText>

@@ -16,7 +16,7 @@ import Home from "./src/pages/Home";
 
 import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
-import "./index.css"
+import "./index.css";
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
@@ -41,8 +41,8 @@ const Root = () => (
     <Header />
     <Router>
       <Switch>
-        <Route exact path="/" component={Login} />
         <Route exact path="/login" component={Login} />
+        <PrivateRoute exact path="/" component={Home} />
         <PrivateRoute exact path="/home" component={Home} />
       </Switch>
     </Router>
