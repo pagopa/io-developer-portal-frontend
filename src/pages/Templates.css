@@ -1,0 +1,4 @@
+.templates--container {
+  /* Header: 45px; Padding: 48px *2 */
+  height: calc(100vh - 141px);
+}

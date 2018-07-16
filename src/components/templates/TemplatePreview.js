@@ -1,34 +1,14 @@
 import React, { Component } from "react";
 
-import { Input } from "design-react-kit";
-
 import ReactMarkdown from "react-markdown";
 
-class MessagesEditor extends Component {
+class TemplatePreview extends Component {
   render() {
-    const { subject, markdown, onChangeSubject, onChangeMarkdown } = this.props;
-
+    const { markdown } = this.props;
+    
     return (
-      <section className="flex-1 d-flex flex-column">
-        <Input
-          type="text"
-          value={subject}
-          placeholder="Titolo"
-          minLength="10"
-          maxLength="120"
-          onChange={onChangeSubject}
-        />
-        <Input
-          type="textarea"
-          value={markdown}
-          className="flex-1"
-          minLength="80"
-          maxLength="10000"
-          onChange={onChangeMarkdown}
-        />
-
         <ReactMarkdown
-          className="home--message--preview flex-1 mt-5"
+          className="templates-editor--message--preview form-control bg-light border-0 h-100 flex-1"
           source={markdown}
           unwrapDisallowed
           allowedTypes={[
@@ -59,9 +39,8 @@ class MessagesEditor extends Component {
             // "virtualHtml"
           ]}
         />
-      </section>
     );
   }
 }
 
-export default MessagesEditor;
+export default TemplatePreview;

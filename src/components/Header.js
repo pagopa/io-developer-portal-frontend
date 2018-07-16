@@ -10,7 +10,7 @@ class Header extends Component {
           <Collapse isOpen navbar>
             <Nav navbar>
               <NavItem>
-                <NavLink href="/home">
+                <NavLink href="/">
                   <i className="it-app mr-3" />
                   IO Backoffice
                 </NavLink>

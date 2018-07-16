@@ -43,7 +43,7 @@ class Login extends Component {
   goHome = () => {
     const { history } = this.props;
     const location = {
-      pathname: "/home"
+      pathname: "/"
     };
     history.replace(location);
   }

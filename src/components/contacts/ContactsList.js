@@ -16,6 +16,10 @@ class ContactsList extends Component {
   render() {
     const { docs, selected, onContactSelect } = this.props;
 
+    if (!docs) {
+      return null;
+    }
+
     return (
       <ListGroup className="flex-1">
         {(() => {
@@ -23,11 +27,16 @@ class ContactsList extends Component {
             return (
               <ListGroupItem
                 key={contact._id}
-                className="cursor-pointer"
-                active={contact._id === selected}
-                onClick={() => onContactSelect(contact._id)}
+                active={selected === contact._id}
               >
-                <div className="d-flex w-100 justify-content-between">
+                <div
+                  className={`d-flex w-100 justify-content-between ${
+                    onContactSelect ? "cursor-pointer" : ""
+                  }`}
+                  onClick={() =>
+                    onContactSelect && onContactSelect(contact._id)
+                  }
+                >
                   <div>{contact._id}</div>
                   <div>
                     <i className={`${getUserIcon(contact)}`} />
