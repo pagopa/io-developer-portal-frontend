@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 
 import {
   Row,
   Col,
+  Card,
   FormGroup,
   Form,
   Label,
@@ -16,18 +18,22 @@ import {
 import { withDB, Find } from "react-pouchdb/browser";
 
 import moment from "moment";
+import Papa from "papaparse";
 
 import DatePicker from "react-datepicker";
 
 import MessagePreview from "../components/messages/MessagePreview";
 import ContactsList from "../components/contacts/ContactsList";
 
+import { contactGetAndPersist, messagePostAndPersist } from "../utils";
 import { get, post } from "../api";
 
 import "./Message.css";
 
 class Message extends Component {
   initialState = {
+    list: "",
+    batch: "",
     selected: "",
     dueDate: undefined,
     amount: "",
@@ -35,14 +41,58 @@ class Message extends Component {
   };
 
   state = {
+    list: this.initialState.list,
+    batch: this.initialState.batch,
     selected: this.initialState.selected,
     dueDate: this.initialState.dueDate,
     amount: this.initialState.amount,
     notice: this.initialState.notice
   };
 
+  fileInput = React.createRef();
+
   onContactSelect = selected => {
     this.setState({ selected });
+  };
+
+  onChangeList = ({ target: { value } }) => {
+    this.setState({
+      batch: this.initialState.batch,
+      list: value
+    });
+  };
+
+  onTriggerUpload = () => {
+    const el = ReactDOM.findDOMNode(this.fileInput.current);
+    el.click();
+  };
+
+  onFileUpdate = ({ target: { files } }) => {
+    Papa.parse(files[0], {
+      skipEmptyLines: true,
+      error: (err, file, inputElem, reason) => {
+        console.error(reason);
+      },
+      complete: (results, file) => {
+        // data is an array of rows.
+        // If header is false, rows are arrays;
+        // otherwise they are objects of data keyed by the field name
+        const filtered = [];
+
+        results.data.map(line =>
+          line.map(value => {
+            if (value.length === 16) {
+              filtered.push(value);
+            }
+          })
+        );
+
+        this.setState({
+          batch: this.initialState.batch,
+          list: filtered.join("\n")
+        });
+      }
+    });
   };
 
   onChangeDueDate = date => {
@@ -63,15 +113,57 @@ class Message extends Component {
     });
   };
 
-  onMessageSubmit = async () => {
-    const { selected, dueDate, notice, amount } = this.state;
+  onSaveContacts = () => {
+    const { list } = this.state;
     const {
       db,
-      location: { state }
+      location: {
+        state: { templateId }
+      }
+    } = this.props;
+
+    Papa.parse(list, {
+      skipEmptyLines: true,
+      error: (err, file, inputElem, reason) => {
+        console.error(reason);
+      },
+      complete: async (results, file) => {
+        const batch = await db.post({
+          type: "batch",
+          templateId
+        });
+
+        const promises = [];
+        results.data.map(async ([result]) => {
+          promises.push(
+            contactGetAndPersist({ code: result, db, batchId: batch.id })
+          );
+        });
+
+        Promise.all(promises)
+          .then(results => {
+            this.setState({
+              batch: batch.id
+            });
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+    });
+  };
+
+  onMessageSubmit = async () => {
+    const { batch, selected, dueDate, notice, amount } = this.state;
+    const {
+      db,
+      location: {
+        state: { type, templateId }
+      }
     } = this.props;
 
     const messages = await db.find({
-      selector: { type: "template", _id: state }
+      selector: { type: "template", _id: templateId }
     });
     const message = messages.docs[0];
 
@@ -90,34 +182,37 @@ class Message extends Component {
       });
     }
 
-    const sent = await post({
-      path: `messages/${selected}`,
-      options: {
-        body: {
-          time_to_live: 3600,
-          content
+    if (!batch) {
+      await messagePostAndPersist({
+        db,
+        code: selected,
+        content,
+        templateId
+      });
+      this.goHome();
+    } else {
+      const promises = [];
+      const list = await db.find({
+        selector: {
+          type: "contact",
+          batchId: batch
         }
-      }
-    });
+      });
 
-    if (sent.status) {
-      // The API returns errors with shape { detail, status, title }
-      console.error(sent);
-      return;
+      list.docs.map(doc =>
+        promises.push(
+          messagePostAndPersist({
+            db,
+            code: doc._id,
+            content,
+            templateId
+          })
+        )
+      );
+
+      await Promise.all(promises);
+      this.goHome();
     }
-
-    const details = await get({
-      path: `messages/${selected}/${sent.id}`
-    });
-
-    db.put({
-      ...details,
-      _id: sent.id,
-      type: "message",
-      template: state
-    });
-
-    this.goHome();
   };
 
   goHome = () => {
@@ -129,35 +224,105 @@ class Message extends Component {
   };
 
   render() {
-    const { selected, dueDate, notice, amount } = this.state;
+    const { list, batch, selected, dueDate, notice, amount } = this.state;
     const {
-      location: { state }
+      location: {
+        state: { type, templateId }
+      }
     } = this.props;
 
     return (
       <section>
-        <h2 className="display-3">Contatti</h2>
-        <div className="message--contacts-list mb-4">
-          <Find
-            selector={{
-              type: "contact"
-            }}
-            sort={["_id"]}
-            render={({ docs }) => (
-              <ContactsList
-                docs={docs}
-                selected={selected}
-                onContactSelect={this.onContactSelect}
-              />
-            )}
-          />
-        </div>
+        {(() => {
+          if (type === "single") {
+            return (
+              <div className="message--contacts-list mb-4">
+                <h2 className="display-4">Seleziona un contatto </h2>
+                <Find
+                  selector={{
+                    type: "contact"
+                  }}
+                  sort={["_id"]}
+                  render={({ docs }) => (
+                    <ContactsList
+                      docs={docs}
+                      selected={selected}
+                      onContactSelect={this.onContactSelect}
+                    />
+                  )}
+                />
+              </div>
+            );
+          }
+
+          return (
+            <div className="message--import-list mb-4">
+              <h2 className="display-4">Importa una lista </h2>
+              <Row>
+                <Col>
+                  <Card>
+                    <Input
+                      className="flex-1 h-100 border-0"
+                      type="textarea"
+                      value={list}
+                      onChange={this.onChangeList}
+                    />
+                  </Card>
+                </Col>
+                <Col>
+                  <Card
+                    className="h-100 d-flex justify-content-center align-items-center cursor-pointer"
+                    onClick={this.onTriggerUpload}
+                  >
+                    <i className="it-upload" />
+                    <Input
+                      className="d-none"
+                      type="file"
+                      ref={this.fileInput}
+                      onChange={this.onFileUpdate}
+                    />
+                  </Card>
+                </Col>
+              </Row>
+              {list &&
+                !batch && (
+                  <Row>
+                    <Col>
+                      <Button
+                        className="mt-3"
+                        block
+                        color="primary"
+                        onClick={this.onSaveContacts}
+                      >
+                        Salva
+                      </Button>
+                    </Col>
+                    <Col />
+                  </Row>
+                )}
+              {batch && (
+                <div className="mt-4">
+                  <Find
+                    selector={{
+                      type: "contact",
+                      batchId: batch
+                    }}
+                    sort={["_id"]}
+                    render={({ docs }) => (
+                      <ContactsList docs={docs} selected={selected} />
+                    )}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         <div className="message--preview mb-4">
           <Find
             selector={{
               type: "template",
-              _id: state
+              _id: templateId
             }}
             render={({ docs }) => {
               const message = docs[0];
@@ -247,15 +412,33 @@ class Message extends Component {
           </Col>
         </Row>
 
-        <Button
-          className="mt-3"
-          block
-          color="primary"
-          disabled={!selected}
-          onClick={this.onMessageSubmit}
-        >
-          Invia
-        </Button>
+        {(() => {
+          if (type === "single") {
+            return (
+              <Button
+                className="mt-3"
+                block
+                color="primary"
+                disabled={!selected}
+                onClick={this.onMessageSubmit}
+              >
+                Invia
+              </Button>
+            );
+          }
+
+          return (
+            <Button
+              className="mt-3"
+              block
+              color="primary"
+              disabled={!batch}
+              onClick={this.onMessageSubmit}
+            >
+              Invia alla lista
+            </Button>
+          );
+        })()}
       </section>
     );
   }

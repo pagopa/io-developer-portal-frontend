@@ -6,7 +6,7 @@ import ContactsList from "../components/contacts/ContactsList";
 
 import { withDB, Find } from "react-pouchdb/browser";
 
-import { get, post } from "../api";
+import { contactGetAndPersist } from "../utils";
 
 class Contacts extends Component {
   initialState = {
@@ -38,20 +38,8 @@ class Contacts extends Component {
         code: this.initialState.code
       },
       async () => {
-        let profile = await get({ path: `profiles/${code}` });
-
-        if (profile.status) {
-          // The API returns errors with shape { detail, status, title }
-          profile = { sender_allowed: null, status: profile.status };
-        }
-
         const { db } = this.props;
-
-        db.put({
-          ...profile,
-          _id: code,
-          type: "contact",
-        });
+        await contactGetAndPersist({ db, code });
       }
     );
   };

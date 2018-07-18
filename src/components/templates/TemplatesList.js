@@ -27,38 +27,50 @@ class TemplatesList extends Component {
     return (
       <Accordion>
         {(() => {
-          return docs.map(message => {
+          return docs.map(template => {
             return (
-              <Fragment key={message._id}>
+              <Fragment key={template._id}>
                 <AccordionHeader
-                  active={selected === message._id}
-                  onToggle={() => this.onSetSelected(message._id)}
+                  active={selected === template._id}
+                  onToggle={() => this.onSetSelected(template._id)}
                 >
-                  {message.subject}
+                  {template.subject}
                 </AccordionHeader>
-                <AccordionBody active={selected === message._id}>
+                <AccordionBody active={selected === template._id}>
                   <div className="d-flex w-100 justify-content-around">
                     <Link
                       className="btn btn-primary mb-3"
-                      to={`templates/${message._id}`}
+                      to={`templates/${template._id}`}
                     >
                       Modifica
                     </Link>
                     <Link
-                      className="btn disabled mb-3"
-                      to={`templates/${message._id}`}
+                      className="btn btn-primary mb-3"
+                      to={{
+                        pathname: "message",
+                        state: {
+                          type: "list",
+                          templateId: template._id
+                        }
+                      }}
                     >
                       Invia ad una lista
                     </Link>
                     <Link
                       className="btn btn-primary mb-3"
-                      to={{ pathname: "message", state: message._id }}
+                      to={{
+                        pathname: "message",
+                        state: {
+                          type: "single",
+                          templateId: template._id
+                        }
+                      }}
                     >
                       Invia ad un destinatario
                     </Link>
                   </div>
 
-                  <MessagePreview message={message} />
+                  <MessagePreview message={template} />
                 </AccordionBody>
               </Fragment>
             );

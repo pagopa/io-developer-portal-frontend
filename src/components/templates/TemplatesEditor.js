@@ -27,9 +27,9 @@ class TemplatesEditor extends Component {
         />
         <section className="flex-1 d-flex flex-row">
           <Input
+            className="flex-1 h-100"
             type="textarea"
             value={markdown}
-            className="flex-1 h-100"
             minLength="80"
             maxLength="10000"
             onChange={onChangeMarkdown}

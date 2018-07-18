@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withDB, Find } from "react-pouchdb/browser";
+import { Find } from "react-pouchdb/browser";
 
 import { Card, CardBody, CardTitle, CardText } from "design-react-kit";
 
