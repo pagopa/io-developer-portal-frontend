@@ -1,4 +1,6 @@
-.message--contacts-list {
-  max-height: 20vh;
-  overflow-y: scroll;
+.message--contacts-list
+{
+    overflow-y: scroll;
+
+    max-height: 20vh;
 }

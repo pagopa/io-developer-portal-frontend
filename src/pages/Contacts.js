@@ -48,9 +48,9 @@ class Contacts extends Component {
         const { db } = this.props;
 
         db.put({
+          ...profile,
           _id: code,
           type: "contact",
-          ...profile
         });
       }
     );

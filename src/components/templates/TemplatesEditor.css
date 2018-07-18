@@ -1,3 +1,4 @@
-.templates-editor--message--preview {
-  overflow-y: auto;
+.templates-editor--message--preview
+{
+    overflow-y: auto;
 }

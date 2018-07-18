@@ -1,4 +1,5 @@
-.login--container {
-  /* Header: 51px */
-  height: calc(100vh - 51px);
+.login--container
+{
+    /* Header: 51px */
+    height: calc(100vh - 51px);
 }

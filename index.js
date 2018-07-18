@@ -9,6 +9,8 @@ import {
   Switch
 } from "react-router-dom";
 
+import "moment/locale/it";
+
 const { localStorage } = window;
 
 import Header from "./src/components/Header";
@@ -22,6 +24,7 @@ import Templates from "./src/pages/Templates";
 
 import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
+import "react-datepicker/dist/react-datepicker.css";
 import "./index.css";
 
 const Layout = ({ children }) => (

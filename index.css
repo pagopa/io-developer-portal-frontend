@@ -1,13 +1,47 @@
 .icon-rotate-45deg:before
 {
-  transform: rotate(45deg)
+    transform: rotate(45deg);
 }
 
 .cursor-pointer
 {
-  cursor: pointer;
+    cursor: pointer;
 }
 
-.flex-1 {
-  flex: 1;
+.flex-1
+{
+    flex: 1;
+}
+
+.close-button
+{
+    top: 7px;
+    right: 10px;
+}
+
+/* react-datepicker */
+.input-group-datepicker,
+.input-group-datepicker > div,
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.react-datepicker__input-container > input,
+.react-datepicker-ignore-onclickoutside
+{
+    display: flex;
+    flex: 1;
+}
+
+.react-datepicker__current-month
+{
+    text-transform: capitalize;
+}
+
+.react-datepicker-time__header
+{
+    padding: 14px 0;
+}
+
+.react-datepicker__time-list
+{
+    padding: 0;
 }
