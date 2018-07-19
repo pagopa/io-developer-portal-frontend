@@ -1,0 +1,6 @@
+.templateslist--collapse-header:after
+{
+    position: absolute;
+    top: 16px;
+    right: 10px;
+}

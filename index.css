@@ -13,6 +13,11 @@
     flex: 1;
 }
 
+.w-90
+{
+    width: 90%;
+}
+
 .close-button
 {
     top: 7px;
