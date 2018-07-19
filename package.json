@@ -8,6 +8,7 @@
   "dependencies": {
     "bootstrap-italia": "^0.9.6",
     "design-react-kit": "^2.2.0",
+    "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "papaparse": "^4.5.0",
     "pouchdb": "^7.0.0",

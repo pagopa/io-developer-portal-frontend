@@ -46,8 +46,8 @@ const upsert = (db, docId, newDoc) => {
 const contactGetAndPersist = async ({ db, code, batchId }) => {
   let profile = await get({ path: `profiles/${code}` });
 
+  // The API returns errors with shape { detail, status, title }
   if (profile.status) {
-    // The API returns errors with shape { detail, status, title }
     // Create an errored profile
     profile = { sender_allowed: null, status: profile.status };
   }
@@ -80,8 +80,8 @@ const messagePostAndPersist = async ({
     }
   });
 
+  // The API returns errors with shape { detail, status, title }
   if (sent.status) {
-    // The API returns errors with shape { detail, status, title }
     // Create an errored message
     return db.post({
       type: "message",

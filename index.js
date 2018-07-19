@@ -20,6 +20,7 @@ import Aside from "./src/components/Aside";
 import Login from "./src/pages/Login";
 import Contacts from "./src/pages/Contacts";
 import Dashboard from "./src/pages/Dashboard";
+import Messages from "./src/pages/Messages";
 import Message from "./src/pages/Message";
 import Templates from "./src/pages/Templates";
 
@@ -31,12 +32,12 @@ import "./index.css";
 const Layout = ({ children }) => (
   <section className="row">
     <div className="col-3">
-      <div className="ml-4 pt-5 pb-5 ">
+      <div className="ml-4 pt-5 pb-5">
         <Aside />
       </div>
     </div>
     <div className="col-9">
-      <div className="mr-4 pt-5 pb-5 ">{children}</div>
+      <div className="mr-4 pt-5 pb-5">{children}</div>
     </div>
   </section>
 );
@@ -73,6 +74,7 @@ const Root = () => {
           <Route exact path="/login" component={Login} />
           <PrivateRoute exact path="/contacts" component={Contacts} />
           <PrivateRoute exact path="/" component={Dashboard} />
+          <PrivateRoute exact path="/messages" component={Messages} />
           <PrivateRoute exact path="/message" component={Message} />
           <PrivateRoute exact path="/templates" component={Templates} />
           <PrivateRoute

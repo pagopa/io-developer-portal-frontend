@@ -20,6 +20,11 @@ class Header extends Component {
             </Link>
           </li>
           <li>
+            <Link className="large list-item" to={{ pathname: "/messages" }}>
+              Messaggi
+            </Link>
+          </li>
+          <li>
             <Link className="large list-item" to={{ pathname: "/contacts" }}>
               Contatti
             </Link>

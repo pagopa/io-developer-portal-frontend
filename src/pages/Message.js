@@ -29,6 +29,7 @@ import { contactGetAndPersist, messagePostAndPersist } from "../utils";
 import { get, post } from "../api";
 
 import "./Message.css";
+import { log } from "util";
 
 class Message extends Component {
   initialState = {
@@ -130,7 +131,8 @@ class Message extends Component {
       complete: async (results, file) => {
         const batch = await db.post({
           type: "batch",
-          templateId
+          templateId,
+          created_at: moment().toISOString()
         });
 
         const promises = [];
@@ -187,7 +189,8 @@ class Message extends Component {
         db,
         code: selected,
         content,
-        templateId
+        templateId,
+        batchId: batch
       });
       this.goHome();
     } else {
@@ -205,7 +208,8 @@ class Message extends Component {
             db,
             code: doc._id,
             content,
-            templateId
+            templateId,
+            batchId: batch
           })
         )
       );
@@ -324,6 +328,7 @@ class Message extends Component {
               type: "template",
               _id: templateId
             }}
+            sort={["_id"]}
             render={({ docs }) => {
               const message = docs[0];
 

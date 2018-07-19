@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { ListGroup, ListGroupItem } from "design-react-kit";
+import { Alert, ListGroup, ListGroupItem } from "design-react-kit";
 
 const getUserIcon = ({ sender_allowed, status }) => {
   if (sender_allowed === true) {
@@ -23,6 +23,9 @@ class ContactsList extends Component {
     return (
       <ListGroup className="flex-1">
         {(() => {
+          if (!docs.length) {
+            return <Alert color="warning">Non ci sono contatti</Alert>;
+          }
           return docs.map(contact => {
             return (
               <ListGroupItem
