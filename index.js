@@ -69,7 +69,7 @@ const Root = () => {
     <PouchDB name={dbName}>
       <Header />
 
-      <Router>
+      <Router basename={process.env.PUBLIC_PATH}>
         <Switch>
           <Route exact path="/login" component={Login} />
           <PrivateRoute exact path="/contacts" component={Contacts} />
@@ -87,6 +87,8 @@ const Root = () => {
             path="/templates/:template_id"
             component={Templates}
           />
+          {/* Not found */}
+          <Route component={Login} />
         </Switch>
       </Router>
     </PouchDB>
