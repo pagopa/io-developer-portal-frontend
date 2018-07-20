@@ -11,12 +11,15 @@ class TemplatesEditor extends Component {
     const {
       subject,
       markdown,
-      onChangeSubject,
-      onChangeMarkdown
+      subjectLength,
+      markdownLength,
+      isSubjectValid,
+      isMarkdownValid
     } = this.props;
+    const { onChangeSubject, onChangeMarkdown } = this.props;
 
     return (
-      <section className="h-100 d-flex flex-column">
+      <section className="h-90 d-flex flex-column">
         <Input
           type="text"
           value={subject}
@@ -25,15 +28,30 @@ class TemplatesEditor extends Component {
           maxLength="120"
           onChange={onChangeSubject}
         />
+        {subject &&
+          !isSubjectValid && (
+            <div className="invalid-feedback d-block">
+              L'oggetto deve essere di {subjectLength.join("-")} caratteri
+            </div>
+          )}
+
         <section className="flex-1 d-flex flex-row">
-          <Input
-            className="flex-1 h-100"
-            type="textarea"
-            value={markdown}
-            minLength="80"
-            maxLength="10000"
-            onChange={onChangeMarkdown}
-          />
+          <div className="flex-1 h-100">
+            <Input
+              className="h-100"
+              type="textarea"
+              value={markdown}
+              minLength="80"
+              maxLength="10000"
+              onChange={onChangeMarkdown}
+            />
+            {markdown &&
+              !isMarkdownValid && (
+                <div className="invalid-feedback d-block">
+                  Il testo deve essere di {markdownLength.join("-")} caratteri
+                </div>
+              )}
+          </div>
 
           <TemplatePreview markdown={markdown} />
         </section>

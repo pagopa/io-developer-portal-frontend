@@ -15,6 +15,8 @@ import {
   Button
 } from "design-react-kit";
 
+import MaskedInput from "react-text-mask";
+
 import { withDB, Find } from "react-pouchdb/browser";
 
 import moment from "moment";
@@ -25,11 +27,18 @@ import DatePicker from "react-datepicker";
 import MessagePreview from "../components/messages/MessagePreview";
 import ContactsList from "../components/contacts/ContactsList";
 
-import { contactGetAndPersist, messagePostAndPersist } from "../utils";
+import {
+  contactGetAndPersist,
+  messagePostAndPersist,
+  isMaskValid,
+  isValueRangeValid
+} from "../utils";
 import { get, post } from "../api";
 
 import "./Message.css";
-import { log } from "util";
+
+// ^[0123][0-9]{17}$
+const noticeMask = [/[0123]/, ...new Array(17).fill(/[0-9]/)];
 
 class Message extends Component {
   initialState = {
@@ -105,7 +114,7 @@ class Message extends Component {
   };
 
   onChangeAmount = ({ target: { value } }) => {
-    this.setState({ amount: new Number(value) });
+    this.setState({ amount: value && new Number(value) });
   };
 
   onReset = field => {
@@ -235,6 +244,9 @@ class Message extends Component {
       }
     } = this.props;
 
+    const isNoticeValid = isMaskValid(notice, noticeMask);
+    const isAmountValid = isValueRangeValid(amount.toString(), [1, 9999999999]);
+
     return (
       <section>
         {(() => {
@@ -266,7 +278,7 @@ class Message extends Component {
                 <Col>
                   <Card>
                     <Input
-                      className="flex-1 h-100 border-0"
+                      className="flex-1 h-100 border-0 shadow-none"
                       type="textarea"
                       value={list}
                       onChange={this.onChangeList}
@@ -371,11 +383,22 @@ class Message extends Component {
             <Label>Numero Avviso</Label>
 
             <InputGroup className="position-relative">
-              <Input
+              <MaskedInput
                 type="text"
+                className="form-control"
+                placeholder=""
+                aria-label="Numero Avviso"
                 value={notice}
+                guide={false}
+                mask={noticeMask}
                 onChange={this.onChangeNotice}
               />
+              {(notice || amount) &&
+                (!isNoticeValid && (
+                  <div className="invalid-feedback d-block">
+                    Per favore digita 18 caratteri numerici e l'importo
+                  </div>
+                ))}
 
               {notice && (
                 <button
@@ -400,9 +423,17 @@ class Message extends Component {
               <Input
                 aria-label="€"
                 type="number"
+                maxLength="10"
                 value={amount}
                 onChange={this.onChangeAmount}
               />
+              {(notice || amount) &&
+                (!isAmountValid && (
+                  <div className="invalid-feedback d-block">
+                    Per favore digita l'importo in Centesimi ed il Numero di
+                    Avviso
+                  </div>
+                ))}
 
               {amount && (
                 <button
@@ -418,13 +449,22 @@ class Message extends Component {
         </Row>
 
         {(() => {
+          const isValid = [];
+          if (dueDate) {
+            isValid.push(moment(dueDate).isValid());
+          }
+          if (notice || amount) {
+            isValid.push(isNoticeValid, isAmountValid);
+          }
+
           if (type === "single") {
+            isValid.push(!!selected);
             return (
               <Button
                 className="mt-3"
                 block
                 color="primary"
-                disabled={!selected}
+                disabled={isValid.includes(false)}
                 onClick={this.onMessageSubmit}
               >
                 Invia
@@ -432,12 +472,13 @@ class Message extends Component {
             );
           }
 
+          isValid.push(!!batch);
           return (
             <Button
               className="mt-3"
               block
               color="primary"
-              disabled={!batch}
+              disabled={isValid.includes(false)}
               onClick={this.onMessageSubmit}
             >
               Invia alla lista

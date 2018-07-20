@@ -12,6 +12,8 @@ import { withDB, Find } from "react-pouchdb/browser";
 
 import compose from "recompose/compose";
 
+import { isLengthValid } from "../utils";
+
 import "./Templates.css";
 
 class Templates extends Component {
@@ -119,6 +121,9 @@ class Templates extends Component {
       }
     } = this.props;
 
+    const isSubjectValid = isLengthValid(subject, [10, 120]);
+    const isMarkdownValid = isLengthValid(markdown, [80, 10000]);
+
     return (
       <section className="templates--container">
         {(() => {
@@ -150,15 +155,19 @@ class Templates extends Component {
               <TemplatesEditor
                 subject={subject}
                 markdown={markdown}
+                subjectLength={[10, 120]}
+                markdownLength={[80, 10000]}
+                isSubjectValid={isSubjectValid}
+                isMarkdownValid={isMarkdownValid}
                 onChangeSubject={this.onChangeSubject}
                 onChangeMarkdown={this.onChangeMarkdown}
               />
 
               <Button
-                className="mt-3"
+                className="mt-5"
                 block
                 color="primary"
-                disabled={!subject || !markdown}
+                disabled={[isSubjectValid, isMarkdownValid].includes(false)}
                 onClick={this.onSaveTemplate}
               >
                 Salva
