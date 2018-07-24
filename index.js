@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { render } from "react-dom";
 
 import { PouchDB } from "react-pouchdb/browser";
@@ -67,29 +67,31 @@ const Root = () => {
 
   return (
     <PouchDB name={dbName}>
-      <Header />
-
       <Router basename={process.env.PUBLIC_PATH}>
-        <Switch>
-          <Route exact path="/login" component={Login} />
-          <PrivateRoute exact path="/contacts" component={Contacts} />
-          <PrivateRoute exact path="/" component={Dashboard} />
-          <PrivateRoute exact path="/messages" component={Messages} />
-          <PrivateRoute exact path="/message" component={Message} />
-          <PrivateRoute exact path="/templates" component={Templates} />
-          <PrivateRoute
-            exact
-            path="/templates/edit/:template_id"
-            component={Templates}
-          />
-          <PrivateRoute
-            exact
-            path="/templates/:template_id"
-            component={Templates}
-          />
-          {/* Not found */}
-          <Route component={Login} />
-        </Switch>
+        <Fragment>
+          <Header />
+
+          <Switch>
+            <Route exact path="/login" component={Login} />
+            <PrivateRoute exact path="/contacts" component={Contacts} />
+            <PrivateRoute exact path="/" component={Dashboard} />
+            <PrivateRoute exact path="/messages" component={Messages} />
+            <PrivateRoute exact path="/message" component={Message} />
+            <PrivateRoute exact path="/templates" component={Templates} />
+            <PrivateRoute
+              exact
+              path="/templates/edit/:template_id"
+              component={Templates}
+            />
+            <PrivateRoute
+              exact
+              path="/templates/:template_id"
+              component={Templates}
+            />
+            {/* Not found */}
+            <Route component={Login} />
+          </Switch>
+        </Fragment>
       </Router>
     </PouchDB>
   );

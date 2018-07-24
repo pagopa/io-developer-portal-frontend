@@ -22,6 +22,7 @@ class TemplatesEditor extends Component {
       <section className="h-90 d-flex flex-column">
         <Input
           type="text"
+          autoFocus
           value={subject}
           placeholder="Titolo"
           minLength="10"

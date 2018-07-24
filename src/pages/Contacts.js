@@ -73,7 +73,8 @@ class Contacts extends Component {
         <InputGroup className="pb-3">
           <MaskedInput
             type="text"
-            className="form-control border-0 shadow-none"
+            autoFocus
+            className="form-control shadow-none"
             placeholder="Codice Fiscale"
             aria-label="Codice Fiscale"
             minLength="16"

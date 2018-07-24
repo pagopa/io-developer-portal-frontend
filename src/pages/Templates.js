@@ -132,7 +132,7 @@ class Templates extends Component {
               <div>
                 <div className="d-flex justify-content-end">
                   <Link
-                    className="btn btn-primary mb-5"
+                    className="btn btn-primary mb-3"
                     to={{ pathname: "templates/new" }}
                   >
                     Aggiungi template

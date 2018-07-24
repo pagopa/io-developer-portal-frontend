@@ -24,7 +24,7 @@ class ContactsList extends Component {
       <ListGroup className="flex-1">
         {(() => {
           if (!docs.length) {
-            return <Alert color="warning">Non ci sono contatti</Alert>;
+            return <Alert color="warning">Non ci sono contatti salvati</Alert>;
           }
           return docs.map(contact => {
             return (

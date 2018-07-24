@@ -3,6 +3,7 @@ import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import {
+  Alert,
   Accordion,
   AccordionHeader,
   AccordionBody,
@@ -35,6 +36,12 @@ class TemplatesList extends Component {
     const { selected } = this.state;
     const { docs } = this.props;
 
+    if (!docs.length) {
+      return (
+        <Alert color="warning">Non ci sono template salvati</Alert>
+      );
+    }
+    
     return (
       <Accordion>
         {(() => {

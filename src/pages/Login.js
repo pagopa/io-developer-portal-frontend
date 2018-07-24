@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 
-import { withRouter } from "react-router";
-
 import {
   Col,
   Row,
@@ -32,7 +30,7 @@ class Login extends Component {
     e.preventDefault();
 
     const { serviceKey } = this.state;
-    
+
     if (!!serviceKey) {
       localStorage.setItem("serviceKey", serviceKey);
 
@@ -41,12 +39,9 @@ class Login extends Component {
   };
 
   goHome = () => {
-    const { history } = this.props;
-    const location = {
-      pathname: "/"
-    };
-    history.replace(location);
-  }
+    // Hard refresh for `PouchDB`, i.e. switch DB (service)
+    window.location.replace("./");
+  };
 
   render() {
     return (
@@ -56,7 +51,10 @@ class Login extends Component {
             <Form className="form-row">
               <Col lg="11">
                 <FormGroup>
-                  <PasswordInput id="login--serviceKey" onChange={this.onPasswordChange} />
+                  <PasswordInput
+                    id="login--serviceKey"
+                    onChange={this.onPasswordChange}
+                  />
                   <Label for="login--serviceKey">API Key</Label>
                   <FormText color="muted">
                     inserisci le credenziali per il tuo servizio
@@ -80,4 +78,4 @@ class Login extends Component {
   }
 }
 
-export default withRouter(Login);
+export default Login;
