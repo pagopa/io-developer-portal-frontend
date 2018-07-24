@@ -1,24 +1,12 @@
 import React, { Component } from "react";
 
-import { InputGroup, InputGroupAddon, Input } from "design-react-kit";
-import MaskedInput from "react-text-mask";
-
+import ContactAdd from "../components/contacts/ContactAdd";
 import ContactsList from "../components/contacts/ContactsList";
 
 import { withDB, Find } from "react-pouchdb/browser";
 
 import { contactGetAndPersist, isMaskValid } from "../utils";
-
-// ^[A-Za-z]{6}[0-9LMNPQRSTUV]{2}[A-Za-z]{1}[0-9LMNPQRSTUV]{2}[A-Za-z]{1}[0-9LMNPQRSTUV]{3}[A-Za-z]{1}$
-const codeMask = [
-  ...new Array(6).fill(/[A-Za-z]/),
-  ...new Array(2).fill(/[0-9LMNPQRSTUV]/),
-  /[A-Za-z]/,
-  ...new Array(2).fill(/[0-9LMNPQRSTUV]/),
-  /[A-Za-z]/,
-  ...new Array(3).fill(/[0-9LMNPQRSTUV]/),
-  /[A-Za-z]/
-];
+import { codeMask } from "../masks";
 
 class Contacts extends Component {
   initialState = {
@@ -70,38 +58,13 @@ class Contacts extends Component {
 
     return (
       <section>
-        <InputGroup className="pb-3">
-          <MaskedInput
-            type="text"
-            autoFocus
-            className="form-control shadow-none"
-            placeholder="Codice Fiscale"
-            aria-label="Codice Fiscale"
-            minLength="16"
-            maxLength="16"
-            value={code}
-            guide={false}
-            mask={codeMask}
-            onChange={this.onInputCode}
-          />
-
-          <InputGroupAddon
-            addonType="append"
-            onClick={() => isCodeValid && this.onInputAdd()}
-          >
-            <span
-              className={`border-0 input-group-text it-close icon-rotate-45deg ${
-                isCodeValid ? "cursor-pointer" : ""
-              }`}
-            />
-          </InputGroupAddon>
-          {code &&
-            !isCodeValid && (
-              <div className="invalid-feedback d-block">
-                Per favore digita 16 caratteri alfanumerici
-              </div>
-            )}
-        </InputGroup>
+        <ContactAdd
+          code={code}
+          codeMask={codeMask}
+          isCodeValid={isCodeValid}
+          onInputCode={this.onInputCode}
+          onInputAdd={this.onInputAdd}
+        />
 
         <Find
           selector={{

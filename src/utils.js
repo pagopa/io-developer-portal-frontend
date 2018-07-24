@@ -2,6 +2,8 @@ import { get, post } from "./api";
 
 import { conformToMask } from "react-text-mask";
 
+import moment from "moment";
+
 const tryAndPut = (db, doc) => {
   return db.put(doc).then(
     res => {
@@ -112,6 +114,27 @@ const messagePostAndPersist = async ({
 };
 
 module.exports.messagePostAndPersist = messagePostAndPersist;
+
+const createMessageContent = ({ message, dueDate, amount, notice }) => {
+  let content = {
+    subject: message.subject,
+    markdown: message.markdown,
+    due_date: dueDate && moment(dueDate).toISOString()
+  };
+
+  if (amount || notice) {
+    content = Object.assign(content, {
+      payment_data: {
+        amount,
+        notice_number: notice
+      }
+    });
+  }
+
+  return content;
+};
+
+module.exports.createMessageContent = createMessageContent;
 
 const isMaskValid = (value, mask) => {
   return conformToMask(value, mask).conformedValue.indexOf("_") === -1;

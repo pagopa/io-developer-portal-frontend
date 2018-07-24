@@ -18,6 +18,7 @@ import Header from "./src/components/Header";
 import Aside from "./src/components/Aside";
 
 import Login from "./src/pages/Login";
+import Compose from "./src/pages/Compose";
 import Contacts from "./src/pages/Contacts";
 import Dashboard from "./src/pages/Dashboard";
 import Messages from "./src/pages/Messages";
@@ -73,8 +74,9 @@ const Root = () => {
 
           <Switch>
             <Route exact path="/login" component={Login} />
-            <PrivateRoute exact path="/contacts" component={Contacts} />
             <PrivateRoute exact path="/" component={Dashboard} />
+            <PrivateRoute exact path="/compose" component={Compose} />
+            <PrivateRoute exact path="/contacts" component={Contacts} />
             <PrivateRoute exact path="/messages" component={Messages} />
             <PrivateRoute exact path="/message" component={Message} />
             <PrivateRoute exact path="/templates" component={Templates} />

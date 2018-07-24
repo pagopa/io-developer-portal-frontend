@@ -15,30 +15,26 @@ import {
   Button
 } from "design-react-kit";
 
-import MaskedInput from "react-text-mask";
-
 import { withDB, Find } from "react-pouchdb/browser";
 
 import moment from "moment";
 import Papa from "papaparse";
 
-import DatePicker from "react-datepicker";
-
 import MessagePreview from "../components/messages/MessagePreview";
 import ContactsList from "../components/contacts/ContactsList";
+import MessageMetadataEditor from "../components/messages/MessageMetadataEditor";
 
 import {
+  createMessageContent,
   contactGetAndPersist,
   messagePostAndPersist,
   isMaskValid,
   isValueRangeValid
 } from "../utils";
 import { get, post } from "../api";
+import { noticeMask } from "../masks";
 
 import "./Message.css";
-
-// ^[0123][0-9]{17}$
-const noticeMask = [/[0123]/, ...new Array(17).fill(/[0-9]/)];
 
 class Message extends Component {
   initialState = {
@@ -178,20 +174,7 @@ class Message extends Component {
     });
     const message = messages.docs[0];
 
-    let content = {
-      subject: message.subject,
-      markdown: message.markdown,
-      due_date: dueDate && moment(dueDate).toISOString()
-    };
-
-    if (amount || notice) {
-      content = Object.assign(content, {
-        payment_data: {
-          amount,
-          notice_number: notice
-        }
-      });
-    }
+    let content = createMessageContent({ message, dueDate, amount, notice });
 
     if (!batch) {
       await messagePostAndPersist({
@@ -352,101 +335,18 @@ class Message extends Component {
           />
         </div>
 
-        <Row className="form-inline">
-          <Col lg="4">
-            <Label>Scadenza</Label>
-            <InputGroup className="position-relative input-group-datepicker">
-              <DatePicker
-                selected={dueDate}
-                onChange={this.onChangeDueDate}
-                dateFormat="DD/MM/YYYY HH:mm"
-                showTimeSelect
-                timeCaption="Orario"
-                timeFormat="HH:mm"
-                timeIntervals={60}
-                disabledKeyboardNavigation
-              />
-
-              {dueDate && (
-                <button
-                  className="close position-absolute close-button"
-                  aria-label="Reset"
-                  onClick={() => this.onReset("dueDate")}
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              )}
-            </InputGroup>
-          </Col>
-
-          <Col lg="5">
-            <Label>Numero Avviso</Label>
-
-            <InputGroup className="position-relative">
-              <MaskedInput
-                type="text"
-                className="form-control"
-                placeholder=""
-                aria-label="Numero Avviso"
-                value={notice}
-                guide={false}
-                mask={noticeMask}
-                onChange={this.onChangeNotice}
-              />
-              {(notice || amount) &&
-                (!isNoticeValid && (
-                  <div className="invalid-feedback d-block">
-                    Per favore digita 18 caratteri numerici e l'importo
-                  </div>
-                ))}
-
-              {notice && (
-                <button
-                  className="close position-absolute close-button"
-                  aria-label="Reset"
-                  onClick={() => this.onReset("notice")}
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              )}
-            </InputGroup>
-          </Col>
-
-          <Col lg="3">
-            <Label>Importo</Label>
-
-            <InputGroup className="position-relative">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>€</InputGroupText>
-                <InputGroupText>{amount && amount / 100}</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                aria-label="€"
-                type="number"
-                maxLength="10"
-                value={amount}
-                onChange={this.onChangeAmount}
-              />
-              {(notice || amount) &&
-                (!isAmountValid && (
-                  <div className="invalid-feedback d-block">
-                    Per favore digita l'importo in Centesimi ed il Numero di
-                    Avviso
-                  </div>
-                ))}
-
-              {amount && (
-                <button
-                  className="close position-absolute close-button"
-                  aria-label="Reset"
-                  onClick={() => this.onReset("amount")}
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              )}
-            </InputGroup>
-          </Col>
-        </Row>
+        <MessageMetadataEditor
+          dueDate={dueDate}
+          notice={notice}
+          amount={amount}
+          noticeMask={noticeMask}
+          isNoticeValid={isNoticeValid}
+          isAmountValid={isAmountValid}
+          onChangeDueDate={this.onChangeDueDate}
+          onChangeNotice={this.onChangeNotice}
+          onChangeAmount={this.onChangeAmount}
+          onReset={this.onReset}
+        />
 
         {(() => {
           const isValid = [];

@@ -28,7 +28,7 @@ class Header extends Component {
           <Collapse isOpen navbar>
             <Nav navbar className="justify-content-between">
               <NavItem>
-                <NavLink href={process.env.PUBLIC_URL}>
+                <NavLink href={process.env.PUBLIC_URL || "/"}>
                   <i className="it-app mr-3" />
                   IO Backoffice
                 </NavLink>
