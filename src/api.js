@@ -1,5 +1,11 @@
-const BASE_URL = "https://api.cd.italia.it/api/v1";
-const PROXIED_URL = "http://localhost:3000";
+let URL = "";
+
+if (process.env.NODE_ENV === "production") {
+  URL = "https://api.cd.italia.it/api/v1";
+} else {
+  // Uses `api-proxy.js`
+  URL = "http://localhost:3000";
+}
 
 const OPTIONS = {
   headers: {
@@ -9,7 +15,7 @@ const OPTIONS = {
 };
 
 module.exports.get = ({ path, options }) => {
-  return fetch(`${PROXIED_URL}/${path}`, {
+  return fetch(`${URL}/${path}`, {
     ...OPTIONS,
     ...options,
     method: "GET"
@@ -17,7 +23,7 @@ module.exports.get = ({ path, options }) => {
 };
 
 module.exports.post = ({ path, options }) => {
-  return fetch(`${PROXIED_URL}/${path}`, {
+  return fetch(`${URL}/${path}`, {
     ...OPTIONS,
     ...options,
     method: "POST",
