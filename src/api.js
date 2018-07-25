@@ -1,11 +1,23 @@
-let URL = "";
-
+let DEFAULT_URL = "";
 if (process.env.NODE_ENV === "production") {
-  URL = "https://api.cd.italia.it/api/v1";
+  DEFAULT_URL = "https://api.cd.italia.it/api/v1";
 } else {
   // Uses `api-proxy.js`
-  URL = "http://localhost:3000";
+  DEFAULT_URL = "http://localhost:3000";
 }
+
+const getUrl = () => {
+  const { localStorage } = window;
+  const serviceEndpoint = localStorage.getItem("serviceEndpoint");
+
+  let URL = "";
+  if (serviceEndpoint) {
+    URL = serviceEndpoint;
+  } else {
+    URL = DEFAULT_URL;
+  }
+  return URL;
+};
 
 const OPTIONS = {
   headers: {
@@ -14,8 +26,10 @@ const OPTIONS = {
   }
 };
 
+module.exports.DEFAULT_URL = DEFAULT_URL;
+
 module.exports.get = ({ path, options }) => {
-  return fetch(`${URL}/${path}`, {
+  return fetch(`${getUrl()}/${path}`, {
     ...OPTIONS,
     ...options,
     method: "GET"
@@ -23,7 +37,7 @@ module.exports.get = ({ path, options }) => {
 };
 
 module.exports.post = ({ path, options }) => {
-  return fetch(`${URL}/${path}`, {
+  return fetch(`${getUrl()}/${path}`, {
     ...OPTIONS,
     ...options,
     method: "POST",

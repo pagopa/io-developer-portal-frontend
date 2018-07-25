@@ -47,6 +47,8 @@ const upsert = (db, docId, newDoc) => {
     });
 };
 
+module.exports.upsert = upsert;
+
 const contactGetAndPersist = async ({ db, code, batchId }) => {
   let profile = await get({ path: `profiles/${code}` });
 

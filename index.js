@@ -24,6 +24,7 @@ import Dashboard from "./src/pages/Dashboard";
 import Messages from "./src/pages/Messages";
 import Message from "./src/pages/Message";
 import Templates from "./src/pages/Templates";
+import Servers from "./src/pages/Servers";
 
 import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
@@ -76,6 +77,7 @@ const Root = () => {
             <Route exact path="/login" component={Login} />
             <PrivateRoute exact path="/" component={Dashboard} />
             <PrivateRoute exact path="/compose" component={Compose} />
+            <PrivateRoute exact path="/config/servers" component={Servers} />
             <PrivateRoute exact path="/contacts" component={Contacts} />
             <PrivateRoute exact path="/messages" component={Messages} />
             <PrivateRoute exact path="/message" component={Message} />
