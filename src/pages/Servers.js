@@ -6,8 +6,8 @@ import { withDB, Find } from "react-pouchdb/browser";
 
 import ServerPicker from "../components/servers/ServerPicker";
 
-import { DEFAULT_URL } from "../api";
-import { upsert } from "../utils";
+import { DEFAULT_URL } from "../utils/api";
+import { upsert } from "../utils/";
 
 const { localStorage } = window;
 

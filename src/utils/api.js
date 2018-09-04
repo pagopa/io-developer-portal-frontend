@@ -19,6 +19,8 @@ const getUrl = () => {
   return URL;
 };
 
+module.exports.getUrl = getUrl;
+
 const OPTIONS = {
   headers: {
     "Content-Type": "application/json",
@@ -28,16 +30,16 @@ const OPTIONS = {
 
 module.exports.DEFAULT_URL = DEFAULT_URL;
 
-module.exports.get = ({ path, options }) => {
-  return fetch(`${getUrl()}/${path}`, {
+module.exports.get = ({ url, path, options }) => {
+  return fetch(`${url || getUrl()}/${path}`, {
     ...OPTIONS,
     ...options,
     method: "GET"
   }).then(response => response.json());
 };
 
-module.exports.post = ({ path, options }) => {
-  return fetch(`${getUrl()}/${path}`, {
+module.exports.post = ({ url, path, options }) => {
+  return fetch(`${url || getUrl()}/${path}`, {
     ...OPTIONS,
     ...options,
     method: "POST",

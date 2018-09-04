@@ -16,6 +16,7 @@ const { localStorage } = window;
 
 import Header from "./src/components/Header";
 import Aside from "./src/components/Aside";
+import Worker from "./src/components/Worker";
 
 import Login from "./src/pages/Login";
 import Compose from "./src/pages/Compose";
@@ -23,8 +24,9 @@ import Contacts from "./src/pages/Contacts";
 import Dashboard from "./src/pages/Dashboard";
 import Messages from "./src/pages/Messages";
 import Message from "./src/pages/Message";
-import Templates from "./src/pages/Templates";
+import Report from "./src/pages/Report";
 import Servers from "./src/pages/Servers";
+import Templates from "./src/pages/Templates";
 
 import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
@@ -72,6 +74,7 @@ const Root = () => {
       <Router basename={process.env.PUBLIC_PATH}>
         <Fragment>
           <Header />
+          <Worker dbName={dbName} />
 
           <Switch>
             <Route exact path="/login" component={Login} />
@@ -81,6 +84,11 @@ const Root = () => {
             <PrivateRoute exact path="/contacts" component={Contacts} />
             <PrivateRoute exact path="/messages" component={Messages} />
             <PrivateRoute exact path="/message" component={Message} />
+            <PrivateRoute
+              exact
+              path="/report/:entry_type/:entry_id"
+              component={Report}
+            />
             <PrivateRoute exact path="/templates" component={Templates} />
             <PrivateRoute
               exact

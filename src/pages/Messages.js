@@ -83,9 +83,9 @@ class Messages extends Component {
               <th style={{ width: "10%" }}>
                 <span className="display-4">In coda</span>
               </th>
-              {/* <th style={{ width: "10%" }}>
+              <th style={{ width: "10%" }}>
                 <span className="display-4">Report</span>
-              </th> */}
+              </th>
             </tr>
           </thead>
           <tbody>

@@ -30,9 +30,9 @@ import {
   messagePostAndPersist,
   isMaskValid,
   isValueRangeValid
-} from "../utils";
-import { get, post } from "../api";
-import { noticeMask } from "../masks";
+} from "../utils/";
+import { get, post } from "../utils/api";
+import { noticeMask } from "../utils/masks";
 
 import "./Message.css";
 

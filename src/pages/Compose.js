@@ -16,10 +16,9 @@ import {
   isValueRangeValid,
   createMessageContent,
   contactGetAndPersist,
-  messagePostAndPersist,
-  goHome
-} from "../utils";
-import { codeMask, noticeMask } from "../masks";
+  messagePostAndPersist
+} from "../utils/";
+import { codeMask, noticeMask } from "../utils/masks";
 
 import moment from "moment";
 

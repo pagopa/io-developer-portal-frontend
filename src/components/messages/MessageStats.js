@@ -2,9 +2,11 @@ import React, { Component, Fragment } from "react";
 
 import { withDB } from "react-pouchdb/browser";
 
-import Info from "react-icons/lib/fa/info-circle";
+import { Link } from "react-router-dom";
 
-import { getStatsFor } from "../../utils";
+import FaChevronRight from "react-icons/lib/fa/chevron-right";
+
+import { getStatsFor } from "../../utils/";
 
 import moment from "moment";
 
@@ -29,15 +31,20 @@ class MessageStats extends Component {
     return (
       <tr>
         <td className="border-0">
-          {moment(entry.message.created_at).format("DD MMMM YYYY, hh:mm")}
+          {moment(entry.message.created_at).format("DD/MM/YYYY, HH:mm")}
         </td>
         <td className="border-0">{templates[entry.templateId].subject}</td>
         <td className="border-0">{statuses.PROCESSED}</td>
         <td className="border-0">{statuses.ERRORED}</td>
         <td className="border-0">{statuses.QUEUED}</td>
-        {/* <td className="border-0">
-          <Info />
-        </td> */}
+        <td className="border-0">
+          <Link
+            className="large list-item"
+            to={{ pathname: `/report/${entry.type}/${entry._id}` }}
+          >
+            <FaChevronRight />
+          </Link>
+        </td>
       </tr>
     );
   }

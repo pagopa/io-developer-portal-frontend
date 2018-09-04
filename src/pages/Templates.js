@@ -12,7 +12,7 @@ import { withDB, Find } from "react-pouchdb/browser";
 
 import compose from "recompose/compose";
 
-import { isLengthValid } from "../utils";
+import { isLengthValid } from "../utils/";
 
 import "./Templates.css";
 

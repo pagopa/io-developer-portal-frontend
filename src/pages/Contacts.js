@@ -5,8 +5,8 @@ import ContactsList from "../components/contacts/ContactsList";
 
 import { withDB, Find } from "react-pouchdb/browser";
 
-import { contactGetAndPersist, isMaskValid } from "../utils";
-import { codeMask } from "../masks";
+import { contactGetAndPersist, isMaskValid } from "../utils/";
+import { codeMask } from "../utils/masks";
 
 class Contacts extends Component {
   initialState = {
