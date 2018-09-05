@@ -10,6 +10,8 @@ import {
   Switch
 } from "react-router-dom";
 
+import WebFont from "webfontloader";
+
 import "moment/locale/it";
 
 const { localStorage } = window;
@@ -114,4 +116,12 @@ const Root = () => {
   );
 };
 
-render(<Root />, document.getElementById("root"));
+WebFont.load({
+  google: {
+    families: ["Titillium Web"]
+  },
+  active: () => {
+    // This event is triggered when the fonts have rendered.
+    render(<Root />, document.getElementById("root"));
+  }
+});
