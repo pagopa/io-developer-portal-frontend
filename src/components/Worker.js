@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { withDB } from "react-pouchdb/browser";
 
-import { WebWorker } from "../workers/WebWorker";
+import { GetMessageWorker } from "../workers/";
 
 import { getUrl } from "../utils/api";
 
@@ -10,7 +10,7 @@ class Worker extends Component {
   working = false;
 
   componentDidMount() {
-    WebWorker.addEventListener("message", ({ data }) => {
+    GetMessageWorker.addEventListener("message", ({ data }) => {
       this.working = !data.completed;
     });
 
@@ -26,7 +26,7 @@ class Worker extends Component {
 
     const { dbName } = this.props;
 
-    WebWorker.postMessage({
+    GetMessageWorker.postMessage({
       action: "getMessage",
       dbName,
       url: getUrl()

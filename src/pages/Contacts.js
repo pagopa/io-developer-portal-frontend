@@ -5,7 +5,7 @@ import ContactsList from "../components/contacts/ContactsList";
 
 import { withDB, Find } from "react-pouchdb/browser";
 
-import { contactGetAndPersist, isMaskValid } from "../utils/";
+import { profileGetAndPersist, isMaskValid } from "../utils/";
 import { codeMask } from "../utils/masks";
 
 class Contacts extends Component {
@@ -39,7 +39,7 @@ class Contacts extends Component {
       },
       async () => {
         const { db } = this.props;
-        await contactGetAndPersist({ db, code });
+        await profileGetAndPersist({ db, code });
       }
     );
   };

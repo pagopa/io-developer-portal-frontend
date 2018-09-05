@@ -46,13 +46,13 @@ const Layout = ({ children }) => (
   </section>
 );
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
+const PrivateRoute = ({ component: Component, dbName, ...rest }) => (
   <Route
     {...rest}
     render={props =>
       !!localStorage.getItem("serviceKey") ? (
         <Layout>
-          <Component {...props} />
+          <Component {...props} dbName={dbName} />
         </Layout>
       ) : (
         <Redirect
@@ -83,7 +83,12 @@ const Root = () => {
             <PrivateRoute exact path="/config/servers" component={Servers} />
             <PrivateRoute exact path="/contacts" component={Contacts} />
             <PrivateRoute exact path="/messages" component={Messages} />
-            <PrivateRoute exact path="/message" component={Message} />
+            <PrivateRoute
+              exact
+              path="/message"
+              component={Message}
+              dbName={dbName}
+            />
             <PrivateRoute
               exact
               path="/report/:entry_type/:entry_id"

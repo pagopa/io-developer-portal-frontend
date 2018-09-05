@@ -5,17 +5,7 @@ PouchDB.plugin(find);
 import Batch from "batch";
 
 import { upsert } from "../utils/db";
-
-const getOptions = dbName => {
-  const OPTIONS = {
-    headers: {
-      "Content-Type": "application/json",
-      "Ocp-Apim-Subscription-Key": dbName
-    }
-  };
-
-  return OPTIONS;
-};
+import { get } from "../utils/api";
 
 self.addEventListener("message", async e => {
   if (!e) return;
@@ -44,10 +34,7 @@ self.addEventListener("message", async e => {
     batch.push(async done => {
       const { id, fiscal_code } = entry.message;
       const path = `messages/${fiscal_code}/${id}`;
-      const message = await fetch(`${url}/${path}`, {
-        ...getOptions(dbName),
-        method: "GET"
-      }).then(response => response.json());
+      const message = await get({ dbName, url, path });
 
       if (message.statusCode) {
         // API returned an error

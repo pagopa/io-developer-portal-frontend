@@ -20,19 +20,23 @@ import { withDB, Find } from "react-pouchdb/browser";
 import moment from "moment";
 import Papa from "papaparse";
 
+import FaSpinner from "react-icons/lib/fa/spinner";
+
 import MessagePreview from "../components/messages/MessagePreview";
 import ContactsList from "../components/contacts/ContactsList";
 import MessageMetadataEditor from "../components/messages/MessageMetadataEditor";
 
 import {
   createMessageContent,
-  contactGetAndPersist,
+  profileGetAndPersist,
   messagePostAndPersist,
   isMaskValid,
   isValueRangeValid
 } from "../utils/";
-import { get, post } from "../utils/api";
+import { get, post, getUrl } from "../utils/api";
 import { noticeMask } from "../utils/masks";
+
+import { GetProfileWorker } from "../workers/";
 
 import "./Message.css";
 
@@ -43,7 +47,9 @@ class Message extends Component {
     selected: "",
     dueDate: undefined,
     amount: "",
-    notice: ""
+    notice: "",
+    sent: false,
+    progress: false
   };
 
   state = {
@@ -52,10 +58,21 @@ class Message extends Component {
     selected: this.initialState.selected,
     dueDate: this.initialState.dueDate,
     amount: this.initialState.amount,
-    notice: this.initialState.notice
+    notice: this.initialState.notice,
+    sent: this.initialState.sent,
+    progress: this.initialState.progress
   };
 
   fileInput = React.createRef();
+
+  componentDidMount() {
+    GetProfileWorker.addEventListener("message", ({ data }) => {
+      this.setState({
+        progress: this.initialState.progress,
+        batch: data.batchId
+      });
+    });
+  }
 
   onContactSelect = selected => {
     this.setState({ selected });
@@ -123,6 +140,7 @@ class Message extends Component {
     const { list } = this.state;
     const {
       db,
+      dbName,
       location: {
         state: { templateId }
       }
@@ -140,27 +158,25 @@ class Message extends Component {
           created_at: moment().toISOString()
         });
 
-        const promises = [];
-        results.data.map(async ([result]) => {
-          promises.push(
-            contactGetAndPersist({ code: result, db, batchId: batch.id })
-          );
+        this.setState({
+          progress: true
         });
-
-        Promise.all(promises)
-          .then(results => {
-            this.setState({
-              batch: batch.id
-            });
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        GetProfileWorker.postMessage({
+          action: "getProfile",
+          dbName,
+          url: getUrl(),
+          batchId: batch.id,
+          results: results.data
+        });
       }
     });
   };
 
   onMessageSubmit = async () => {
+    this.setState({
+      sent: true
+    });
+
     const { batch, selected, dueDate, notice, amount } = this.state;
     const {
       db,
@@ -220,7 +236,16 @@ class Message extends Component {
   };
 
   render() {
-    const { list, batch, selected, dueDate, notice, amount } = this.state;
+    const {
+      list,
+      batch,
+      selected,
+      dueDate,
+      notice,
+      amount,
+      sent,
+      progress
+    } = this.state;
     const {
       location: {
         state: { type, templateId }
@@ -292,8 +317,9 @@ class Message extends Component {
                         block
                         color="primary"
                         onClick={this.onSaveContacts}
+                        disabled={progress}
                       >
-                        Salva
+                        {progress ? <FaSpinner /> : "Salva"}
                       </Button>
                     </Col>
                     <Col />
@@ -378,10 +404,10 @@ class Message extends Component {
               className="mt-3"
               block
               color="primary"
-              disabled={isValid.includes(false)}
+              disabled={isValid.includes(false) || sent}
               onClick={this.onMessageSubmit}
             >
-              Invia alla lista
+              {sent ? <FaSpinner /> : "Invia alla lista"}
             </Button>
           );
         })()}

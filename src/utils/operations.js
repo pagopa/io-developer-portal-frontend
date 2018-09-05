@@ -3,8 +3,8 @@ import { upsert } from "./db";
 
 import moment from "moment";
 
-const contactGetAndPersist = async ({ db, code, batchId }) => {
-  let profile = await get({ path: `profiles/${code}` });
+const profileGetAndPersist = async ({ db, dbName, url, code, batchId }) => {
+  let profile = await get({ dbName, url, path: `profiles/${code}` });
 
   // The API returns errors with shape { detail, status, title }
   if (profile.status) {
@@ -21,7 +21,7 @@ const contactGetAndPersist = async ({ db, code, batchId }) => {
   return upsert(db, code, newDoc);
 };
 
-module.exports.contactGetAndPersist = contactGetAndPersist;
+module.exports.profileGetAndPersist = profileGetAndPersist;
 
 const messagePostAndPersist = async ({
   db,

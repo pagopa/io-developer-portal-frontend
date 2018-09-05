@@ -15,7 +15,7 @@ import {
   isLengthValid,
   isValueRangeValid,
   createMessageContent,
-  contactGetAndPersist,
+  profileGetAndPersist,
   messagePostAndPersist
 } from "../utils/";
 import { codeMask, noticeMask } from "../utils/masks";
@@ -85,7 +85,7 @@ class Compose extends Component {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
     const { db } = this.props;
 
-    const contact = contactGetAndPersist({
+    const contact = profileGetAndPersist({
       code,
       db
     });
