@@ -28,7 +28,7 @@ const messagePostAndPersist = async ({
   code,
   content,
   templateId,
-  batchId
+  batchId = ""
 }) => {
   const sent = await post({
     path: `messages/${code}`,

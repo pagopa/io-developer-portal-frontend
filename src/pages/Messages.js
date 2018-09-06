@@ -11,7 +11,8 @@ class Messages extends Component {
   state = {
     templates: [],
     messages: [],
-    batches: []
+    batches: [],
+    stats: {}
   };
 
   componentDidMount = async () => {
@@ -30,7 +31,7 @@ class Messages extends Component {
       selector: {
         type: "message",
         batchId: {
-          $eq: ""
+          $in: [null, ""]
         }
       }
     });
@@ -39,25 +40,49 @@ class Messages extends Component {
         type: "batch"
       }
     });
+    const counts = await db.query(
+      {
+        map: doc => {
+          if (doc.type === "message") emit(doc.batchId, 1);
+        },
+        reduce: "_count"
+      },
+      { reduce: true, group: true }
+    );
+
+    const stats = {};
+    counts.rows.forEach(count => {
+      stats[count.key || "none"] = count.value;
+    });
 
     this.setState({
       templates: templates.docs,
       messages: messages.docs,
-      batches: batches.docs
+      batches: batches.docs,
+      stats
     });
   };
 
   render() {
-    const { templates, messages, batches } = this.state;
+    const { templates, messages, batches, stats } = this.state;
     const { db } = this.props;
 
-    const batchesMessages = batches.map(batch =>
-      Object.assign({}, batch, {
-        message: {
-          created_at: batch.created_at
+    console.log(stats);
+
+    const batchesMessages = batches
+      .filter(batch => {
+        if (!stats[batch._id]) {
+          return false;
         }
+        return true;
       })
-    );
+      .map(batch =>
+        Object.assign({}, batch, {
+          message: {
+            created_at: batch.created_at
+          }
+        })
+      );
 
     const templatesMap = keyBy(templates, template => {
       return template._id;
@@ -65,26 +90,34 @@ class Messages extends Component {
 
     return (
       <div>
-        <table className="table mb-0 border-0">
+        <table className="table mb-0 rounded">
           <thead>
             <tr>
-              <th>
-                <span className="display-4">Data</span>
+              <th className="border-0">
+                <span className="text-uppercase font-weight-normal">Data</span>
               </th>
-              <th>
-                <span className="display-4">Template</span>
+              <th className="border-0">
+                <span className="text-uppercase font-weight-normal">
+                  Oggetto
+                </span>
               </th>
-              <th style={{ width: "10%" }}>
-                <span className="display-4">Consegnati</span>
+              <th className="border-0" style={{ width: "10%" }}>
+                <span className="text-uppercase font-weight-normal">
+                  Consegnati
+                </span>
               </th>
-              <th style={{ width: "10%" }}>
-                <span className="display-4">Falliti</span>
+              <th className="border-0" style={{ width: "10%" }}>
+                <span className="text-uppercase font-weight-normal">
+                  Falliti
+                </span>
               </th>
-              <th style={{ width: "10%" }}>
-                <span className="display-4">In coda</span>
+              <th className="border-0" style={{ width: "10%" }}>
+                <span className="text-uppercase font-weight-normal">
+                  In coda
+                </span>
               </th>
-              <th style={{ width: "10%" }}>
-                <span className="display-4">Report</span>
+              <th className="border-0" style={{ width: "10%" }}>
+                <span className="text-uppercase font-weight-normal" />
               </th>
             </tr>
           </thead>

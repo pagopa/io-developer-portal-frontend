@@ -7,8 +7,8 @@ class TemplatePreview extends Component {
     const { markdown } = this.props;
     
     return (
-        <ReactMarkdown
-          className="templates-editor--message--preview form-control bg-light border-0 h-100 flex-1"
+      <ReactMarkdown
+        className="templates-editor--message--preview form-control card shadow h-100 flex-1"
           source={markdown}
           unwrapDisallowed
           allowedTypes={[

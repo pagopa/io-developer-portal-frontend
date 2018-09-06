@@ -12,7 +12,8 @@ import { withDB, Find } from "react-pouchdb/browser";
 
 import compose from "recompose/compose";
 
-import { isLengthValid } from "../utils/";
+import { isLengthValid, LIMITS } from "../utils/";
+const { SUBJECT, MARKDOWN } = LIMITS;
 
 import "./Templates.css";
 
@@ -121,8 +122,11 @@ class Templates extends Component {
       }
     } = this.props;
 
-    const isSubjectValid = isLengthValid(subject, [10, 120]);
-    const isMarkdownValid = isLengthValid(markdown, [80, 10000]);
+    const isSubjectValid = isLengthValid(subject, [SUBJECT.MIN, SUBJECT.MAX]);
+    const isMarkdownValid = isLengthValid(markdown, [
+      MARKDOWN.MIN,
+      MARKDOWN.MAX
+    ]);
 
     return (
       <section className="templates--container">
@@ -155,8 +159,8 @@ class Templates extends Component {
               <TemplatesEditor
                 subject={subject}
                 markdown={markdown}
-                subjectLength={[10, 120]}
-                markdownLength={[80, 10000]}
+                subjectLength={[SUBJECT.MIN, SUBJECT.MAX]}
+                markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
                 isSubjectValid={isSubjectValid}
                 isMarkdownValid={isMarkdownValid}
                 onChangeSubject={this.onChangeSubject}

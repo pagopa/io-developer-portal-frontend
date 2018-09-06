@@ -19,7 +19,8 @@ const getStatsFor = async (entry, db) => {
     // Custom ones
     NOTSENT: 0,
     ERRORED: 0,
-    QUEUED: 0
+    QUEUED: 0,
+    TOTAL: 0
   };
 
   if (entry.type === "message") {
@@ -41,6 +42,10 @@ const getStatsFor = async (entry, db) => {
 
   statuses.QUEUED = statuses.ACCEPTED + statuses.THROTTLED;
   statuses.ERRORED = statuses.FAILED + statuses.NOTSENT;
+  statuses.TOTAL = (["PROCESSED", "QUEUED", "ERRORED"]).reduce((acc, key) => {
+    return acc + statuses[key];
+  }, 0);
+  
   return statuses;
 };
 

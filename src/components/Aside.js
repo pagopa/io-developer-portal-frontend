@@ -42,7 +42,10 @@ class Header extends Component {
             </Link>
           </li>
           <li>
-            <Link className="large list-item" to={{ pathname: "/messages" }}>
+            <Link
+              className="large list-item border-top border-custom-grey"
+              to={{ pathname: "/messages" }}
+            >
               <Inbox className="mr-2 aside--icon" />
               Messaggi inviati
             </Link>

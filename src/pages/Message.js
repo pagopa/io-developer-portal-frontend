@@ -1,9 +1,13 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import ReactDOM from "react-dom";
 
 import {
   Row,
   Col,
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
+  Badge,
   Card,
   FormGroup,
   Form,
@@ -31,10 +35,12 @@ import {
   profileGetAndPersist,
   messagePostAndPersist,
   isMaskValid,
-  isValueRangeValid
+  isValueRangeValid,
+  LIMITS
 } from "../utils/";
 import { get, post, getUrl } from "../utils/api";
 import { noticeMask } from "../utils/masks";
+const { AMOUNT, CODE } = LIMITS;
 
 import { GetProfileWorker } from "../workers/";
 
@@ -43,22 +49,28 @@ import "./Message.css";
 class Message extends Component {
   initialState = {
     list: "",
+    contacts: [],
+    file: undefined,
     batch: "",
     selected: "",
     dueDate: undefined,
     amount: "",
     notice: "",
+    recipientOpen: false,
     sent: false,
     progress: false
   };
 
   state = {
     list: this.initialState.list,
+    contacts: this.initialState.contacts,
+    file: this.initialState.file,
     batch: this.initialState.batch,
     selected: this.initialState.selected,
     dueDate: this.initialState.dueDate,
     amount: this.initialState.amount,
     notice: this.initialState.notice,
+    recipientOpen: this.initialState.recipientOpen,
     sent: this.initialState.sent,
     progress: this.initialState.progress
   };
@@ -74,6 +86,14 @@ class Message extends Component {
     });
   }
 
+  onToggleRecipientOpen = selected => {
+    this.setState(prevState => {
+      return {
+        recipientOpen: !prevState.recipientOpen
+      };
+    });
+  };
+
   onContactSelect = selected => {
     this.setState({ selected });
   };
@@ -81,6 +101,8 @@ class Message extends Component {
   onChangeList = ({ target: { value } }) => {
     this.setState({
       batch: this.initialState.batch,
+      contacts: this.initialState.contacts,
+      file: this.initialState.file,
       list: value
     });
   };
@@ -104,7 +126,8 @@ class Message extends Component {
 
         results.data.map(line =>
           line.map(value => {
-            if (value.length === 16) {
+            // TODO Test it against validator (will be validated against API anyway)
+            if (value.length === CODE.MAX) {
               filtered.push(value);
             }
           })
@@ -112,7 +135,10 @@ class Message extends Component {
 
         this.setState({
           batch: this.initialState.batch,
-          list: filtered.join("\n")
+          file: files[0],
+          list: filtered.join("\n"),
+          recipientOpen: true,
+          contacts: results.data
         });
       }
     });
@@ -159,7 +185,9 @@ class Message extends Component {
         });
 
         this.setState({
-          progress: true
+          progress: true,
+          recipientOpen: true,
+          contacts: results.data
         });
         GetProfileWorker.postMessage({
           action: "getProfile",
@@ -238,11 +266,14 @@ class Message extends Component {
   render() {
     const {
       list,
+      contacts,
+      file,
       batch,
       selected,
       dueDate,
       notice,
       amount,
+      recipientOpen,
       sent,
       progress
     } = this.state;
@@ -253,93 +284,150 @@ class Message extends Component {
     } = this.props;
 
     const isNoticeValid = isMaskValid(notice, noticeMask);
-    const isAmountValid = isValueRangeValid(amount.toString(), [1, 9999999999]);
+    const isAmountValid = isValueRangeValid(amount.toString(), [
+      AMOUNT.MIN,
+      AMOUNT.MAX
+    ]);
 
     return (
       <section>
         {(() => {
-          if (type === "single") {
-            return (
-              <div className="message--contacts-list mb-4">
-                <h2 className="display-4">Seleziona un contatto </h2>
-                <Find
-                  selector={{
-                    type: "contact"
-                  }}
-                  sort={["_id"]}
-                  render={({ docs }) => (
-                    <ContactsList
-                      docs={docs}
-                      selected={selected}
-                      onContactSelect={this.onContactSelect}
-                    />
-                  )}
-                />
-              </div>
-            );
-          }
-
           return (
-            <div className="message--import-list mb-4">
-              <h2 className="display-4">Importa una lista </h2>
-              <Row>
+            <Fragment>
+              <Row className="mb-5">
                 <Col>
-                  <Card>
-                    <Input
-                      className="flex-1 h-100 border-0 shadow-none"
-                      type="textarea"
-                      value={list}
-                      onChange={this.onChangeList}
-                    />
-                  </Card>
+                  <Accordion className="border-0">
+                    <AccordionHeader
+                      className="border-0 p-2 text-decoration-none font-weight-normal"
+                      active={recipientOpen}
+                      onToggle={() => this.onToggleRecipientOpen()}
+                    >
+                      <span className="text-uppercase text-secondary">
+                        {type === "single" ? "Destinatario" : "Destinatari"}
+                      </span>
+                      {(list || selected) && (
+                        <Badge
+                          color=""
+                          className="font-weight-normal ml-3 bg-custom-pale-blue color-custom-denim-blue"
+                        >
+                          {(() => {
+                            if (type === "single") {
+                              return selected;
+                            }
+
+                            return (
+                              <span>
+                                {file && file.name
+                                  ? `${file.name} (${contacts.length})`
+                                  : contacts.length}
+                              </span>
+                            );
+                          })()}
+                        </Badge>
+                      )}
+                    </AccordionHeader>
+                    <AccordionBody className="p-0" active={recipientOpen}>
+                      {(() => {
+                        if (type === "single") {
+                          return (
+                            <Fragment>
+                              <div className="message--contacts-list mb-4">
+                                <Find
+                                  selector={{
+                                    type: "contact"
+                                  }}
+                                  sort={["_id"]}
+                                  render={({ docs }) => (
+                                    <ContactsList
+                                      docs={docs}
+                                      selected={selected}
+                                      onContactSelect={this.onContactSelect}
+                                    />
+                                  )}
+                                />
+                              </div>
+                            </Fragment>
+                          );
+                        }
+
+                        return (
+                          <Fragment>
+                            <Row>
+                              <Col>
+                                <Card>
+                                  <Input
+                                    className="flex-1 h-100 border-0 shadow-none"
+                                    type="textarea"
+                                    value={list}
+                                    onChange={this.onChangeList}
+                                  />
+                                </Card>
+                              </Col>
+                            </Row>
+                            {list &&
+                              !batch && (
+                                <Row>
+                                  <Col>
+                                    <Button
+                                      className="mt-3"
+                                      block
+                                      color="primary"
+                                      onClick={this.onSaveContacts}
+                                      disabled={progress}
+                                    >
+                                      {progress ? <FaSpinner /> : "Salva"}
+                                    </Button>
+                                  </Col>
+                                  <Col />
+                                </Row>
+                              )}
+                            {batch && (
+                              <div className="message--contacts-list mt-4">
+                                <Find
+                                  selector={{
+                                    type: "contact",
+                                    batchId: batch
+                                  }}
+                                  sort={["_id"]}
+                                  render={({ docs }) => (
+                                    <ContactsList
+                                      docs={docs}
+                                      selected={selected}
+                                    />
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </Fragment>
+                        );
+                      })()}
+                    </AccordionBody>
+                  </Accordion>
                 </Col>
-                <Col>
-                  <Card
-                    className="h-100 d-flex justify-content-center align-items-center cursor-pointer"
-                    onClick={this.onTriggerUpload}
-                  >
-                    <i className="it-upload" />
-                    <Input
-                      className="d-none"
-                      type="file"
-                      ref={this.fileInput}
-                      onChange={this.onFileUpdate}
-                    />
-                  </Card>
-                </Col>
+                {(() => {
+                  if (type !== "single") {
+                    return (
+                      <Col className="col-auto border-left mb-2">
+                        <header
+                          className="message--recipient-upload text-uppercase text-right ml-2"
+                          onClick={this.onTriggerUpload}
+                        >
+                          <span className="btn btn-link font-weight-bold">
+                            Carica documento
+                          </span>
+                        </header>
+                        <Input
+                          className="d-none"
+                          type="file"
+                          ref={this.fileInput}
+                          onChange={this.onFileUpdate}
+                        />
+                      </Col>
+                    );
+                  }
+                })()}
               </Row>
-              {list &&
-                !batch && (
-                  <Row>
-                    <Col>
-                      <Button
-                        className="mt-3"
-                        block
-                        color="primary"
-                        onClick={this.onSaveContacts}
-                        disabled={progress}
-                      >
-                        {progress ? <FaSpinner /> : "Salva"}
-                      </Button>
-                    </Col>
-                    <Col />
-                  </Row>
-                )}
-              {batch && (
-                <div className="mt-4">
-                  <Find
-                    selector={{
-                      type: "contact",
-                      batchId: batch
-                    }}
-                    sort={["_id"]}
-                    render={({ docs }) => (
-                      <ContactsList docs={docs} selected={selected} />
-                    )}
-                  />
-                </div>
-              )}
-            </div>
+            </Fragment>
           );
         })()}
 
@@ -387,8 +475,7 @@ class Message extends Component {
             isValid.push(!!selected);
             return (
               <Button
-                className="mt-3"
-                block
+                className="mt-3 pl-5 pr-5"
                 color="primary"
                 disabled={isValid.includes(false)}
                 onClick={this.onMessageSubmit}
@@ -401,8 +488,7 @@ class Message extends Component {
           isValid.push(!!batch);
           return (
             <Button
-              className="mt-3"
-              block
+              className="mt-3 pl-5 pr-5"
               color="primary"
               disabled={isValid.includes(false) || sent}
               onClick={this.onMessageSubmit}

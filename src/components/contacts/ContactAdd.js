@@ -3,6 +3,9 @@ import React, { Component } from "react";
 import { InputGroup, InputGroupAddon } from "design-react-kit";
 import MaskedInput from "react-text-mask";
 
+import { isLengthValid, LIMITS } from "../../utils/";
+const { CODE } = LIMITS;
+
 class ContactAdd extends Component {
   render() {
     const { code, codeMask, isCodeValid, onInputCode, onInputAdd } = this.props;
@@ -15,8 +18,8 @@ class ContactAdd extends Component {
           className="form-control shadow-none"
           placeholder="Codice Fiscale"
           aria-label="Codice Fiscale"
-          minLength="16"
-          maxLength="16"
+          minLength={CODE.MIN}
+          maxLength={CODE.MAX}
           value={code}
           guide={false}
           mask={codeMask}
@@ -38,7 +41,7 @@ class ContactAdd extends Component {
         {code &&
           !isCodeValid && (
             <div className="invalid-feedback d-block">
-              Per favore digita 16 caratteri alfanumerici
+              Per favore digita {CODE.MAX} caratteri alfanumerici
             </div>
           )}
       </InputGroup>

@@ -29,15 +29,15 @@ class MessageStats extends Component {
     const { templates, entry } = this.props;
 
     return (
-      <tr>
-        <td className="border-0">
-          {moment(entry.message.created_at).format("DD/MM/YYYY, HH:mm")}
+      <tr className="font-weight-bold">
+        <td>{moment(entry.message.created_at).format("DD/MM/YYYY, HH:mm")}</td>
+        <td className="text-word-break">
+          {templates[entry.templateId].subject}
         </td>
-        <td className="border-0">{templates[entry.templateId].subject}</td>
-        <td className="border-0">{statuses.PROCESSED}</td>
-        <td className="border-0">{statuses.ERRORED}</td>
-        <td className="border-0">{statuses.QUEUED}</td>
-        <td className="border-0">
+        <td>{statuses.PROCESSED}</td>
+        <td>{statuses.ERRORED}</td>
+        <td>{statuses.QUEUED}</td>
+        <td>
           <Link
             className="large list-item"
             to={{ pathname: `/report/${entry.type}/${entry._id}` }}

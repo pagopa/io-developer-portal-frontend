@@ -2,18 +2,27 @@ import React, { Component } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
 
-import { Row, Col } from "design-react-kit";
+import {
+  Row,
+  Col,
+  Accordion,
+  AccordionHeader,
+  AccordionBody
+} from "design-react-kit";
 
 import sortBy from "lodash/sortBy";
 import groupBy from "lodash/groupBy";
 import moment from "moment";
 
 import { getStatsFor } from "../utils/";
+
 import MessageListReport from "../components/messages/MessageListReport";
+import MessagePreview from "../components/messages/MessagePreview";
 
 class Report extends Component {
   state = {
-    statuses: {}
+    statuses: {},
+    selected: ""
   };
 
   componentDidMount = async () => {
@@ -34,8 +43,17 @@ class Report extends Component {
     });
   };
 
+  onSetSelected = selected => {
+    this.setState((prevState, props) => {
+      selected = prevState.selected === selected ? "" : selected;
+      return {
+        selected
+      };
+    });
+  };
+
   render() {
-    const { statuses } = this.state;
+    const { statuses, selected } = this.state;
     const {
       match: {
         params: { entry_type, entry_id }
@@ -76,40 +94,83 @@ class Report extends Component {
                     <Col lg="5" className="text-right">
                       {moment(message.created_at).format("DD/MM/YYYY, HH:mm")}
                     </Col>
-                    <Col lg="12">
+
+                    <Col lg="11">
                       <hr />
-                      <Row>
-                        <Col lg="4">Consegnati: {statuses.PROCESSED}</Col>
-                        <Col lg="8">
+                      <Accordion className="border-0">
+                        <AccordionHeader
+                          className="border-0 p-2 text-decoration-none font-weight-normal"
+                          active={selected === "PROCESSED"}
+                          onToggle={() => this.onSetSelected("PROCESSED")}
+                        >
+                          <span className="text-uppercase text-secondary">
+                            Consegnati:
+                            <span className="font-weight-bold">
+                              {" "}
+                              {statuses.PROCESSED}
+                            </span>
+                          </span>
+                        </AccordionHeader>
+                        <AccordionBody active={selected === "PROCESSED"}>
                           <MessageListReport list={groups.PROCESSED} />
-                        </Col>
-                      </Row>
+                        </AccordionBody>
+                      </Accordion>
                     </Col>
-                    <Col lg="12">
+
+                    <Col lg="11">
                       <hr />
-                      <Row>
-                        <Col lg="4">Falliti: {statuses.ERRORED}</Col>
-                        <Col lg="8">
+                      <Accordion className="border-0">
+                        <AccordionHeader
+                          className="border-0 p-2 text-decoration-none font-weight-normal"
+                          active={selected === "ERRORED"}
+                          onToggle={() => this.onSetSelected("ERRORED")}
+                        >
+                          <span className="text-uppercase text-secondary">
+                            Falliti:
+                            <span className="font-weight-bold">
+                              {" "}
+                              {statuses.ERRORED}
+                            </span>
+                          </span>
+                        </AccordionHeader>
+                        <AccordionBody active={selected === "ERRORED"}>
                           {/* 
-                          ERRORED = FAILED + NOTSENT
-                        */}
+                            ERRORED = FAILED + NOTSENT
+                          */}
                           <MessageListReport list={groups.FAILED} />
                           <MessageListReport list={groups.NOTSENT} />
-                        </Col>
-                      </Row>
+                        </AccordionBody>
+                      </Accordion>
                     </Col>
-                    <Col lg="12">
+
+                    <Col lg="11">
                       <hr />
-                      <Row>
-                        <Col lg="4">In coda: {statuses.QUEUED}</Col>
-                        <Col lg="8">
+                      <Accordion className="border-0">
+                        <AccordionHeader
+                          className="border-0 p-2 text-decoration-none font-weight-normal"
+                          active={selected === "QUEUED"}
+                          onToggle={() => this.onSetSelected("QUEUED")}
+                        >
+                          <span className="text-uppercase text-secondary">
+                            In coda:
+                            <span className="font-weight-bold">
+                              {" "}
+                              {statuses.QUEUED}
+                            </span>
+                          </span>
+                        </AccordionHeader>
+                        <AccordionBody active={selected === "QUEUED"}>
                           {/* 
-                          QUEUED = ACCEPTED + THROTTLED
-                        */}
+                            QUEUED = ACCEPTED + THROTTLED
+                          */}
                           <MessageListReport list={groups.ACCEPTED} />
                           <MessageListReport list={groups.THROTTLED} />
-                        </Col>
-                      </Row>
+                        </AccordionBody>
+                      </Accordion>
+                    </Col>
+
+                    <Col lg="11" className="mt-5">
+                      <MessagePreview message={template} />
                     </Col>
                   </Row>
                 );

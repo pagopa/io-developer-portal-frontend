@@ -118,7 +118,7 @@ const Root = () => {
 
 WebFont.load({
   google: {
-    families: ["Titillium Web"]
+    families: ["Titillium Web:300,400,700"]
   },
   active: () => {
     // This event is triggered when the fonts have rendered.

@@ -13,6 +13,13 @@ import {
 import DatePicker from "react-datepicker";
 import MaskedInput from "react-text-mask";
 
+import FaCalendar from "react-icons/lib/fa/calendar";
+
+import { LIMITS } from "../../utils/";
+const { NOTICE } = LIMITS;
+
+import "./MessageMetadataEditor.css";
+
 class MessageMetadataEditor extends Component {
   render() {
     const {
@@ -31,8 +38,11 @@ class MessageMetadataEditor extends Component {
     return (
       <Row className="form-inline">
         <Col lg="4">
-          <Label>Scadenza</Label>
+          <Label className="text-uppercase">Scadenza</Label>
           <InputGroup className="position-relative input-group-datepicker">
+            <div className="position-absolute messagemetatada--editor-calendar p-2">
+              <FaCalendar className="text-primary" />
+            </div>
             <DatePicker
               selected={dueDate}
               onChange={onChangeDueDate}
@@ -57,7 +67,7 @@ class MessageMetadataEditor extends Component {
         </Col>
 
         <Col lg="5">
-          <Label>Numero Avviso</Label>
+          <Label className="text-uppercase">N° Avviso</Label>
 
           <InputGroup className="position-relative">
             <MaskedInput
@@ -73,7 +83,7 @@ class MessageMetadataEditor extends Component {
             {(notice || amount) &&
               (!isNoticeValid && (
                 <div className="invalid-feedback d-block">
-                  Per favore digita 18 caratteri numerici e l'importo
+                  Per favore digita {NOTICE.MAX} caratteri numerici e l'importo
                 </div>
               ))}
 
@@ -90,7 +100,7 @@ class MessageMetadataEditor extends Component {
         </Col>
 
         <Col lg="3">
-          <Label>Importo</Label>
+          <Label className="text-uppercase">Importo</Label>
 
           <InputGroup className="position-relative">
             <InputGroupAddon addonType="prepend">

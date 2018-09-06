@@ -1,3 +1,8 @@
+.message--recipient-upload, 
+.message--recipient-upload .btn {
+    font-size: 90% !important;
+}
+
 .message--contacts-list
 {
     overflow-y: scroll;

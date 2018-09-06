@@ -16,9 +16,11 @@ import {
   isValueRangeValid,
   createMessageContent,
   profileGetAndPersist,
-  messagePostAndPersist
+  messagePostAndPersist,
+  LIMITS
 } from "../utils/";
 import { codeMask, noticeMask } from "../utils/masks";
+const { SUBJECT, MARKDOWN, AMOUNT } = LIMITS;
 
 import moment from "moment";
 
@@ -122,10 +124,16 @@ class Compose extends Component {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
 
     const isCodeValid = isMaskValid(code, codeMask);
-    const isSubjectValid = isLengthValid(subject, [10, 120]);
-    const isMarkdownValid = isLengthValid(markdown, [80, 10000]);
+    const isSubjectValid = isLengthValid(subject, [SUBJECT.MIN, SUBJECT.MAX]);
+    const isMarkdownValid = isLengthValid(markdown, [
+      MARKDOWN.MIN,
+      MARKDOWN.MAX
+    ]);
     const isNoticeValid = isMaskValid(notice, noticeMask);
-    const isAmountValid = isValueRangeValid(amount.toString(), [1, 9999999999]);
+    const isAmountValid = isValueRangeValid(amount.toString(), [
+      AMOUNT.MIN,
+      AMOUNT.MAX
+    ]);
 
     return (
       <section className="templates--container">
@@ -140,8 +148,8 @@ class Compose extends Component {
           <TemplatesEditor
             subject={subject}
             markdown={markdown}
-            subjectLength={[10, 120]}
-            markdownLength={[80, 10000]}
+            subjectLength={[SUBJECT.MIN, SUBJECT.MAX]}
+            markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
             isSubjectValid={isSubjectValid}
             isMarkdownValid={isMarkdownValid}
             onChangeSubject={this.onChangeSubject}
@@ -174,8 +182,7 @@ class Compose extends Component {
 
           return (
             <Button
-              className="mt-3"
-              block
+              className="mt-3 pl-5 pr-5"
               color="primary"
               disabled={isValid.includes(false)}
               onClick={this.onMessageSubmit}
