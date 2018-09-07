@@ -130,10 +130,7 @@ class Compose extends Component {
       MARKDOWN.MAX
     ]);
     const isNoticeValid = isMaskValid(notice, noticeMask);
-    const isAmountValid = isValueRangeValid(amount.toString(), [
-      AMOUNT.MIN,
-      AMOUNT.MAX
-    ]);
+    const isAmountValid = isValueRangeValid(amount, [AMOUNT.MIN, AMOUNT.MAX]);
 
     return (
       <section className="templates--container">
@@ -160,8 +157,7 @@ class Compose extends Component {
         <MessageMetadataEditor
           dueDate={dueDate}
           notice={notice}
-          amount={amount}
-          noticeMask={noticeMask}
+          amount={amount.toString()}
           isNoticeValid={isNoticeValid}
           isAmountValid={isAmountValid}
           onChangeDueDate={this.onChangeDueDate}

@@ -81,7 +81,7 @@ const createMessageContent = ({ message, dueDate, amount, notice }) => {
   if (amount || notice) {
     content = Object.assign(content, {
       payment_data: {
-        amount,
+        amount: amount.valueOf(),
         notice_number: notice
       }
     });

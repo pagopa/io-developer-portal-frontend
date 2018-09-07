@@ -15,3 +15,8 @@ module.exports.codeMask = codeMask;
 const noticeMask = [/[0123]/, ...new Array(17).fill(/[0-9]/)];
 
 module.exports.noticeMask = noticeMask;
+
+// 1-9999999999
+const amountMask = [/[1-9]/, ...new Array(9).fill(/[0-9]/)];
+
+module.exports.amountMask = amountMask;

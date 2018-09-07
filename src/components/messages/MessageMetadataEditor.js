@@ -15,6 +15,7 @@ import MaskedInput from "react-text-mask";
 
 import FaCalendar from "react-icons/lib/fa/calendar";
 
+import { noticeMask, amountMask } from "../../utils/masks";
 import { LIMITS } from "../../utils/";
 const { NOTICE } = LIMITS;
 
@@ -26,7 +27,6 @@ class MessageMetadataEditor extends Component {
       dueDate,
       notice,
       amount,
-      noticeMask,
       isNoticeValid,
       isAmountValid,
       onChangeDueDate,
@@ -107,11 +107,14 @@ class MessageMetadataEditor extends Component {
               <InputGroupText>€</InputGroupText>
               <InputGroupText>{amount && amount / 100}</InputGroupText>
             </InputGroupAddon>
-            <Input
+            <MaskedInput
+              type="text"
+              className="form-control"
+              placeholder=""
               aria-label="€"
-              type="number"
-              maxLength="10"
               value={amount}
+              guide={false}
+              mask={amountMask}
               onChange={onChangeAmount}
             />
             {(notice || amount) &&
