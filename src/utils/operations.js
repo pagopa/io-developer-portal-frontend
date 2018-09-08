@@ -42,31 +42,44 @@ const messagePostAndPersist = async ({
 
   // The API returns errors with shape { detail, status, title }
   if (sent.status) {
-    // Create an errored message
-    return db.post({
-      type: "message",
-      status: "NOTSENT",
+    const details = {
       message: {
         created_at: new Date().toISOString(),
         fiscal_code: code,
         ...sent
-      },
+      }
+    };
+
+    // Create an errored message
+    const operation = await db.post({
+      ...details,
+      type: "message",
       templateId,
-      batchId
+      batchId,
+      status: "NOTSENT"
     });
+
+    return {
+      ...details,
+      _id: operation.id
+    };
   }
 
   const details = await get({
     path: `messages/${code}/${sent.id}`
   });
 
-  return db.put({
+  await db.put({
     ...details,
     _id: sent.id,
     type: "message",
     templateId,
     batchId
   });
+  return {
+    ...details,
+    _id: sent.id
+  };
 };
 
 module.exports.messagePostAndPersist = messagePostAndPersist;

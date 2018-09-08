@@ -67,8 +67,6 @@ class Messages extends Component {
     const { templates, messages, batches, stats } = this.state;
     const { db } = this.props;
 
-    console.log(stats);
-
     const batchesMessages = batches
       .filter(batch => {
         if (!stats[batch._id]) {

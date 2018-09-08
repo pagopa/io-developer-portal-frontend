@@ -4,12 +4,12 @@ const LIMITS = {
   SUBJECT: {
     // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L246
     MIN: 10,
-    MAX: 120
+    MAX: 119
   },
   MARKDOWN: {
     // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L260
     MIN: 80,
-    MAX: 10000
+    MAX: 9999
   },
   CODE: {
     // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L234

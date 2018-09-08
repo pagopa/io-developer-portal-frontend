@@ -1,0 +1,8 @@
+.dashboard--notifications-container {
+  z-index: 10;
+
+  right: 40px;
+  bottom: 100px;
+
+  width: 600px;
+}

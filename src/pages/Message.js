@@ -220,15 +220,17 @@ class Message extends Component {
 
     let content = createMessageContent({ message, dueDate, amount, notice });
 
+    let result;
     if (!batch) {
-      await messagePostAndPersist({
-        db,
-        code: selected,
-        content,
-        templateId,
-        batchId: batch
-      });
-      this.goHome();
+      result = [
+        await messagePostAndPersist({
+          db,
+          code: selected,
+          content,
+          templateId,
+          batchId: batch
+        })
+      ];
     } else {
       const promises = [];
       const list = await db.find({
@@ -250,15 +252,17 @@ class Message extends Component {
         )
       );
 
-      await Promise.all(promises);
-      this.goHome();
+      result = await Promise.all(promises);
     }
+
+    this.goHome({ result });
   };
 
-  goHome = () => {
+  goHome = ({ result }) => {
     const { history } = this.props;
     const location = {
-      pathname: "/"
+      pathname: "/",
+      state: result
     };
     history.push(location);
   };

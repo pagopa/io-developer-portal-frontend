@@ -103,19 +103,21 @@ class Compose extends Component {
 
     let content = createMessageContent({ message, dueDate, amount, notice });
 
-    await messagePostAndPersist({
+    const result = await messagePostAndPersist({
       db,
       code,
       content,
       templateId: template.id
     });
-    this.goHome();
+
+    this.goHome({ result });
   };
 
-  goHome = () => {
+  goHome = ({ result }) => {
     const { history } = this.props;
     const location = {
-      pathname: "/"
+      pathname: "/",
+      state: [result]
     };
     history.push(location);
   };

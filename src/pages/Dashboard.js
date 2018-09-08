@@ -4,10 +4,22 @@ import { Find } from "react-pouchdb/browser";
 
 import { Card, CardBody, CardTitle, CardText } from "design-react-kit";
 
+import Notification from "../components/notifications/Notification";
+
+import "./Dashboard.css";
+
 class Dashboard extends Component {
   render() {
+    const { location } = this.props;
+
     return (
       <section className="d-flex">
+        <section className="position-fixed dashboard--notifications-container">
+          {location.state &&
+            location.state.map(info => {
+              return <Notification key={info._id} info={info} />;
+            })}
+        </section>
         <Find
           selector={{
             type: "template"
