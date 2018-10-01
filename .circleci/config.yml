@@ -90,7 +90,7 @@ workflows:
           # is a transient dependency of the deploy job.
           filters:
             branches:
-              ignore: gh-pages
+              only: master
             tags:
               only: /.*/
 
