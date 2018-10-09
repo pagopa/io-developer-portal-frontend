@@ -31,6 +31,10 @@ import Report from "./src/pages/Report";
 import Servers from "./src/pages/Servers";
 import Templates from "./src/pages/Templates";
 
+import Profile from "./src/pages/Profile";
+import UserList from "./src/pages/UserList";
+import SubscriptionService from "./src/pages/SubscriptionService";
+
 import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -58,13 +62,13 @@ const PrivateRoute = ({ component: Component, dbName, ...rest }) => (
           <Component {...props} dbName={dbName} />
         </Layout>
       ) : (
-        <Redirect
-          to={{
-            pathname: "/login",
-            state: { from: props.location }
-          }}
-        />
-      )
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: props.location }
+            }}
+          />
+        )
     }
   />
 );
@@ -91,6 +95,7 @@ const Root = () => {
             <PrivateRoute exact path="/config/servers" component={Servers} />
             <PrivateRoute exact path="/contacts" component={Contacts} />
             <PrivateRoute exact path="/messages" component={Messages} />
+            <PrivateRoute exact path="/users" component={UserList} />
             <PrivateRoute
               exact
               path="/message"
@@ -113,6 +118,8 @@ const Root = () => {
               path="/templates/:template_id"
               component={Templates}
             />
+            <PrivateRoute exact path="/profile/:email?" component={Profile} />
+            <PrivateRoute exact path="/service/:service_id" component={SubscriptionService} />
             {/* Not found */}
             <Route component={Login} />
           </Switch>
