@@ -152,6 +152,7 @@ export default class Profile extends Component {
   }
 
   render() {
+    const isSameUser = !this.props.match.params.email;
     const keyPlaceholder = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
     return (
       <Fragment>
@@ -159,7 +160,7 @@ export default class Profile extends Component {
           <h4>{get(this.state, "userData.apimUser.email")}</h4>
           <div>Nome: {get(this.state, "userData.apimUser.firstName")}</div>
           <div>Cognome: {get(this.state, "userData.apimUser.lastName")}</div>
-          <div><a href={this.state.applicationConfig.changePasswordLink}>Cambia password</a></div>
+          {isSameUser && <div><a href={this.state.applicationConfig.changePasswordLink}>Cambia password</a></div>}
         </div>
         <div>
           <h4 className="mt-4">Servizi registrati</h4>
