@@ -1,80 +1,31 @@
-import React, { Component } from "react";
-
-import {
-  Col,
-  Row,
-  Form,
-  FormGroup,
-  PasswordInput,
-  Label,
-  FormText,
-  Button
-} from "design-react-kit";
+import { Component } from "react";
 
 const { localStorage } = window;
 
-import "./Login.css";
+import { getUserTokenOrRedirect } from "../utils/msal";
+import { getFromBackend } from "../utils/backend";
 
 class Login extends Component {
-  state = {
-    serviceKey: ""
-  };
+  componentDidMount = async () => {
+    try {
+      const configuration = await getFromBackend({ path: "configuration" });
+      const user = await getUserTokenOrRedirect(configuration);
+      // bearer token to call backend api
+      localStorage.setItem("userToken", user.token);
+      // profile data (email, name, ...)
+      localStorage.setItem("userData", JSON.stringify(user.user.idToken));
 
-  onPasswordChange = ({ target: { value } }) => {
-    this.setState({
-      serviceKey: value
-    });
-  };
+      const apimUser = await getFromBackend({ path: "user" });
+      const isApiAdmin = new Set(apimUser.apimUser.groupNames).has("ApiAdmin");
+      localStorage.setItem("isApiAdmin", isApiAdmin);
 
-  onStoreCredentials = e => {
-    e.preventDefault();
-
-    const { serviceKey } = this.state;
-
-    if (!!serviceKey) {
-      localStorage.setItem("serviceKey", serviceKey);
-
-      this.goHome();
+      window.location.replace("/");
     }
-  };
-
-  goHome = () => {
-    // Hard refresh for `PouchDB`, i.e. switch DB (service)
-    window.location.replace("./");
-  };
+    catch (e) { console.error("Login needed", e) };
+  }
 
   render() {
-    return (
-      <section className="container login--container d-flex justify-content-center align-items-center">
-        <Row className="w-40">
-          <Col lg="12">
-            <Form className="form-row">
-              <Col lg="11">
-                <FormGroup>
-                  <PasswordInput
-                    id="login--serviceKey"
-                    onChange={this.onPasswordChange}
-                  />
-                  <Label for="login--serviceKey">API Key</Label>
-                  <FormText color="muted">
-                    inserisci le credenziali per il tuo servizio
-                  </FormText>
-                </FormGroup>
-              </Col>
-              <Col lg="1">
-                <Button
-                  color="primary"
-                  className="mt-3 ml-5"
-                  onClick={this.onStoreCredentials}
-                >
-                  Invia
-                </Button>
-              </Col>
-            </Form>
-          </Col>
-        </Row>
-      </section>
-    );
+    return null;
   }
 }
 
