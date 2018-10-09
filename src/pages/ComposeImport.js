@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import { withRouter } from "react-router";
 
 import { Row, Col, FormGroup, Input, Toggle, Button } from "design-react-kit";
+import SelectedService from "../components/SelectedService";
 
 import { withDB } from "react-pouchdb/browser";
 
@@ -148,6 +149,7 @@ class Compose extends Component {
 
     return (
       <section className="pages--container">
+        <SelectedService />
         <Col className="col-auto mb-2">
           <header
             className="compose-import--recipient-upload text-uppercase"
