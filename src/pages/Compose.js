@@ -26,7 +26,7 @@ import moment from "moment";
 
 import compose from "recompose/compose";
 
-import "./Templates.css";
+import "./Pages.css";
 
 class Compose extends Component {
   initialState = {
@@ -135,7 +135,7 @@ class Compose extends Component {
     const isAmountValid = isValueRangeValid(amount, [AMOUNT.MIN, AMOUNT.MAX]);
 
     return (
-      <section className="templates--container">
+      <section className="pages--container">
         <ContactAdd
           code={code}
           codeMask={codeMask}

@@ -22,6 +22,7 @@ import Worker from "./src/components/Worker";
 
 import Login from "./src/pages/Login";
 import Compose from "./src/pages/Compose";
+import ComposeImport from "./src/pages/ComposeImport";
 import Contacts from "./src/pages/Contacts";
 import Dashboard from "./src/pages/Dashboard";
 import Messages from "./src/pages/Messages";
@@ -82,6 +83,11 @@ const Root = () => {
             <Route exact path="/login" component={Login} />
             <PrivateRoute exact path="/" component={Dashboard} />
             <PrivateRoute exact path="/compose" component={Compose} />
+            <PrivateRoute
+              exact
+              path="/compose/import"
+              component={ComposeImport}
+            />
             <PrivateRoute exact path="/config/servers" component={Servers} />
             <PrivateRoute exact path="/contacts" component={Contacts} />
             <PrivateRoute exact path="/messages" component={Messages} />

@@ -6,6 +6,7 @@ import { LinkList, LinkListItem } from "design-react-kit";
 
 import TableHead from "react-icons/lib/fa/th-large";
 import Rocket from "react-icons/lib/fa/rocket";
+import FileText from "react-icons/lib/fa/file-text-o";
 import Envelope from "react-icons/lib/fa/envelope";
 import Group from "react-icons/lib/fa/group";
 import Inbox from "react-icons/lib/fa/inbox";
@@ -30,9 +31,15 @@ class Header extends Component {
             </Link>
           </li>
           <li>
+            <Link className="large list-item" to={{ pathname: "/compose/import" }}>
+              <FileText className="mr-2 aside--icon" />
+              Invio da file
+            </Link>
+          </li>
+          <li>
             <Link className="large list-item" to={{ pathname: "/templates" }}>
               <Envelope className="mr-2 aside--icon" />
-              Template
+              Invio con Template
             </Link>
           </li>
           <li>

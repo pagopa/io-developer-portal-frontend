@@ -41,17 +41,14 @@ class Notification extends Component {
 
   render() {
     const { info } = this.state;
+
     if (!info.message || !info.message.status || info.message.status < 400) {
       return null;
     }
 
     return (
       <div className="bg-white">
-        <Alert
-          isOpen={!!info._id}
-          toggle={this.close}
-          color="danger"
-        >
+        <Alert isOpen={!!info._id} toggle={this.close} color="danger">
           {(() => {
             return (
               <div>
