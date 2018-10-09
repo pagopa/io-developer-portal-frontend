@@ -15,7 +15,7 @@ import compose from "recompose/compose";
 import { isLengthValid, LIMITS } from "../utils/";
 const { SUBJECT, MARKDOWN } = LIMITS;
 
-import "./Templates.css";
+import "./Pages.css";
 
 class Templates extends Component {
   initialState = {
@@ -129,7 +129,7 @@ class Templates extends Component {
     ]);
 
     return (
-      <section className="templates--container">
+      <section className="pages--container">
         {(() => {
           if (!template_id) {
             return (

@@ -120,7 +120,7 @@ class Message extends Component {
       },
       complete: (results, file) => {
         // data is an array of rows.
-        // If header is false, rows are arrays;
+        // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
         const filtered = [];
 

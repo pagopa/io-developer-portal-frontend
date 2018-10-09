@@ -2,6 +2,8 @@ import React, { Component, Fragment } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
 
+import { Alert } from "design-react-kit";
+
 import MessageStats from "../components/messages/MessageStats";
 
 import orderBy from "lodash/orderBy";
@@ -86,6 +88,12 @@ class Messages extends Component {
       return template._id;
     });
 
+    const orderedMessages = orderBy(
+      [].concat(messages, batchesMessages),
+      ["message.created_at"],
+      ["desc"]
+    );
+
     return (
       <div>
         <table className="table mb-0 rounded">
@@ -120,19 +128,27 @@ class Messages extends Component {
             </tr>
           </thead>
           <tbody>
-            {orderBy(
-              [].concat(messages, batchesMessages),
-              ["message.created_at"],
-              ["desc"]
-            ).map(entry => {
-              return (
-                <MessageStats
-                  key={entry._id}
-                  templates={templatesMap}
-                  entry={entry}
-                />
-              );
-            })}
+            {(() => {
+              if (!orderedMessages.length) {
+                return (
+                  <tr>
+                    <td colSpan="5">
+                      <Alert color="warning">Non ci sono messaggi inviati</Alert>
+                    </td>
+                  </tr>
+                );
+              }
+
+              return orderedMessages.map(entry => {
+                return (
+                  <MessageStats
+                    key={entry._id}
+                    templates={templatesMap}
+                    entry={entry}
+                  />
+                );
+              });
+            })()}
           </tbody>
         </table>
       </div>
