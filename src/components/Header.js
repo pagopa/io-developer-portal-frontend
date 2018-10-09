@@ -40,7 +40,7 @@ class Header extends Component {
               </section>
               <section>
                 <Nav>
-                  <NavItem className="d-flex">
+                  {userData && <NavItem className="d-flex">
                     <div className="text-white align-self-center">
                       <Link
                         className="nav-link"
@@ -50,7 +50,7 @@ class Header extends Component {
                         {localStorage.getItem("isApiAdmin") ? " (admin)" : ""}
                       </Link>
                     </div>
-                  </NavItem>
+                  </NavItem>}
                   <NavItem>
                     <Link
                       className="nav-link"

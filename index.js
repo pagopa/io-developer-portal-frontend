@@ -57,7 +57,7 @@ const PrivateRoute = ({ component: Component, dbName, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      !!localStorage.getItem("serviceKey") ? (
+      !!localStorage.getItem("userData") ? (
         <Layout>
           <Component {...props} dbName={dbName} />
         </Layout>
