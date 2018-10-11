@@ -22,8 +22,6 @@ export const getFromBackend = async ({ url, path, token, options }) => {
     method: "GET"
   });
 
-  console.debug("getFromBackend", response, response.status);
-
   // The API returned an error with shape { message, statusCode }
   if (response.status === 401) {
     window.location.replace("/login");

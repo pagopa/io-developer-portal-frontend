@@ -10,17 +10,16 @@ export default class SubscriptionService extends Component {
   async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
     const service = await getFromBackend({
-      path:
-        "services/" + serviceId
+      path: "services/" + serviceId
     });
     this.setState({
       service
     });
   }
 
-  handleInputChange = (event) => {
+  handleInputChange = event => {
     const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
     this.setState({
       service: {
@@ -28,25 +27,23 @@ export default class SubscriptionService extends Component {
         [name]: value
       }
     });
-  }
+  };
 
   handleSubmit = async () => {
     const service = this.state.service;
-    const res = await putToBackend(
-      {
-        path: "services/" + service.service_id,
-        options: {
-          // limit fields to editable ones
-          body: {
-            organization_fiscal_code: service.organization_fiscal_code,
-            organization_name: service.organization_name,
-            department_name: service.department_name,
-            service_name: service.service_name
-          }
+    const res = await putToBackend({
+      path: "services/" + service.service_id,
+      options: {
+        // limit fields to editable ones
+        body: {
+          organization_fiscal_code: service.organization_fiscal_code,
+          organization_name: service.organization_name,
+          department_name: service.department_name,
+          service_name: service.service_name
         }
-      });
-    console.debug("Service data", res);
-  }
+      }
+    });
+  };
 
   render() {
     const service = this.state.service;
@@ -90,21 +87,29 @@ export default class SubscriptionService extends Component {
             className="mb-4"
           />
 
-          <Button onClick={this.handleSubmit}>
-            Salva i dati del servizio
-          </Button>
+          <Button color="primary" onClick={this.handleSubmit}>Salva i dati del servizio</Button>
         </form>
 
-        {service.authorized_recipients.length > 0 &&
-          <div className="mb-3">Codici fiscali destinatari autorizzati: {service.authorized_recipients}</div>}
+        {service.authorized_recipients.length > 0 && (
+          <div className="mb-3">
+            Codici fiscali destinatari autorizzati:{" "}
+            {service.authorized_recipients}
+          </div>
+        )}
 
-        {service.authorized_cidrs.length > 0 &&
-          <div className="mb-3">IP di origine autorizzati: {service.authorized_cidrs}</div>}
+        {service.authorized_cidrs.length > 0 && (
+          <div className="mb-3">
+            IP di origine autorizzati: {service.authorized_cidrs}
+          </div>
+        )}
 
-        {service.max_allowed_payment_amount &&
-          <div className="mb-3">Importo massimo autorizzato: {service.max_allowed_payment_amount} eurocents</div>}
-
+        {service.max_allowed_payment_amount && (
+          <div className="mb-3">
+            Importo massimo autorizzato: {service.max_allowed_payment_amount}{" "}
+            eurocents
+          </div>
+        )}
       </div>
-    ) : null
+    ) : null;
   }
 }

@@ -10,7 +10,7 @@ import Server from "react-icons/lib/fa/server";
 
 class Header extends Component {
   onSignOut = () => {
-    localStorage.removeItem("serviceKey");
+    localStorage.removeItem("userData");
 
     this.goHome();
   };
@@ -24,7 +24,9 @@ class Header extends Component {
   };
 
   render() {
-    const userData = localStorage.getItem("userData") ? JSON.parse(localStorage.getItem("userData")) : undefined;
+    const userData = localStorage.getItem("userData")
+      ? JSON.parse(localStorage.getItem("userData"))
+      : undefined;
     return (
       <header>
         <Navbar expand="lg">
@@ -40,17 +42,6 @@ class Header extends Component {
               </section>
               <section>
                 <Nav>
-                  {userData && <NavItem className="d-flex">
-                    <div className="text-white align-self-center">
-                      <Link
-                        className="nav-link"
-                        to={{ pathname: "/profile" }}
-                      >
-                        {userData.given_name}{' '}{userData.family_name}
-                        {localStorage.getItem("isApiAdmin") ? " (admin)" : ""}
-                      </Link>
-                    </div>
-                  </NavItem>}
                   <NavItem>
                     <Link
                       className="nav-link"
@@ -59,23 +50,29 @@ class Header extends Component {
                       <Server />
                     </Link>
                   </NavItem>
-
-                  {(() => {
-                    const isSignedIn = !!userData;
-
-                    if (isSignedIn) {
-                      return (
-                        <NavItem
-                          className="cursor-pointer"
-                          onClick={this.onSignOut}
+                  {userData && (
+                    <NavItem className="d-flex">
+                      <div className="text-white align-self-center">
+                        <Link
+                          className="nav-link"
+                          to={{ pathname: "/profile" }}
                         >
-                          <NavLink>
-                            <SignOut />
-                          </NavLink>
-                        </NavItem>
-                      );
-                    }
-                  })()}
+                          {userData.given_name} {userData.family_name}
+                          {localStorage.getItem("isApiAdmin") ? " (admin)" : ""}
+                        </Link>
+                      </div>
+                    </NavItem>
+                  )}
+                  {userData && (
+                    <NavItem
+                      className="cursor-pointer"
+                      onClick={this.onSignOut}
+                    >
+                      <NavLink>
+                        <SignOut />
+                      </NavLink>
+                    </NavItem>
+                  )}
                 </Nav>
               </section>
             </Nav>

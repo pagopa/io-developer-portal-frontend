@@ -1,20 +1,32 @@
 import React, { Component } from "react";
 
+import { Alert } from "design-react-kit";
+
 export default class Service extends Component {
-  state = {};
+  state = {
+    serviceData: undefined
+  };
 
   componentDidMount() {
-    const serviceStr = localStorage.getItem("service");
-    this.setState({ serviceData: serviceStr ? JSON.parse(serviceStr) : undefined });
+    const service = localStorage.getItem("service");
+    this.setState({
+      serviceData: service ? JSON.parse(service) : undefined
+    });
   }
 
   render() {
-    return this.state.serviceData ? (
-      <p>Invio per conto di{' '}
-        {this.state.serviceData.organization_name}{' '}/{' '}
-        {this.state.serviceData.service_name}{' '}
-        [<a href={'/service/' + this.state.serviceData.service_id}>{this.state.serviceData.service_id}</a>]
+    const { serviceData } = this.state;
+    return serviceData ? (
+      <p>
+        Invio per conto di {serviceData.organization_name} /{" "}
+        {serviceData.service_name} [
+        <a href={"/service/" + serviceData.service_id}>
+          {serviceData.service_id}
+        </a>
+        ]
       </p>
-    ) : <p>Nessuna API key selezionata !</p>
+    ) : (
+      <Alert color="danger">Nessuna API key selezionata !</Alert>
+    );
   }
 }

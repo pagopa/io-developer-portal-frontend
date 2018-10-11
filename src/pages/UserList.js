@@ -14,13 +14,13 @@ export default class UserList extends Component {
   componentDidMount = async () => {
     const self = this;
     const users = await getFromBackend({
-      path:
-        "users"
+      path: "users"
     });
     this.setState({ users });
-  }
+  };
 
   render() {
+    const { users } = this.state;
     return (
       <table className="table mb-0 rounded">
         <thead>
@@ -40,7 +40,7 @@ export default class UserList extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.state.users.items.map(u =>
+          {users && users.items && users.items.map(u => (
             <tr key={u.email}>
               <td>
                 <Link
@@ -53,8 +53,10 @@ export default class UserList extends Component {
               <td>{u.firstName}</td>
               <td>{u.lastName}</td>
               <td>{u.email}</td>
-            </tr>)}
+            </tr>
+          ))}
         </tbody>
-      </table>)
+      </table>
+    );
   }
 }
