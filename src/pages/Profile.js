@@ -1,14 +1,19 @@
 import React, { Component, Fragment } from "react";
-import get from "lodash/get";
-import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
+
 import { Button } from "design-react-kit";
 
-const getMail = (email) => email && email !== "" ? atob(email) : undefined;
+import get from "lodash/get";
 
-function SubscriptionService(props) {
-  const { service } = props;
+import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
+
+import FaEye from "react-icons/lib/fa/eye";
+import FaEyeSlash from "react-icons/lib/fa/eye-slash";
+
+const getMail = email => (email && email !== "" ? atob(email) : undefined);
+
+const SubscriptionService = ({ service }) => {
   return service ? (
-    <div className="">
+    <div>
       <h5>{service.service_id}</h5>
       <div>Nome servizio: {service.service_name}</div>
       <div>Dipartimento: {service.department_name}</div>
@@ -21,8 +26,8 @@ function SubscriptionService(props) {
         Modifica i dati del servizio
       </a>
     </div>
-  ) : null
-}
+  ) : null;
+};
 
 export default class Profile extends Component {
   state = {
@@ -34,48 +39,46 @@ export default class Profile extends Component {
   };
 
   onAddSubscription = async () => {
-    const self = this;
-    const email = getMail(self.props.match.params.email);
+    const email = getMail(this.props.match.params.email);
 
     const userSubscription = await postToBackend({
-      path:
-        "subscriptions" + (email ? "/" + encodeURIComponent(email) : ""),
+      path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : ""),
       options: {
         body: {
-          organization_fiscal_code: self.state.newSubscription.organization_fiscal_code,
-          organization_name: self.state.newSubscription.organization_name,
-          department_name: self.state.newSubscription.department_name,
-          service_name: self.state.newSubscription.service_name
+          organization_fiscal_code: this.state.newSubscription
+            .organization_fiscal_code,
+          organization_name: this.state.newSubscription.organization_name,
+          department_name: this.state.newSubscription.department_name,
+          service_name: this.state.newSubscription.service_name
         }
       }
     });
 
-    console.debug("added subscription", userSubscription);
-
-    self.setState({
-      userSubscriptions: { ...self.state.userSubscriptions, [userSubscription.name]: userSubscription }
+    this.setState({
+      userSubscriptions: {
+        ...this.state.userSubscriptions,
+        [userSubscription.name]: userSubscription
+      }
     });
 
     const service = await getFromBackend({
-      path:
-        "services/" + userSubscription.name
+      path: "services/" + userSubscription.name
     });
 
-    self.setState({
-      services: { ...self.state.services, [service.service_id]: service }
+    this.setState({
+      services: { ...this.state.services, [service.service_id]: service }
     });
-  }
+  };
 
   async componentDidMount() {
-    const self = this;
-    const email = getMail(self.props.match.params.email);
-
-    console.debug("Profile with email", email);
+    const email = getMail(this.props.match.params.email);
 
     const applicationConfig = await getFromBackend({ path: "configuration" });
     this.setState({ applicationConfig });
 
-    const userData = await getFromBackend({ path: "user" + (email ? "/" + encodeURIComponent(email) : "") });
+    const userData = await getFromBackend({
+      path: "user" + (email ? "/" + encodeURIComponent(email) : "")
+    });
     this.setState({
       userData,
       // populate new subscription form with default data taken from the user's profile
@@ -89,16 +92,19 @@ export default class Profile extends Component {
 
     // load all user's subscriptions
     const userSubscriptions = await getFromBackend({
-      path:
-        "subscriptions" + (email ? "/" + encodeURIComponent(email) : "")
+      path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : "")
     });
 
-    const userSubscriptionsObj = Object.keys(userSubscriptions).reduce((p, key) => (
-      isNaN(key) ? p :
-        {
-          ...p,
-          [userSubscriptions[key].name]: userSubscriptions[key]
-        }), {});
+    const userSubscriptionsObj = Object.keys(userSubscriptions).reduce(
+      (p, key) =>
+        isNaN(key)
+          ? p
+          : {
+              ...p,
+              [userSubscriptions[key].name]: userSubscriptions[key]
+            },
+      {}
+    );
 
     this.setState({
       userSubscriptions: userSubscriptionsObj
@@ -108,8 +114,7 @@ export default class Profile extends Component {
     Object.keys(userSubscriptionsObj).forEach(async subscriptionKey => {
       const subscription = userSubscriptionsObj[subscriptionKey];
       const service = await getFromBackend({
-        path:
-          "services/" + subscription.name
+        path: "services/" + subscription.name
       });
       this.setState({
         services: { ...this.state.services, [service.service_id]: service }
@@ -118,78 +123,150 @@ export default class Profile extends Component {
   }
 
   onToggleKey(keyIdx) {
-    this.setState({ [keyIdx]: !this.state[keyIdx] })
+    this.setState({ [keyIdx]: !this.state[keyIdx] });
   }
 
   onSetKey = (serviceKey, service) => () => {
     localStorage.setItem("serviceKey", serviceKey);
     localStorage.setItem("service", JSON.stringify(service));
     window.location.replace("/compose");
-  }
+  };
 
   onRegenerateKey = (keyType, subscriptionId) => async () => {
-    const self = this;
     const userSubscription = await putToBackend({
-      path:
-        "subscriptions/" + subscriptionId + "/" + keyType + "_key",
+      path: "subscriptions/" + subscriptionId + "/" + keyType + "_key",
       options: { body: undefined }
     });
-    self.setState({
-      userSubscriptions: { ...self.state.userSubscriptions, [userSubscription.name]: userSubscription }
+    this.setState({
+      userSubscriptions: {
+        ...this.state.userSubscriptions,
+        [userSubscription.name]: userSubscription
+      }
     });
-  }
+  };
 
-  handleInputChange = (event) => {
+  handleInputChange = event => {
     const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
+
     this.setState({
       newSubscription: {
         ...this.state.newSubscription,
         [name]: value
       }
     });
-  }
+  };
 
   render() {
+    const { userSubscriptions, services } = this.state;
     const isSameUser = !this.props.match.params.email;
-    const keyPlaceholder = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+    const keyPlaceholder = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+
     return (
       <Fragment>
         <div>
           <h4>{get(this.state, "userData.apimUser.email")}</h4>
           <div>Nome: {get(this.state, "userData.apimUser.firstName")}</div>
           <div>Cognome: {get(this.state, "userData.apimUser.lastName")}</div>
-          {isSameUser && <div><a href={this.state.applicationConfig.changePasswordLink}>Cambia password</a></div>}
+          {isSameUser && (
+            <div>
+              <a href={this.state.applicationConfig.changePasswordLink}>
+                Cambia password
+              </a>
+            </div>
+          )}
         </div>
         <div>
           <h4 className="mt-4">Servizi registrati</h4>
-          {Object.keys(this.state.userSubscriptions).map(subscriptionName => {
-            const subscription = this.state.userSubscriptions[subscriptionName];
-            const service = this.state.services[subscription.name];
+          {Object.keys(userSubscriptions).map(subscriptionName => {
+            const subscription = userSubscriptions[subscriptionName];
+            const service = services[subscription.name];
+
             return (
               <div key={subscription.id} className="shadow p-4 my-4">
-                <SubscriptionService service={service}></SubscriptionService>
+                <SubscriptionService service={service} />
                 <h6 className="mt-4">Sottoscrizione ({subscription.state})</h6>
-                <div className="my-2">Chiave primaria: {this.state['p_' + subscription.name] ? subscription.primaryKey : keyPlaceholder}
-                  <Button size="xs" className="ml-1 mr-1" onClick={() => this.onToggleKey('p_' + subscription.name)}>{this.state['p_' + subscription.name] ?
-                    'nascondi' : 'mostra'}</Button>
-                  <Button size="xs" className="mr-1" onClick={this.onRegenerateKey('primary', subscription.name)}>rigenera</Button>
-                  <Button size="xs" className="mr-1" onClick={this.onSetKey(subscription.primaryKey, service)}>usa questa chiave</Button>
+                <div className="my-2">
+                  Chiave primaria:{" "}
+                  {this.state["p_" + subscription.name]
+                    ? subscription.primaryKey
+                    : keyPlaceholder}
+                  <Button
+                    outline
+                    color="primary"
+                    size="xs"
+                    className="ml-1 mr-1"
+                    onClick={() => this.onToggleKey("p_" + subscription.name)}
+                  >
+                    {this.state["p_" + subscription.name] ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
+                  </Button>
+                  <Button
+                    color="danger"
+                    size="xs"
+                    className="mr-1"
+                    onClick={this.onRegenerateKey("primary", subscription.name)}
+                  >
+                    Rigenera
+                  </Button>
+                  <Button
+                    color="primary"
+                    size="xs"
+                    className="mr-1"
+                    disabled={!service || subscription.state !== "active"}
+                    onClick={this.onSetKey(subscription.primaryKey, service)}
+                  >
+                    Usa questa chiave
+                  </Button>
                 </div>
-                <div className="my-2">Chiave secondaria: {this.state['s_' + subscription.name] ? subscription.secondaryKey : keyPlaceholder}
-                  <Button size="xs" className="ml-1 mr-1" onClick={() => this.onToggleKey('s_' + subscription.name)}>{this.state['s_' + subscription.name] ?
-                    'nascondi' : 'mostra'}</Button>
-                  <Button size="xs" className="mr-1" onClick={this.onRegenerateKey('secondary', subscription.name)}>rigenera</Button>
-                  <Button size="xs" className="mr-1" onClick={this.onSetKey(subscription.secondaryKey, service)}>usa questa chiave</Button>
+                <div className="my-2">
+                  Chiave secondaria:{" "}
+                  {this.state["s_" + subscription.name]
+                    ? subscription.secondaryKey
+                    : keyPlaceholder}
+                  <Button
+                    outline
+                    color="primary"
+                    size="xs"
+                    className="ml-1 mr-1"
+                    onClick={() => this.onToggleKey("s_" + subscription.name)}
+                  >
+                    {this.state["s_" + subscription.name] ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
+                  </Button>
+                  <Button
+                    color="danger"
+                    size="xs"
+                    className="mr-1"
+                    onClick={this.onRegenerateKey(
+                      "secondary",
+                      subscription.name
+                    )}
+                  >
+                    Rigenera
+                  </Button>
+                  <Button
+                    color="primary"
+                    size="xs"
+                    className="mr-1"
+                    disabled={!service || subscription.state !== "active"}
+                    onClick={this.onSetKey(subscription.secondaryKey, service)}
+                  >
+                    Usa questa chiave
+                  </Button>
                 </div>
               </div>
-            )
-          })
-          }
+            );
+          })}
 
           <div className="shadow p-4 mt-5">
-
             <label>Nome servizio</label>
             <input
               name="service_name"
@@ -208,21 +285,34 @@ export default class Profile extends Component {
             <input
               name="organization_name"
               type="text"
-              defaultValue={get(this.state, "newSubscription.organization_name")}
+              defaultValue={get(
+                this.state,
+                "newSubscription.organization_name"
+              )}
               onChange={this.handleInputChange}
             />
             <label>Codice fiscale ente</label>
             <input
               name="organization_fiscal_code"
               type="text"
-              defaultValue={get(this.state, "newSubscription.organization_fiscal_code")}
+              defaultValue={get(
+                this.state,
+                "newSubscription.organization_fiscal_code"
+              )}
               onChange={this.handleInputChange}
             />
 
-            <Button className="mt-3" onClick={this.onAddSubscription}>Aggiungi sottoscrizione</Button>
+            <Button
+              color="primary"
+              className="mt-3"
+              color="primary"
+              onClick={this.onAddSubscription}
+            >
+              Aggiungi sottoscrizione
+            </Button>
           </div>
         </div>
-      </Fragment >
+      </Fragment>
     );
   }
 }

@@ -33,7 +33,6 @@ export async function getUserTokenOrRedirect(configuration) {
     return userAgentApplication.loginRedirect(configuration.b2cScopes);
   }
   try {
-    console.debug("getUserTokenOrRedirect user", user);
     return await getUserToken(configuration);
   }
   catch (e) {

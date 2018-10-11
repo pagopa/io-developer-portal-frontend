@@ -88,6 +88,7 @@ class Compose extends Component {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
     const { db } = this.props;
 
+    // No need to await
     const contact = profileGetAndPersist({
       code,
       db
@@ -101,8 +102,10 @@ class Compose extends Component {
       type: "template",
       ...message
     });
+    console.log(template);
 
     let content = createMessageContent({ message, dueDate, amount, notice });
+    console.log(content);
 
     const result = await messagePostAndPersist({
       db,
