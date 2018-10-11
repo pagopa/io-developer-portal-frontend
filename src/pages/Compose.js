@@ -25,6 +25,7 @@ const { SUBJECT, MARKDOWN, AMOUNT } = LIMITS;
 import moment from "moment";
 
 import compose from "recompose/compose";
+import SelectedService from "../components/SelectedService";
 
 import "./Pages.css";
 
@@ -136,6 +137,7 @@ class Compose extends Component {
 
     return (
       <section className="pages--container">
+        <SelectedService />
         <ContactAdd
           code={code}
           codeMask={codeMask}

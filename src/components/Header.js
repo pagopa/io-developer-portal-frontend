@@ -24,6 +24,7 @@ class Header extends Component {
   };
 
   render() {
+    const userData = localStorage.getItem("userData") ? JSON.parse(localStorage.getItem("userData")) : undefined;
     return (
       <header>
         <Navbar expand="lg">
@@ -39,6 +40,17 @@ class Header extends Component {
               </section>
               <section>
                 <Nav>
+                  <NavItem className="d-flex">
+                    <div className="text-white align-self-center">
+                      <Link
+                        className="nav-link"
+                        to={{ pathname: "/profile" }}
+                      >
+                        {userData.given_name}{' '}{userData.family_name}
+                        {localStorage.getItem("isApiAdmin") ? " (admin)" : ""}
+                      </Link>
+                    </div>
+                  </NavItem>
                   <NavItem>
                     <Link
                       className="nav-link"
@@ -49,7 +61,7 @@ class Header extends Component {
                   </NavItem>
 
                   {(() => {
-                    const isSignedIn = !!localStorage.getItem("serviceKey");
+                    const isSignedIn = !!userData;
 
                     if (isSignedIn) {
                       return (
