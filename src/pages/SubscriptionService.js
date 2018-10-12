@@ -3,10 +3,6 @@ import { Button } from "design-react-kit";
 import { getFromBackend, putToBackend } from "../utils/backend";
 
 export default class SubscriptionService extends Component {
-  state = {
-    userToken: localStorage.getItem("userToken")
-  };
-
   async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
     const service = await getFromBackend({

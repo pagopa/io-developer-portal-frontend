@@ -13,70 +13,85 @@ import Inbox from "react-icons/lib/fa/inbox";
 import Book from "react-icons/lib/fa/book";
 import User from "react-icons/lib/fa/user";
 
+import { StorageContext } from "../context/storage";
+
 import "./Aside.css";
 
-class Header extends Component {
+class Aside extends Component {
   render() {
     return (
       <aside>
-        <LinkList>
-          <li>
-            <Link className="large list-item" to={{ pathname: "/" }}>
-              <TableHead className="mr-2 aside--icon" />
-              Dashboard
-            </Link>
-          </li>
-          {localStorage.getItem("isApiAdmin") &&
-            <li>
-              <Link className="large list-item" to={{ pathname: "/users" }}>
-                <Book className="mr-2 aside--icon" />
-                Utenti registrati
-              </Link>
-            </li>
-          }
-          <li>
-            <Link className="large list-item" to={{ pathname: "/profile" }}>
-              <User className="mr-2 aside--icon" />
-              Profilo (sottoscrizioni)
-            </Link>
-          </li>
-          <li>
-            <Link className="large list-item" to={{ pathname: "/compose" }}>
-              <Rocket className="mr-2 aside--icon" />
-              Invio rapido
-            </Link>
-          </li>
-          <li>
-            <Link className="large list-item" to={{ pathname: "/compose/import" }}>
-              <FileText className="mr-2 aside--icon" />
-              Invio da file
-            </Link>
-          </li>
-          <li>
-            <Link className="large list-item" to={{ pathname: "/templates" }}>
-              <Envelope className="mr-2 aside--icon" />
-              Invio con Template
-            </Link>
-          </li>
-          <li>
-            <Link className="large list-item" to={{ pathname: "/contacts" }}>
-              <Group className="mr-2 aside--icon" />
-              Contatti
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="large list-item border-top border-custom-grey"
-              to={{ pathname: "/messages" }}
-            >
-              <Inbox className="mr-2 aside--icon" />
-              Messaggi inviati
-            </Link>
-          </li>
-        </LinkList>
+        <StorageContext.Consumer>
+          {storage => (
+            <LinkList>
+              <li>
+                <Link className="large list-item" to={{ pathname: "/" }}>
+                  <TableHead className="mr-2 aside--icon" />
+                  Dashboard
+                </Link>
+              </li>
+              {storage.isApiAdmin && (
+                <li>
+                  <Link className="large list-item" to={{ pathname: "/users" }}>
+                    <Book className="mr-2 aside--icon" />
+                    Utenti registrati
+                  </Link>
+                </li>
+              )}
+              <li>
+                <Link className="large list-item" to={{ pathname: "/profile" }}>
+                  <User className="mr-2 aside--icon" />
+                  Profilo (sottoscrizioni)
+                </Link>
+              </li>
+              <li>
+                <Link className="large list-item" to={{ pathname: "/compose" }}>
+                  <Rocket className="mr-2 aside--icon" />
+                  Invio rapido
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="large list-item"
+                  to={{ pathname: "/compose/import" }}
+                >
+                  <FileText className="mr-2 aside--icon" />
+                  Invio da file
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="large list-item"
+                  to={{ pathname: "/templates" }}
+                >
+                  <Envelope className="mr-2 aside--icon" />
+                  Invio con Template
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="large list-item"
+                  to={{ pathname: "/contacts" }}
+                >
+                  <Group className="mr-2 aside--icon" />
+                  Contatti
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="large list-item border-top border-custom-grey"
+                  to={{ pathname: "/messages" }}
+                >
+                  <Inbox className="mr-2 aside--icon" />
+                  Messaggi inviati
+                </Link>
+              </li>
+            </LinkList>
+          )}
+        </StorageContext.Consumer>
       </aside>
     );
   }
 }
 
-export default Header;
+export default Aside;

@@ -7,7 +7,6 @@ const { localStorage } = window;
 
 export default class UserList extends Component {
   state = {
-    userToken: localStorage.getItem("userToken"),
     users: { items: [], length: 0 }
   };
 
