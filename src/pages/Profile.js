@@ -3,6 +3,7 @@ import React, { Component, Fragment } from "react";
 import { Button } from "design-react-kit";
 
 import get from "lodash/get";
+import { getStorage } from "../context/storage";
 
 import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
 
@@ -44,13 +45,13 @@ export default class Profile extends Component {
     const userSubscription = await postToBackend({
       path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : ""),
       options: {
-        body: {
+        body: Object.assign({}, {
           organization_fiscal_code: this.state.newSubscription
             .organization_fiscal_code,
           organization_name: this.state.newSubscription.organization_name,
           department_name: this.state.newSubscription.department_name,
           service_name: this.state.newSubscription.service_name
-        }
+        }, this.state.newSubscription.new_user ? { new_user: this.state.newSubscription.new_user } : {})
       }
     });
 
@@ -79,16 +80,32 @@ export default class Profile extends Component {
     const userData = await getFromBackend({
       path: "user" + (email ? "/" + encodeURIComponent(email) : "")
     });
+
     this.setState({
-      userData,
-      // populate new subscription form with default data taken from the user's profile
-      newSubscription: {
-        service_name: userData.authenticatedUser.extension_Service,
-        department_name: userData.authenticatedUser.extension_Department,
-        organization_name: userData.authenticatedUser.extension_Organization,
-        organization_fiscal_code: "00000000000"
-      }
+      userData
     });
+
+    const isEditingAuthenticatedUser = !email;
+
+    if (isEditingAuthenticatedUser) {
+      // prepopulate new subscription form with values from authenticated user
+      // TODO: do this for admins (email = true) as well
+      const storedUserData = getStorage().userData;
+      this.setState({
+        newSubscription: {
+          service_name: storedUserData.extension_Service,
+          department_name: storedUserData.extension_Department,
+          organization_name: storedUserData.extension_Organization,
+          organization_fiscal_code: "00000000000",
+          new_user: {
+            adb2c_id: storedUserData.oid,
+            first_name: storedUserData.given_name,
+            last_name: storedUserData.family_name,
+            email: storedUserData.emails[0]
+          }
+        }
+      });
+    }
 
     // load all user's subscriptions
     const userSubscriptions = await getFromBackend({
@@ -100,9 +117,9 @@ export default class Profile extends Component {
         isNaN(key)
           ? p
           : {
-              ...p,
-              [userSubscriptions[key].name]: userSubscriptions[key]
-            },
+            ...p,
+            [userSubscriptions[key].name]: userSubscriptions[key]
+          },
       {}
     );
 
@@ -163,12 +180,15 @@ export default class Profile extends Component {
     const isSameUser = !this.props.match.params.email;
     const keyPlaceholder = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
+    const firstName = get(this.state, "userData.apimUser.firstName");
+    const lastName = get(this.state, "userData.apimUser.lastName");
+
     return (
       <Fragment>
         <div>
-          <h4>{get(this.state, "userData.apimUser.email")}</h4>
-          <div>Nome: {get(this.state, "userData.apimUser.firstName")}</div>
-          <div>Cognome: {get(this.state, "userData.apimUser.lastName")}</div>
+          <h4>{get(this.state, "userData.apimUser.email", "Nuovo utente")}</h4>
+          {firstName && <div>Nome: {firstName}</div>}
+          {lastName && <div>Cognome: {lastName}</div>}
           {isSameUser && (
             <div>
               <a href={this.state.applicationConfig.changePasswordLink}>
@@ -202,8 +222,8 @@ export default class Profile extends Component {
                     {this.state["p_" + subscription.name] ? (
                       <FaEyeSlash />
                     ) : (
-                      <FaEye />
-                    )}
+                        <FaEye />
+                      )}
                   </Button>
                   <Button
                     color="danger"
@@ -238,8 +258,8 @@ export default class Profile extends Component {
                     {this.state["s_" + subscription.name] ? (
                       <FaEyeSlash />
                     ) : (
-                      <FaEye />
-                    )}
+                        <FaEye />
+                      )}
                   </Button>
                   <Button
                     color="danger"

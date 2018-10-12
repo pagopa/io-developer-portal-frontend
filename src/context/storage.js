@@ -1,9 +1,9 @@
 import React from "react";
 
-const getStorage = () => {
+export const getStorage = () => {
   return {
     backendEndpoint: localStorage.getItem("backendEndpoint"),
-    isApiAdmin: JSON.parse(localStorage.getItem("isApiAdmin")),
+    isApiAdmin: localStorage.getItem("isApiAdmin") === true,
     service: JSON.parse(localStorage.getItem("service")),
     serviceEndpoint: localStorage.getItem("serviceEndpoint"),
     serviceKey: localStorage.getItem("serviceKey"),
