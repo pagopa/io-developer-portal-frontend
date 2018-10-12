@@ -3,6 +3,8 @@ import { Button } from "design-react-kit";
 import { getFromBackend, putToBackend } from "../utils/backend";
 
 export default class SubscriptionService extends Component {
+  state = {};
+
   async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
     const service = await getFromBackend({
@@ -99,12 +101,10 @@ export default class SubscriptionService extends Component {
           </div>
         )}
 
-        {service.max_allowed_payment_amount && (
-          <div className="mb-3">
-            Importo massimo autorizzato: {service.max_allowed_payment_amount}{" "}
-            eurocents
-          </div>
-        )}
+        <div className="mb-3">
+          Importo massimo autorizzato: {service.max_allowed_payment_amount}{" "}
+          eurocents
+        </div>
       </div>
     ) : null;
   }
