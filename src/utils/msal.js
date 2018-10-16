@@ -7,36 +7,11 @@
  */
 import { UserAgentApplication } from "msal";
 
-// force singleton
-let __defaultUserAgentApplication;
-
-export function getDefaultUserAgentApplication(applicationConfig) {
-  __defaultUserAgentApplication = __defaultUserAgentApplication || new UserAgentApplication(
+export async function getUserTokenOrRedirect(configuration) {
+  const userAgentApplication = new UserAgentApplication(
     applicationConfig.clientID, applicationConfig.authority, (errorDesc, token, error, tokenType) => {
       console.debug("getDefaultUserAgentApplication::token", token);
     });
-  return __defaultUserAgentApplication;
-}
-
-export async function getUserToken(configuration) {
-  console.debug("getUserToken::getUserToken");
-
-  const userAgentApplication = getDefaultUserAgentApplication(configuration);
-  const token = await userAgentApplication.acquireTokenSilent(configuration.b2cScopes);
-
-  console.debug("getUserToken::token", token);
-
-  if (!token) {
-    throw new Error("getUserToken: cannot get user token");
-  }
-  return ({
-    token,
-    user: userAgentApplication.getUser()
-  });
-}
-
-export async function getUserTokenOrRedirect(configuration) {
-  const userAgentApplication = getDefaultUserAgentApplication(configuration);
 
   const user = userAgentApplication.getUser();
   console.debug("getUserTokenOrRedirect::user", user);
@@ -44,8 +19,19 @@ export async function getUserTokenOrRedirect(configuration) {
   if (!user) {
     return userAgentApplication.loginRedirect(configuration.b2cScopes);
   }
+
   try {
-    return await getUserToken(configuration);
+    const token = await userAgentApplication.acquireTokenSilent(configuration.b2cScopes);
+
+    console.debug("getUserTokenOrRedirect::token", token);
+
+    if (!token) {
+      throw new Error("getUserTokenOrRedirect: cannot get user token");
+    }
+    return ({
+      token,
+      user: userAgentApplication.getUser()
+    });
   }
   catch (e) {
     console.debug("getUserTokenOrRedirect::error", e);
