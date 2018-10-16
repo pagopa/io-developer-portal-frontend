@@ -17,12 +17,12 @@ export async function getUserTokenOrRedirect(configuration) {
   console.debug("getUserTokenOrRedirect::user", user);
 
   if (!user) {
+    console.debug("getUserTokenOrRedirect::loginRedirect");
     return userAgentApplication.loginRedirect(configuration.b2cScopes);
   }
 
   try {
     const token = await userAgentApplication.acquireTokenSilent(configuration.b2cScopes);
-
     console.debug("getUserTokenOrRedirect::token", token);
 
     if (!token) {
