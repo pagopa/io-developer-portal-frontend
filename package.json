@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "parcel index.html",
     "dev:proxy": "node api-proxy.js",
-    "build": "parcel build index.html --public-url ./",
+    "build": "parcel build index.html --public-url /",
     "postbuild": "shx cp 404.html web.config dist/",
     "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'"
   },
