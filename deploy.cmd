@@ -102,15 +102,8 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
   pushd "%DEPLOYMENT_TARGET%"
   call :ExecuteCmd !NPM_CMD! install
   IF !ERRORLEVEL! NEQ 0 goto error
-  popd
-)
-
-:: 4. Build the website
-IF EXIST "%DEPLOYMENT_TEMP%\scripts\build.js" (
-  pushd "%DEPLOYMENT_TEMP%"
-  echo "Building web site"
-  call npm run build
-  if !ERRORLEVEL! NEQ 0 goto error
+  call :ExecuteCmd !NPM_CMD! run build
+  IF !ERRORLEVEL! NEQ 0 goto error
   popd
 )
 
