@@ -94,6 +94,6 @@ workflows:
             tags:
               only: /.*/
 
-      - deploy-github-pages:
-          requires:
-            - build
+      # - deploy-github-pages:
+      #     requires:
+      #       - build
