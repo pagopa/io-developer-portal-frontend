@@ -6,7 +6,7 @@
 node_modules/
 
 # Parcel (https://parceljs.org/)
-# dist
+dist
 .cache
 
 # local files used for development
