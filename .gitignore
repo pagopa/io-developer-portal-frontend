@@ -8,3 +8,7 @@ node_modules/
 # Parcel (https://parceljs.org/)
 dist
 .cache
+
+# local files used for development
+local.*
+.vscode

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { Button } from "design-react-kit";
 
+import SelectedService from "../components/SelectedService";
 import TemplatesList from "../components/templates/TemplatesList";
 import TemplatesEditor from "../components/templates/TemplatesEditor";
 
@@ -130,6 +131,7 @@ class Templates extends Component {
 
     return (
       <section className="pages--container">
+        <SelectedService />
         {(() => {
           if (!template_id) {
             return (

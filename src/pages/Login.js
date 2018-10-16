@@ -1,78 +1,45 @@
 import React, { Component } from "react";
 
-import {
-  Col,
-  Row,
-  Form,
-  FormGroup,
-  PasswordInput,
-  Label,
-  FormText,
-  Button
-} from "design-react-kit";
+import { Alert } from "design-react-kit";
 
 const { localStorage } = window;
+
+import { getUserTokenOrRedirect } from "../utils/msal";
+import { getFromBackend } from "../utils/backend";
 
 import "./Login.css";
 
 class Login extends Component {
-  state = {
-    serviceKey: ""
-  };
+  componentDidMount = async () => {
+    try {
+      const configuration = await getFromBackend({ path: "configuration" });
+      const user = await getUserTokenOrRedirect(configuration);
 
-  onPasswordChange = ({ target: { value } }) => {
-    this.setState({
-      serviceKey: value
-    });
-  };
-
-  onStoreCredentials = e => {
-    e.preventDefault();
-
-    const { serviceKey } = this.state;
-
-    if (!!serviceKey) {
-      localStorage.setItem("serviceKey", serviceKey);
-
-      this.goHome();
+      if (user) {
+        // bearer token to call backend api
+        localStorage.setItem("userToken", user.token);
+        // profile data (email, name, ...)
+        localStorage.setItem("userData", JSON.stringify(user.user.idToken));
+  
+        const apimUser = await getFromBackend({ path: "user" });
+        const isApiAdmin =
+          apimUser.apimUser &&
+          new Set(apimUser.apimUser.groupNames).has("ApiAdmin");
+  
+        localStorage.setItem("isApiAdmin", isApiAdmin);
+        window.location.replace("/");
+      }
+    } catch (e) {
+      console.error("Login needed", e);
     }
-  };
-
-  goHome = () => {
-    // Hard refresh for `PouchDB`, i.e. switch DB (service)
-    window.location.replace("./");
   };
 
   render() {
     return (
-      <section className="container login--container d-flex justify-content-center align-items-center">
-        <Row className="w-40">
-          <Col lg="12">
-            <Form className="form-row">
-              <Col lg="11">
-                <FormGroup>
-                  <PasswordInput
-                    id="login--serviceKey"
-                    onChange={this.onPasswordChange}
-                  />
-                  <Label for="login--serviceKey">API Key</Label>
-                  <FormText color="muted">
-                    inserisci le credenziali per il tuo servizio
-                  </FormText>
-                </FormGroup>
-              </Col>
-              <Col lg="1">
-                <Button
-                  color="primary"
-                  className="mt-3 ml-5"
-                  onClick={this.onStoreCredentials}
-                >
-                  Invia
-                </Button>
-              </Col>
-            </Form>
-          </Col>
-        </Row>
+      <section className="login--container">
+        <Alert color="info">
+          Stai per essere reindirizzato alla pagina di Sign in{" "}
+        </Alert>
       </section>
     );
   }
