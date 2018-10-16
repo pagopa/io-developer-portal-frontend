@@ -24,6 +24,8 @@ class Login extends Component {
         localStorage.setItem("userData", JSON.stringify(user.user.idToken));
 
         const apimUser = await getFromBackend({ path: "user" });
+        console.debug("Login::apimUser", apimUser);
+
         const isApiAdmin =
           apimUser.apimUser &&
           new Set(apimUser.apimUser.groupNames).has("ApiAdmin");
