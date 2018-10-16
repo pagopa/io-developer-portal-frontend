@@ -15,8 +15,13 @@ export function getDefaultUserAgentApplication(applicationConfig) {
 }
 
 export async function getUserToken(configuration) {
+  console.debug("getUserTokenOrRedirect::getUserToken");
+
   const userAgentApplication = getDefaultUserAgentApplication(configuration);
   const token = await userAgentApplication.acquireTokenSilent(configuration.b2cScopes);
+
+  console.debug("getUserTokenOrRedirect::getUserToken::token", token);
+
   if (!token) {
     throw new Error("getUserToken: cannot get user token");
   }
@@ -28,7 +33,10 @@ export async function getUserToken(configuration) {
 
 export async function getUserTokenOrRedirect(configuration) {
   const userAgentApplication = getDefaultUserAgentApplication(configuration);
+
   const user = userAgentApplication.getUser();
+  console.debug("getUserTokenOrRedirect::user", user);
+
   if (!user) {
     return userAgentApplication.loginRedirect(configuration.b2cScopes);
   }
