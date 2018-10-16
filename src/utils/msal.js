@@ -10,17 +10,17 @@ import { UserAgentApplication } from "msal";
 export function getDefaultUserAgentApplication(applicationConfig) {
   return new UserAgentApplication(
     applicationConfig.clientID, applicationConfig.authority, (errorDesc, token, error, tokenType) => {
-      console.debug("getDefaultUserAgentApplication token", token);
+      console.debug("getDefaultUserAgentApplication::token", token);
     });
 }
 
 export async function getUserToken(configuration) {
-  console.debug("getUserTokenOrRedirect::getUserToken");
+  console.debug("getUserToken::getUserToken");
 
   const userAgentApplication = getDefaultUserAgentApplication(configuration);
   const token = await userAgentApplication.acquireTokenSilent(configuration.b2cScopes);
 
-  console.debug("getUserTokenOrRedirect::getUserToken::token", token);
+  console.debug("getUserToken::token", token);
 
   if (!token) {
     throw new Error("getUserToken: cannot get user token");

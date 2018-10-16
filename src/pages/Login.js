@@ -15,7 +15,7 @@ class Login extends Component {
       const configuration = await getFromBackend({ path: "configuration" });
       const user = await getUserTokenOrRedirect(configuration);
 
-      console.debug("Login::getUserTokenOrRedirect::user", user);
+      console.debug("Login::getUserTokenOrRedirect::userToken", user.token, user.user);
 
       if (user) {
         // bearer token to call backend api
