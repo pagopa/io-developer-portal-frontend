@@ -9,7 +9,7 @@ import { UserAgentApplication } from "msal";
 
 export async function getUserTokenOrRedirect(configuration) {
   const userAgentApplication = new UserAgentApplication(
-    applicationConfig.clientID, applicationConfig.authority, (errorDesc, token, error, tokenType) => {
+    configuration.clientID, configuration.authority, (errorDesc, token, error, tokenType) => {
       console.debug("getDefaultUserAgentApplication::token", token);
     });
 
