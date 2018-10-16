@@ -15,17 +15,21 @@ class Login extends Component {
       const configuration = await getFromBackend({ path: "configuration" });
       const user = await getUserTokenOrRedirect(configuration);
 
+      console.debug("Login::getUserTokenOrRedirect::userToken", user.token, user.user);
+
       if (user) {
         // bearer token to call backend api
         localStorage.setItem("userToken", user.token);
         // profile data (email, name, ...)
         localStorage.setItem("userData", JSON.stringify(user.user.idToken));
-  
+
         const apimUser = await getFromBackend({ path: "user" });
+        console.debug("Login::apimUser", apimUser);
+
         const isApiAdmin =
           apimUser.apimUser &&
           new Set(apimUser.apimUser.groupNames).has("ApiAdmin");
-  
+
         localStorage.setItem("isApiAdmin", isApiAdmin);
         window.location.replace("/");
       }

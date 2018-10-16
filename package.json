@@ -1,12 +1,16 @@
 {
   "name": "italia-backoffice",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "engines": {
+    "node": "6.11.2",
+    "npm": "6.1.0"
+  },
   "scripts": {
-    "start": "npx parcel index.html",
-    "start:proxy": "node api-proxy.js",
-    "build": "npx parcel build index.html --public-url ./",
-    "postbuild": "npx shx cp 404.html dist/",
-    "deploy": "npx gh-pages -d dist -m 'Update GitHub Pages [ci skip]'"
+    "dev": "parcel index.html",
+    "dev:proxy": "node api-proxy.js",
+    "build": "parcel build index.html --public-url /",
+    "postbuild": "shx cp 404.html web.config dist/",
+    "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'"
   },
   "dependencies": {
     "batch": "^0.6.1",
@@ -42,6 +46,7 @@
     "eslint-plugin-import": "^2.14.0",
     "express": "^4.16.3",
     "parcel-bundler": "^1.10.2",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "shx": "^0.3.2"
   }
 }
