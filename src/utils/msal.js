@@ -7,11 +7,15 @@
  */
 import { UserAgentApplication } from "msal";
 
+// force singleton
+let __defaultUserAgentApplication;
+
 export function getDefaultUserAgentApplication(applicationConfig) {
-  return new UserAgentApplication(
+  __defaultUserAgentApplication = __defaultUserAgentApplication || new UserAgentApplication(
     applicationConfig.clientID, applicationConfig.authority, (errorDesc, token, error, tokenType) => {
       console.debug("getDefaultUserAgentApplication::token", token);
     });
+  return __defaultUserAgentApplication;
 }
 
 export async function getUserToken(configuration) {
