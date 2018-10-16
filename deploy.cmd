@@ -97,6 +97,8 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 :: 2. Select node version
 call :SelectNodeVersion
 
+REM NODE_ENV=production npm run build && git add -A && git commit -a -m "debug auth" && git push origin production-debug:production
+
 :: 3. Install npm packages
 REM IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 REM   pushd "%DEPLOYMENT_TARGET%"
