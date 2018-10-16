@@ -44,6 +44,7 @@ export async function getUserTokenOrRedirect(configuration) {
     return await getUserToken(configuration);
   }
   catch (e) {
+    console.debug("getUserTokenOrRedirect::error", e);
     return userAgentApplication.loginRedirect(configuration.b2cScopes);
   }
 }
