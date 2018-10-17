@@ -10,6 +10,8 @@ import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
 import FaEye from "react-icons/lib/fa/eye";
 import FaEyeSlash from "react-icons/lib/fa/eye-slash";
 
+import Confirmation from "../components/modal/Confirmation";
+
 const getMail = email => (email && email !== "" ? atob(email) : undefined);
 
 const SubscriptionService = ({ service }) => {
@@ -36,7 +38,9 @@ export default class Profile extends Component {
     userSubscriptions: {},
     services: {},
     applicationConfig: {},
-    newSubscription: {}
+    newSubscription: {},
+    isConfirmationOpen: false,
+    onConfirmOperation: () => {}
   };
 
   onAddSubscription = async () => {
@@ -45,13 +49,19 @@ export default class Profile extends Component {
     const userSubscription = await postToBackend({
       path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : ""),
       options: {
-        body: Object.assign({}, {
-          organization_fiscal_code: this.state.newSubscription
-            .organization_fiscal_code,
-          organization_name: this.state.newSubscription.organization_name,
-          department_name: this.state.newSubscription.department_name,
-          service_name: this.state.newSubscription.service_name
-        }, this.state.newSubscription.new_user ? { new_user: this.state.newSubscription.new_user } : {})
+        body: Object.assign(
+          {},
+          {
+            organization_fiscal_code: this.state.newSubscription
+              .organization_fiscal_code,
+            organization_name: this.state.newSubscription.organization_name,
+            department_name: this.state.newSubscription.department_name,
+            service_name: this.state.newSubscription.service_name
+          },
+          this.state.newSubscription.new_user
+            ? { new_user: this.state.newSubscription.new_user }
+            : {}
+        )
       }
     });
 
@@ -117,9 +127,9 @@ export default class Profile extends Component {
         isNaN(key)
           ? p
           : {
-            ...p,
-            [userSubscriptions[key].name]: userSubscriptions[key]
-          },
+              ...p,
+              [userSubscriptions[key].name]: userSubscriptions[key]
+            },
       {}
     );
 
@@ -150,14 +160,20 @@ export default class Profile extends Component {
   };
 
   onRegenerateKey = (keyType, subscriptionId) => async () => {
-    const userSubscription = await putToBackend({
-      path: "subscriptions/" + subscriptionId + "/" + keyType + "_key",
-      options: { body: undefined }
-    });
     this.setState({
-      userSubscriptions: {
-        ...this.state.userSubscriptions,
-        [userSubscription.name]: userSubscription
+      isConfirmationOpen: true,
+      onConfirmOperation: async () => {
+        const userSubscription = await putToBackend({
+          path: "subscriptions/" + subscriptionId + "/" + keyType + "_key",
+          options: { body: undefined }
+        });
+        this.setState({
+          isConfirmationOpen: false,
+          userSubscriptions: {
+            ...this.state.userSubscriptions,
+            [userSubscription.name]: userSubscription
+          }
+        });
       }
     });
   };
@@ -177,6 +193,7 @@ export default class Profile extends Component {
 
   render() {
     const { userSubscriptions, services } = this.state;
+    const { isConfirmationOpen, onConfirmOperation } = this.state;
     const isSameUser = !this.props.match.params.email;
     const keyPlaceholder = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
@@ -222,13 +239,14 @@ export default class Profile extends Component {
                     {this.state["p_" + subscription.name] ? (
                       <FaEyeSlash />
                     ) : (
-                        <FaEye />
-                      )}
+                      <FaEye />
+                    )}
                   </Button>
                   <Button
                     color="danger"
                     size="xs"
                     className="mr-1"
+                    disabled={!service || subscription.state !== "active"}
                     onClick={this.onRegenerateKey("primary", subscription.name)}
                   >
                     Rigenera
@@ -258,13 +276,14 @@ export default class Profile extends Component {
                     {this.state["s_" + subscription.name] ? (
                       <FaEyeSlash />
                     ) : (
-                        <FaEye />
-                      )}
+                      <FaEye />
+                    )}
                   </Button>
                   <Button
                     color="danger"
                     size="xs"
                     className="mr-1"
+                    disabled={!service || subscription.state !== "active"}
                     onClick={this.onRegenerateKey(
                       "secondary",
                       subscription.name
@@ -332,6 +351,12 @@ export default class Profile extends Component {
             </Button>
           </div>
         </div>
+
+        <Confirmation
+          isOpen={isConfirmationOpen}
+          onCancel={() => this.setState({ isConfirmationOpen: false })}
+          onConfirm={onConfirmOperation}
+        />
       </Fragment>
     );
   }
