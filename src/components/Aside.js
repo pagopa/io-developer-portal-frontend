@@ -45,7 +45,7 @@ class Aside extends Component {
                 </Link>
               </li>
               <li>
-                <Link className="large list-item" to={{ pathname: "/compose" }}>
+                <Link className="large list-item border-top border-custom-grey" to={{ pathname: "/compose" }}>
                   <Rocket className="mr-2 aside--icon" />
                   Invio rapido
                 </Link>
@@ -79,12 +79,18 @@ class Aside extends Component {
               </li>
               <li>
                 <Link
-                  className="large list-item border-top border-custom-grey"
+                  className="large list-item"
                   to={{ pathname: "/messages" }}
                 >
                   <Inbox className="mr-2 aside--icon" />
                   Messaggi inviati
                 </Link>
+              </li>
+              <li>
+                <a href="./openapi.html" className="large list-item border-top border-custom-grey">
+                  <Inbox className="mr-2 aside--icon" />
+                  Specifiche OpenAPI
+                </a>
               </li>
             </LinkList>
           )}
