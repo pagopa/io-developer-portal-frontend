@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Alert } from "design-react-kit";
 
 import { StorageContext } from "../context/storage";
 
-export default class Service extends Component {
+class Service extends Component {
   render() {
+    const { t } = this.props;
+
     return (
       <StorageContext.Consumer>
         {storage => {
@@ -13,7 +17,7 @@ export default class Service extends Component {
             const { service } = storage;
             return (
               <p>
-                Invio per conto di {service.organization_name} /{" "}
+                {t("send_as")} {service.organization_name} /{" "}
                 {service.service_name} [
                 <a href={"/service/" + service.service_id}>
                   {service.service_id}
@@ -23,9 +27,11 @@ export default class Service extends Component {
             );
           }
 
-          return <Alert color="danger">Nessuna API key selezionata !</Alert>;
+          return <Alert color="danger">{t("no_services")}</Alert>;
         }}
       </StorageContext.Consumer>
     );
   }
 }
+
+export default withNamespaces("service")(Service);

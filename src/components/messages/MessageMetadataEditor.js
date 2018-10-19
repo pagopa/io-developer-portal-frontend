@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import {
   Row,
   Col,
@@ -34,11 +36,12 @@ class MessageMetadataEditor extends Component {
       onChangeAmount,
       onReset
     } = this.props;
+    const { t } = this.props;
 
     return (
       <Row className="form-inline">
         <Col lg="4">
-          <Label className="text-uppercase">Scadenza</Label>
+          <Label className="text-uppercase">{t("due_date")}</Label>
           <InputGroup className="position-relative input-group-datepicker">
             <div className="position-absolute messagemetatada--editor-calendar p-2">
               <FaCalendar className="text-primary" />
@@ -46,10 +49,10 @@ class MessageMetadataEditor extends Component {
             <DatePicker
               selected={dueDate}
               onChange={onChangeDueDate}
-              dateFormat="DD/MM/YYYY HH:mm"
+              dateFormat={t("format:date")}
               showTimeSelect
-              timeCaption="Orario"
-              timeFormat="HH:mm"
+              timeCaption={t("time")}
+              timeFormat={t("format:time")}
               timeIntervals={60}
               disabledKeyboardNavigation
             />
@@ -57,7 +60,7 @@ class MessageMetadataEditor extends Component {
             {dueDate && (
               <button
                 className="close position-absolute close-button"
-                aria-label="Reset"
+                aria-label={t("reset")}
                 onClick={() => onReset("dueDate")}
               >
                 <span aria-hidden="true">&times;</span>
@@ -67,14 +70,14 @@ class MessageMetadataEditor extends Component {
         </Col>
 
         <Col lg="5">
-          <Label className="text-uppercase">N° Avviso</Label>
+          <Label className="text-uppercase">{t("notice")}</Label>
 
           <InputGroup className="position-relative">
             <MaskedInput
               type="text"
               className="form-control"
               placeholder=""
-              aria-label="Numero Avviso"
+              aria-label={t("notice")}
               value={notice}
               guide={false}
               mask={noticeMask}
@@ -83,14 +86,14 @@ class MessageMetadataEditor extends Component {
             {(notice || amount) &&
               (!isNoticeValid && (
                 <div className="invalid-feedback d-block">
-                  Per favore digita {NOTICE.MAX} caratteri numerici e l'importo
+                  {t("validation:notice", { max: NOTICE.MAX })}
                 </div>
               ))}
 
             {notice && (
               <button
                 className="close position-absolute close-button"
-                aria-label="Reset"
+                aria-label={t("reset")}
                 onClick={() => onReset("notice")}
               >
                 <span aria-hidden="true">&times;</span>
@@ -100,18 +103,18 @@ class MessageMetadataEditor extends Component {
         </Col>
 
         <Col lg="3">
-          <Label className="text-uppercase">Importo</Label>
+          <Label className="text-uppercase">{t("amount")}</Label>
 
           <InputGroup className="position-relative">
             <InputGroupAddon addonType="prepend">
-              <InputGroupText>€</InputGroupText>
+              <InputGroupText>{t("format:currency")}</InputGroupText>
               <InputGroupText>{amount && amount / 100}</InputGroupText>
             </InputGroupAddon>
             <MaskedInput
               type="text"
               className="form-control"
               placeholder=""
-              aria-label="€"
+              aria-label={t("format:currency")}
               value={amount}
               guide={false}
               mask={amountMask}
@@ -120,15 +123,14 @@ class MessageMetadataEditor extends Component {
             {(notice || amount) &&
               (!isAmountValid && (
                 <div className="invalid-feedback d-block">
-                  Per favore digita l'importo in Centesimi ed il Numero di
-                  Avviso
+                {t("validation:amount")}
                 </div>
               ))}
 
             {amount && (
               <button
                 className="close position-absolute close-button"
-                aria-label="Reset"
+                aria-label={t("reset")}
                 onClick={() => onReset("amount")}
               >
                 <span aria-hidden="true">&times;</span>
@@ -141,4 +143,6 @@ class MessageMetadataEditor extends Component {
   }
 }
 
-export default MessageMetadataEditor;
+export default withNamespaces(["compose", "format", "validation"])(
+  MessageMetadataEditor
+);

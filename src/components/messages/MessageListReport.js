@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 class MessageListReport extends Component {
   render() {
-    const { list } = this.props;
+    const { list, t } = this.props;
+    
     if (!list) {
       return null;
     }
@@ -12,13 +15,13 @@ class MessageListReport extends Component {
         <thead>
           <tr>
             <th>
-              <span className="display-5">Codice Fiscale</span>
+              <span className="display-5">{t("report.fiscal_code")}</span>
             </th>
             <th>
-              <span className="display-5">Canale</span>
+              <span className="display-5">{t("report.channel")}</span>
             </th>
             <th>
-              <span className="display-5">Stato</span>
+              <span className="display-5">{t("report.state")}</span>
             </th>
           </tr>
         </thead>
@@ -51,4 +54,4 @@ class MessageListReport extends Component {
   }
 }
 
-export default MessageListReport;
+export default withNamespaces("messages")(MessageListReport);

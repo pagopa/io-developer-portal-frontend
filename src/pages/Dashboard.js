@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Find } from "react-pouchdb/browser";
 
 import { Card, CardBody, CardTitle, CardText } from "design-react-kit";
@@ -10,7 +12,7 @@ import "./Dashboard.css";
 
 class Dashboard extends Component {
   render() {
-    const { location } = this.props;
+    const { location, t } = this.props;
 
     return (
       <section className="d-flex">
@@ -29,7 +31,7 @@ class Dashboard extends Component {
               <Card className="flex-1 bg-primary text-white p-3 m-3">
                 <CardBody>
                   <CardTitle className="display-1">{docs.length}</CardTitle>
-                  <CardText>Template</CardText>
+                  <CardText>{t("templates")}</CardText>
                 </CardBody>
               </Card>
             );
@@ -44,7 +46,7 @@ class Dashboard extends Component {
               <Card className="flex-1 bg-primary text-white p-3 m-3">
                 <CardBody>
                   <CardTitle className="display-1">{docs.length}</CardTitle>
-                  <CardText>Messaggi</CardText>
+                  <CardText>{t("messages")}</CardText>
                 </CardBody>
               </Card>
             );
@@ -59,7 +61,7 @@ class Dashboard extends Component {
               <Card className="flex-1 bg-primary text-white p-3 m-3">
                 <CardBody>
                   <CardTitle className="display-1">{docs.length}</CardTitle>
-                  <CardText>Contatti</CardText>
+                  <CardText>{t("contacts")}</CardText>
                 </CardBody>
               </Card>
             );
@@ -70,4 +72,4 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+export default withNamespaces("dashboard")(Dashboard);

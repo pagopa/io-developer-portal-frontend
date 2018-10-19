@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
+import { withNamespaces } from "react-i18next";
 
 import { Alert } from "design-react-kit";
 
 import MessageStats from "../components/messages/MessageStats";
 
+import compose from "recompose/compose";
 import orderBy from "lodash/orderBy";
 import keyBy from "lodash/keyBy";
 
@@ -67,7 +69,7 @@ class Messages extends Component {
 
   render() {
     const { templates, messages, batches, stats } = this.state;
-    const { db } = this.props;
+    const { db, t } = this.props;
 
     const batchesMessages = batches
       .filter(batch => {
@@ -104,22 +106,22 @@ class Messages extends Component {
               </th>
               <th className="border-0">
                 <span className="text-uppercase font-weight-normal">
-                  Oggetto
+                  {t("subject")}
                 </span>
               </th>
               <th className="border-0" style={{ width: "10%" }}>
                 <span className="text-uppercase font-weight-normal">
-                  Consegnati
+                  {t("sent")}
                 </span>
               </th>
               <th className="border-0" style={{ width: "10%" }}>
                 <span className="text-uppercase font-weight-normal">
-                  Falliti
+                  {t("failed")}
                 </span>
               </th>
               <th className="border-0" style={{ width: "10%" }}>
                 <span className="text-uppercase font-weight-normal">
-                  In coda
+                  {t("queued")}
                 </span>
               </th>
               <th className="border-0" style={{ width: "10%" }}>
@@ -133,7 +135,7 @@ class Messages extends Component {
                 return (
                   <tr>
                     <td colSpan="5">
-                      <Alert color="warning">Non ci sono messaggi inviati</Alert>
+                      <Alert color="warning">{t("no_messages")}</Alert>
                     </td>
                   </tr>
                 );
@@ -156,4 +158,9 @@ class Messages extends Component {
   }
 }
 
-export default withDB(Messages);
+const enhance = compose(
+  withDB,
+  withNamespaces("messages")
+);
+
+export default enhance(Messages);

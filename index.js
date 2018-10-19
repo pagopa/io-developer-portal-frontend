@@ -10,6 +10,9 @@ import {
   Switch
 } from "react-router-dom";
 
+import { I18nextProvider } from "react-i18next";
+import i18n from "./src/i18n/i18n";
+
 import WebFont from "webfontloader";
 
 import "moment/locale/it";
@@ -62,13 +65,13 @@ const PrivateRoute = ({ component: Component, dbName, ...rest }) => (
           <Component {...props} dbName={dbName} />
         </Layout>
       ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: props.location }
-            }}
-          />
-        )
+        <Redirect
+          to={{
+            pathname: "/login",
+            state: { from: props.location }
+          }}
+        />
+      )
     }
   />
 );
@@ -79,7 +82,7 @@ const Root = () => {
   return (
     <PouchDB name={dbName}>
       <Router basename={process.env.PUBLIC_PATH}>
-        <Fragment>
+        <I18nextProvider i18n={i18n}>
           <Header />
           <Worker dbName={dbName} />
 
@@ -119,11 +122,15 @@ const Root = () => {
               component={Templates}
             />
             <PrivateRoute exact path="/profile/:email?" component={Profile} />
-            <PrivateRoute exact path="/service/:service_id" component={SubscriptionService} />
+            <PrivateRoute
+              exact
+              path="/service/:service_id"
+              component={SubscriptionService}
+            />
             {/* Not found */}
             <Route component={Login} />
           </Switch>
-        </Fragment>
+        </I18nextProvider>
       </Router>
     </PouchDB>
   );

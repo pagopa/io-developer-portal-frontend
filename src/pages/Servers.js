@@ -1,13 +1,16 @@
 import React, { Component } from "react";
 
-import { Col, Row, ListGroup, ListGroupItem, Button } from "design-react-kit";
-
 import { withDB, Find } from "react-pouchdb/browser";
+import { withNamespaces } from "react-i18next";
+
+import { Col, Row, ListGroup, ListGroupItem, Button } from "design-react-kit";
 
 import ServerPicker from "../components/servers/ServerPicker";
 
 import { DEFAULT_URL } from "../utils/api";
 import { upsert } from "../utils/";
+
+import compose from "recompose/compose";
 
 const { localStorage } = window;
 
@@ -86,20 +89,20 @@ class Servers extends Component {
 
   render() {
     const { servers } = this.state;
+    const { t } = this.props;
+
     const serviceEndpoint = localStorage.getItem("serviceEndpoint");
 
     return (
       <ListGroup>
         <Row>
           <Col>
-            <h2 className="display-4 mt-2">
-              Seleziona il server (endpoint) predefinito
-            </h2>
+            <h2 className="display-4 mt-2">{t("select")}</h2>
           </Col>
           <Col>
             <div className="d-flex justify-content-end mb-3">
               <Button color="primary" onClick={this.onServerAdd}>
-                Aggiungi un server
+                {t("add")}
               </Button>
             </div>
           </Col>
@@ -111,7 +114,7 @@ class Servers extends Component {
             server={{
               endpoint: DEFAULT_URL
             }}
-            value={`${DEFAULT_URL} (default)`}
+            value={`${DEFAULT_URL} (${t("default")})`}
             checked={
               serviceEndpoint === null || serviceEndpoint === DEFAULT_URL
             }
@@ -139,4 +142,9 @@ class Servers extends Component {
   }
 }
 
-export default withDB(Servers);
+const enhance = compose(
+  withDB,
+  withNamespaces(["servers", "format"])
+);
+
+export default enhance(Servers);

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Alert } from "design-react-kit";
 
 const { localStorage } = window;
@@ -15,7 +17,11 @@ class Login extends Component {
       const configuration = await getFromBackend({ path: "configuration" });
       const user = await getUserTokenOrRedirect(configuration);
 
-      console.debug("Login::getUserTokenOrRedirect::userToken", user.token, user.user);
+      console.debug(
+        "Login::getUserTokenOrRedirect::userToken",
+        user.token,
+        user.user
+      );
 
       if (user) {
         // bearer token to call backend api
@@ -39,14 +45,14 @@ class Login extends Component {
   };
 
   render() {
+    const { t } = this.props;
+
     return (
       <section className="login--container">
-        <Alert color="info">
-          Stai per essere reindirizzato alla pagina di Sign in{" "}
-        </Alert>
+        <Alert color="info">{t("message")}</Alert>
       </section>
     );
   }
 }
 
-export default Login;
+export default withNamespaces("login")(Login);

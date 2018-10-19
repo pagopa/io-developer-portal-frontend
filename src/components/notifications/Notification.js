@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Alert } from "design-react-kit";
 
 class Notification extends Component {
@@ -41,6 +43,7 @@ class Notification extends Component {
 
   render() {
     const { info } = this.state;
+    const { t } = this.props;
 
     if (!info.message || !info.message.status || info.message.status < 400) {
       return null;
@@ -57,7 +60,7 @@ class Notification extends Component {
                 </h4>
                 <span className="text-word-break">{info.message.detail}</span>
                 <hr />
-                Destinatario: {info.message.fiscal_code}
+                {t("recipient")}: {info.message.fiscal_code}
               </div>
             );
           })()}
@@ -67,4 +70,4 @@ class Notification extends Component {
   }
 }
 
-export default Notification;
+export default withNamespaces("notification")(Notification);

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Link } from "react-router-dom";
 
 import { LinkList, LinkListItem } from "design-react-kit";
@@ -19,6 +21,8 @@ import "./Aside.css";
 
 class Aside extends Component {
   render() {
+    const { t } = this.props;
+
     return (
       <aside>
         <StorageContext.Consumer>
@@ -27,27 +31,30 @@ class Aside extends Component {
               <li>
                 <Link className="large list-item" to={{ pathname: "/" }}>
                   <TableHead className="mr-2 aside--icon" />
-                  Dashboard
+                  {t("dashboard")}
                 </Link>
               </li>
               {storage.isApiAdmin && (
                 <li>
                   <Link className="large list-item" to={{ pathname: "/users" }}>
                     <Book className="mr-2 aside--icon" />
-                    Utenti registrati
+                    {t("users")}
                   </Link>
                 </li>
               )}
               <li>
                 <Link className="large list-item" to={{ pathname: "/profile" }}>
                   <User className="mr-2 aside--icon" />
-                  Profilo (sottoscrizioni)
+                  {t("profile")}
                 </Link>
               </li>
               <li>
-                <Link className="large list-item border-top border-custom-grey" to={{ pathname: "/compose" }}>
+                <Link
+                  className="large list-item border-top border-custom-grey"
+                  to={{ pathname: "/compose" }}
+                >
                   <Rocket className="mr-2 aside--icon" />
-                  Invio rapido
+                  {t("send")}
                 </Link>
               </li>
               <li>
@@ -56,7 +63,7 @@ class Aside extends Component {
                   to={{ pathname: "/compose/import" }}
                 >
                   <FileText className="mr-2 aside--icon" />
-                  Invio da file
+                  {t("send_from_file")}
                 </Link>
               </li>
               <li>
@@ -65,7 +72,7 @@ class Aside extends Component {
                   to={{ pathname: "/templates" }}
                 >
                   <Envelope className="mr-2 aside--icon" />
-                  Invio con Template
+                  {t("send_from_template")}
                 </Link>
               </li>
               <li>
@@ -74,7 +81,7 @@ class Aside extends Component {
                   to={{ pathname: "/contacts" }}
                 >
                   <Group className="mr-2 aside--icon" />
-                  Contatti
+                  {t("contacts")}
                 </Link>
               </li>
               <li>
@@ -83,13 +90,16 @@ class Aside extends Component {
                   to={{ pathname: "/messages" }}
                 >
                   <Inbox className="mr-2 aside--icon" />
-                  Messaggi inviati
+                  {t("sent")}
                 </Link>
               </li>
               <li>
-                <a href="./openapi.html" className="large list-item border-top border-custom-grey">
+                <a
+                  href="./openapi.html"
+                  className="large list-item border-top border-custom-grey"
+                >
                   <Inbox className="mr-2 aside--icon" />
-                  Specifiche OpenAPI
+                  {t("openapi")}
                 </a>
               </li>
             </LinkList>
@@ -100,4 +110,4 @@ class Aside extends Component {
   }
 }
 
-export default Aside;
+export default withNamespaces("aside")(Aside);

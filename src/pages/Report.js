@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
+import { withNamespaces } from "react-i18next";
 
 import {
   Row,
@@ -10,6 +11,7 @@ import {
   AccordionBody
 } from "design-react-kit";
 
+import compose from "recompose/compose";
 import sortBy from "lodash/sortBy";
 import groupBy from "lodash/groupBy";
 import moment from "moment";
@@ -59,6 +61,7 @@ class Report extends Component {
         params: { entry_type, entry_id }
       }
     } = this.props;
+    const { t } = this.props;
 
     return (
       <Find
@@ -92,7 +95,7 @@ class Report extends Component {
                       <h1 className="display-3">{template.subject}</h1>
                     </Col>
                     <Col lg="5" className="text-right">
-                      {moment(message.created_at).format("DD/MM/YYYY, HH:mm")}
+                      {moment(message.created_at).format(t("format:date"))}
                     </Col>
 
                     <Col lg="11">
@@ -104,7 +107,7 @@ class Report extends Component {
                           onToggle={() => this.onSetSelected("PROCESSED")}
                         >
                           <span className="text-uppercase text-secondary">
-                            Consegnati:
+                            {t("sent")}:
                             <span className="font-weight-bold">
                               {" "}
                               {statuses.PROCESSED}
@@ -126,7 +129,7 @@ class Report extends Component {
                           onToggle={() => this.onSetSelected("ERRORED")}
                         >
                           <span className="text-uppercase text-secondary">
-                            Falliti:
+                            {t("failed")}:
                             <span className="font-weight-bold">
                               {" "}
                               {statuses.ERRORED}
@@ -152,7 +155,7 @@ class Report extends Component {
                           onToggle={() => this.onSetSelected("QUEUED")}
                         >
                           <span className="text-uppercase text-secondary">
-                            In coda:
+                            {t("queued")}:
                             <span className="font-weight-bold">
                               {" "}
                               {statuses.QUEUED}
@@ -183,4 +186,9 @@ class Report extends Component {
   }
 }
 
-export default withDB(Report);
+const enhance = compose(
+  withDB,
+  withNamespaces(["messages", "format"])
+);
+
+export default enhance(Report);

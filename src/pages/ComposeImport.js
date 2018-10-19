@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 import { withRouter } from "react-router";
+import { withNamespaces } from "react-i18next";
 
 import { Row, Col, FormGroup, Input, Toggle, Button } from "design-react-kit";
 import SelectedService from "../components/SelectedService";
@@ -146,6 +147,7 @@ class Compose extends Component {
 
   render() {
     const { file, fileData, sent } = this.state;
+    const { t } = this.props;
 
     return (
       <section className="pages--container">
@@ -160,12 +162,12 @@ class Compose extends Component {
                 if (file) {
                   return (
                     <span>
-                      {file.name} ({fileData.length} messaggi)
+                      {file.name} ({fileData.length} {t("messages")})
                     </span>
                   );
                 }
 
-                return <span>Carica documento (.csv)</span>;
+                return <span>{t("upload_file")}</span>;
               })()}
             </span>
           </header>
@@ -176,10 +178,7 @@ class Compose extends Component {
             onChange={this.onFileUpdate}
           />
           <FormGroup check className="m-3">
-            <Toggle
-              label="Ignora l'intestazione del file"
-              onChange={this.onToggleHeader}
-            />
+            <Toggle label={t("ignore_header")} onChange={this.onToggleHeader} />
           </FormGroup>
         </Col>
 
@@ -191,38 +190,38 @@ class Compose extends Component {
                   <tr>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Nome
+                        {t("name")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Cognome
+                        {t("surname")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Codice Fiscale
+                        {t("fiscal_code")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Oggetto
+                        {t("subject")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Messaggio
+                        {t("markdown")}
                       </span>
                     </th>
                     <th className="border-0 compose-import--rows-icons">
                       <span className="text-uppercase font-weight-normal">
-                        Scadenza
+                        {t("due_date")}
                       </span>
                       <span className="text-uppercase font-weight-normal">
-                        Avviso
+                        {t("notice")}
                       </span>
                       <span className="text-uppercase font-weight-normal">
-                        Importo
+                        {t("amount")}
                       </span>
                     </th>
                   </tr>
@@ -266,7 +265,7 @@ class Compose extends Component {
                 disabled={sent}
                 onClick={this.onMessageSubmit}
               >
-                Invia
+                {t("send")}
               </Button>
             );
           }
@@ -278,7 +277,8 @@ class Compose extends Component {
 
 const enhance = compose(
   withDB,
-  withRouter
+  withRouter,
+  withNamespaces("compose_import")
 );
 
 export default enhance(Compose);
