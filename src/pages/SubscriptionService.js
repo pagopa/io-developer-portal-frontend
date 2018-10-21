@@ -40,7 +40,8 @@ export default class SubscriptionService extends Component {
           organization_name: service.organization_name,
           department_name: service.department_name,
           service_name: service.service_name,
-          max_allowed_payment_amount: parseInt(service.max_allowed_payment_amount)
+          max_allowed_payment_amount: parseInt(service.max_allowed_payment_amount),
+          is_visible: new Boolean(service.is_visible)
         }
       }
     });
@@ -100,6 +101,18 @@ export default class SubscriptionService extends Component {
                     onChange={this.handleInputChange}
                     className="mb-4"
                   /></div>)}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <input
+                    name="is_visible"
+                    type="checkbox"
+                    defaultChecked={service.is_visible}
+                    onChange={this.handleInputChange}
+                    className="mb-4 mr-2"
+                  />
+                  <label className="m-0">Visibile nella lista servizi</label>
+                </div>)}
 
               < Button color="primary" onClick={this.handleSubmit}>Salva i dati del servizio</Button>
             </form>
