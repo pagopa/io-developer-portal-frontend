@@ -91,6 +91,7 @@ const en = {
     authorized_recipients: "Authorized recipients (Fiscal Codes)",
     authorized_ips: "Authorized IPs",
     max_allowed_payment_amount: "Maximum allowd payment amount",
+    visible_service: "Visible in service list",
     eurocents: "eurocents",
     edit: "Edit service's details",
     save: "Save service's details",

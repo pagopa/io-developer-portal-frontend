@@ -91,6 +91,7 @@ const it = {
     authorized_recipients: "Codici fiscali destinatari autorizzati",
     authorized_ips: "IP di origine autorizzati",
     max_allowed_payment_amount: "Importo massimo autorizzato",
+    visible_service: "Visibile nella lista servizi",
     eurocents: "eurocents",
     edit: "Modifica i dati del servizio",
     save: "Salva i dati del servizio",
