@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Button } from "design-react-kit";
 
 import get from "lodash/get";
@@ -14,25 +16,39 @@ import Confirmation from "../components/modal/Confirmation";
 
 const getMail = email => (email && email !== "" ? atob(email) : undefined);
 
-const SubscriptionService = ({ service }) => {
+const SubscriptionService = ({ service, t }) => {
   return service ? (
     <div>
       <h5>{service.service_id}</h5>
-      <div>Nome servizio: {service.service_name}</div>
-      <div>Dipartimento: {service.department_name}</div>
-      <div>Ente: {service.organization_name}</div>
-      <div>Codice fiscale ente: {service.organization_fiscal_code}</div>
-      <div>Codici fiscali autorizzati: {service.authorized_recipients}</div>
-      <div>IP di origine autorizzati: {service.authorized_ips}</div>
-      <div>Importo massimo: {service.max_allowed_payment_amount} eurocents</div>
-      <a href={"/service/" + service.service_id}>
-        Modifica i dati del servizio
-      </a>
+      <div>
+        {t("service:name")}: {service.service_name}
+      </div>
+      <div>
+        {t("service:department")}: {service.department_name}
+      </div>
+      <div>
+        {t("service:organization")}: {service.organization_name}
+      </div>
+      <div>
+        {t("service:organization_fiscal_code")}:{" "}
+        {service.organization_fiscal_code}
+      </div>
+      <div>
+        {t("service:authorized_recipients")}: {service.authorized_recipients}
+      </div>
+      <div>
+        {t("service:authorized_ips")}: {service.authorized_ips}
+      </div>
+      <div>
+        {t("service:max_allowed_payment_amount")}:{" "}
+        {service.max_allowed_payment_amount} {t("service:eurocents")}
+      </div>
+      <a href={"/service/" + service.service_id}>{t("service:edit")}</a>
     </div>
   ) : null;
 };
 
-export default class Profile extends Component {
+class Profile extends Component {
   state = {
     userData: {},
     userSubscriptions: {},
@@ -194,8 +210,9 @@ export default class Profile extends Component {
   render() {
     const { userSubscriptions, services } = this.state;
     const { isConfirmationOpen, onConfirmOperation } = this.state;
+    const { t } = this.props;
+
     const isSameUser = !this.props.match.params.email;
-    const keyPlaceholder = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
     const firstName = get(this.state, "userData.apimUser.firstName");
     const lastName = get(this.state, "userData.apimUser.lastName");
@@ -203,32 +220,42 @@ export default class Profile extends Component {
     return (
       <Fragment>
         <div>
-          <h4>{get(this.state, "userData.apimUser.email", "Nuovo utente")}</h4>
-          {firstName && <div>Nome: {firstName}</div>}
-          {lastName && <div>Cognome: {lastName}</div>}
+          <h4>{get(this.state, "userData.apimUser.email", t("new_user"))}</h4>
+          {firstName && (
+            <div>
+              {t("name")}: {firstName}
+            </div>
+          )}
+          {lastName && (
+            <div>
+              {t("surname")}: {lastName}
+            </div>
+          )}
           {isSameUser && (
             <div>
               <a href={this.state.applicationConfig.changePasswordLink}>
-                Cambia password
+                {t("change_password")}
               </a>
             </div>
           )}
         </div>
         <div>
-          <h4 className="mt-4">Servizi registrati</h4>
+          <h4 className="mt-4">{t("services")}</h4>
           {Object.keys(userSubscriptions).map(subscriptionName => {
             const subscription = userSubscriptions[subscriptionName];
             const service = services[subscription.name];
 
             return (
               <div key={subscription.id} className="shadow p-4 my-4">
-                <SubscriptionService service={service} />
-                <h6 className="mt-4">Sottoscrizione ({subscription.state})</h6>
+                <SubscriptionService service={service} t={t} />
+                <h6 className="mt-4">
+                  {t("subscription")} ({subscription.state})
+                </h6>
                 <div className="my-2">
-                  Chiave primaria:{" "}
+                  {t("primary_key")}:{" "}
                   {this.state["p_" + subscription.name]
                     ? subscription.primaryKey
-                    : keyPlaceholder}
+                    : t("key")}
                   <Button
                     outline
                     color="primary"
@@ -249,7 +276,7 @@ export default class Profile extends Component {
                     disabled={!service || subscription.state !== "active"}
                     onClick={this.onRegenerateKey("primary", subscription.name)}
                   >
-                    Rigenera
+                    {t("regenerate")}
                   </Button>
                   <Button
                     color="primary"
@@ -258,14 +285,14 @@ export default class Profile extends Component {
                     disabled={!service || subscription.state !== "active"}
                     onClick={this.onSetKey(subscription.primaryKey, service)}
                   >
-                    Usa questa chiave
+                    {t("use")}
                   </Button>
                 </div>
                 <div className="my-2">
-                  Chiave secondaria:{" "}
+                  {t("secondary_key")}:{" "}
                   {this.state["s_" + subscription.name]
                     ? subscription.secondaryKey
-                    : keyPlaceholder}
+                    : t("key")}
                   <Button
                     outline
                     color="primary"
@@ -289,7 +316,7 @@ export default class Profile extends Component {
                       subscription.name
                     )}
                   >
-                    Rigenera
+                    {t("regenerate")}
                   </Button>
                   <Button
                     color="primary"
@@ -298,7 +325,7 @@ export default class Profile extends Component {
                     disabled={!service || subscription.state !== "active"}
                     onClick={this.onSetKey(subscription.secondaryKey, service)}
                   >
-                    Usa questa chiave
+                    {t("use")}
                   </Button>
                 </div>
               </div>
@@ -306,21 +333,21 @@ export default class Profile extends Component {
           })}
 
           <div className="shadow p-4 mt-5">
-            <label>Nome servizio</label>
+            <label>{t("service:name")}</label>
             <input
               name="service_name"
               type="text"
               defaultValue={get(this.state, "newSubscription.service_name")}
               onChange={this.handleInputChange}
             />
-            <label>Dipartimento</label>
+            <label>{t("service:department")}</label>
             <input
               name="department_name"
               type="text"
               defaultValue={get(this.state, "newSubscription.department_name")}
               onChange={this.handleInputChange}
             />
-            <label>Ente</label>
+            <label>{t("service:organization")}</label>
             <input
               name="organization_name"
               type="text"
@@ -330,7 +357,7 @@ export default class Profile extends Component {
               )}
               onChange={this.handleInputChange}
             />
-            <label>Codice fiscale ente</label>
+            <label>{t("service:organization_fiscal_code")}</label>
             <input
               name="organization_fiscal_code"
               type="text"
@@ -347,7 +374,7 @@ export default class Profile extends Component {
               color="primary"
               onClick={this.onAddSubscription}
             >
-              Aggiungi sottoscrizione
+              {t("add")}
             </Button>
           </div>
         </div>
@@ -361,3 +388,5 @@ export default class Profile extends Component {
     );
   }
 }
+
+export default withNamespaces(["profile", "service"])(Profile);

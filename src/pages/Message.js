@@ -1,6 +1,9 @@
 import React, { Component, Fragment } from "react";
 import ReactDOM from "react-dom";
 
+import { withDB, Find } from "react-pouchdb/browser";
+import { withNamespaces } from "react-i18next";
+
 import {
   Row,
   Col,
@@ -19,8 +22,7 @@ import {
   Button
 } from "design-react-kit";
 
-import { withDB, Find } from "react-pouchdb/browser";
-
+import compose from "recompose/compose";
 import moment from "moment";
 import Papa from "papaparse";
 
@@ -208,6 +210,7 @@ class Message extends Component {
     const { batch, selected, dueDate, notice, amount } = this.state;
     const {
       db,
+      t,
       location: {
         state: { type, templateId }
       }
@@ -218,7 +221,13 @@ class Message extends Component {
     });
     const message = messages.docs[0];
 
-    let content = createMessageContent({ message, dueDate, amount, notice });
+    let content = createMessageContent({
+      message,
+      dueDate,
+      amount,
+      notice,
+      dueDateFormat: t("format:date")
+    });
 
     let result;
     if (!batch) {
@@ -286,6 +295,7 @@ class Message extends Component {
         state: { type, templateId }
       }
     } = this.props;
+    const { t } = this.props;
 
     const isNoticeValid = isMaskValid(notice, noticeMask);
     const isAmountValid = isValueRangeValid(amount, [AMOUNT.MIN, AMOUNT.MAX]);
@@ -304,7 +314,7 @@ class Message extends Component {
                       onToggle={() => this.onToggleRecipientOpen()}
                     >
                       <span className="text-uppercase text-secondary">
-                        {type === "single" ? "Destinatario" : "Destinatari"}
+                        {type === "single" ? t("recipient") : t("recipients")}
                       </span>
                       {(list || selected) && (
                         <Badge
@@ -376,7 +386,7 @@ class Message extends Component {
                                       onClick={this.onSaveContacts}
                                       disabled={progress}
                                     >
-                                      {progress ? <FaSpinner /> : "Salva"}
+                                      {progress ? <FaSpinner /> : t("save")}
                                     </Button>
                                   </Col>
                                   <Col />
@@ -414,7 +424,7 @@ class Message extends Component {
                           onClick={this.onTriggerUpload}
                         >
                           <span className="btn btn-link font-weight-bold">
-                            Carica documento
+                            {t("upload_file")}
                           </span>
                         </header>
                         <Input
@@ -480,7 +490,7 @@ class Message extends Component {
                 disabled={isValid.includes(false)}
                 onClick={this.onMessageSubmit}
               >
-                Invia
+                {t("send")}
               </Button>
             );
           }
@@ -493,7 +503,7 @@ class Message extends Component {
               disabled={isValid.includes(false) || sent}
               onClick={this.onMessageSubmit}
             >
-              {sent ? <FaSpinner /> : "Invia alla lista"}
+              {sent ? <FaSpinner /> : t("send_batch")}
             </Button>
           );
         })()}
@@ -502,4 +512,9 @@ class Message extends Component {
   }
 }
 
-export default withDB(Message);
+const enhance = compose(
+  withDB,
+  withNamespaces("message")
+);
+
+export default enhance(Message);

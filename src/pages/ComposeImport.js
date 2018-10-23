@@ -2,8 +2,17 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 import { withRouter } from "react-router";
+import { withNamespaces } from "react-i18next";
 
-import { Row, Col, FormGroup, Input, Toggle, Button } from "design-react-kit";
+import {
+  Row,
+  Col,
+  FormGroup,
+  Alert,
+  Input,
+  Toggle,
+  Button
+} from "design-react-kit";
 import SelectedService from "../components/SelectedService";
 
 import { withDB } from "react-pouchdb/browser";
@@ -11,6 +20,9 @@ import { withDB } from "react-pouchdb/browser";
 import {
   createMessageContent,
   messagePostAndPersist,
+  areHeadersValid,
+  getMessageValues,
+  interpolateMarkdown,
   CONSTANTS
 } from "../utils/";
 const {
@@ -33,14 +45,16 @@ class Compose extends Component {
   initialState = {
     file: undefined,
     fileData: [],
-    ignoreHeader: false,
+    headers: [],
+    ignoreHeaders: false,
     sent: false
   };
 
   state = {
     file: this.initialState.file,
     fileData: this.initialState.fileData,
-    ignoreHeader: this.initialState.ignoreHeader,
+    headers: this.initialState.headers,
+    ignoreHeaders: this.initialState.ignoreHeaders,
     sent: this.initialState.sent
   };
 
@@ -56,7 +70,7 @@ class Compose extends Component {
   };
 
   onToggleHeader = ({ target: { checked } }) => {
-    this.setState({ ignoreHeader: checked }, () => {
+    this.setState({ ignoreHeaders: checked }, () => {
       this.onFileParse(this.state.file);
     });
   };
@@ -76,13 +90,16 @@ class Compose extends Component {
         // data is an array of rows.
         // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
-        const { ignoreHeader } = this.state;
+        const { ignoreHeaders } = this.state;
         const { data } = results;
 
-        if (ignoreHeader) {
-          data.shift();
+        let headers;
+        if (ignoreHeaders) {
+          headers = data.shift();
+        } else {
+          headers = data[0];
         }
-        this.setState({ file, fileData: data });
+        this.setState({ file, fileData: data, headers });
       }
     });
   };
@@ -92,8 +109,8 @@ class Compose extends Component {
       sent: true
     });
 
-    const { file, fileData } = this.state;
-    const { db } = this.props;
+    const { file, fileData, ignoreHeaders } = this.state;
+    const { db, t } = this.props;
 
     const template = await db.post({
       type: "template",
@@ -112,11 +129,15 @@ class Compose extends Component {
         subject: row[SUBJECT],
         markdown: row[MARKDOWN]
       };
+      if (ignoreHeaders) {
+        message.markdown = interpolateMarkdown(message.markdown, row);
+      }
       const content = createMessageContent({
         message,
         dueDate: !!row[DUEDATE] ? row[DUEDATE] : undefined,
         amount: !!row[AMOUNT] ? new Number(row[AMOUNT]) : undefined,
-        notice: !!row[NOTICE] ? row[NOTICE] : undefined
+        notice: !!row[NOTICE] ? row[NOTICE] : undefined,
+        dueDateFormat: t("format:date")
       });
 
       promises.push(
@@ -145,7 +166,10 @@ class Compose extends Component {
   };
 
   render() {
-    const { file, fileData, sent } = this.state;
+    const { file, fileData, headers, ignoreHeaders, sent } = this.state;
+    const { t } = this.props;
+
+    const isValid = ignoreHeaders ? areHeadersValid(headers) : true;
 
     return (
       <section className="pages--container">
@@ -160,12 +184,12 @@ class Compose extends Component {
                 if (file) {
                   return (
                     <span>
-                      {file.name} ({fileData.length} messaggi)
+                      {file.name} ({fileData.length} {t("messages")})
                     </span>
                   );
                 }
 
-                return <span>Carica documento (.csv)</span>;
+                return <span>{t("upload_file")}</span>;
               })()}
             </span>
           </header>
@@ -176,10 +200,7 @@ class Compose extends Component {
             onChange={this.onFileUpdate}
           />
           <FormGroup check className="m-3">
-            <Toggle
-              label="Ignora l'intestazione del file"
-              onChange={this.onToggleHeader}
-            />
+            <Toggle label={t("ignore_header")} onChange={this.onToggleHeader} />
           </FormGroup>
         </Col>
 
@@ -188,41 +209,49 @@ class Compose extends Component {
             return (
               <table className="table mb-0 rounded">
                 <thead>
+                  {ignoreHeaders &&
+                    !isValid && (
+                      <tr>
+                        <td colSpan="6">
+                          <Alert color="danger">{t("invalid_headers")}</Alert>
+                        </td>
+                      </tr>
+                    )}
                   <tr>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Nome
+                        {t("name")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Cognome
+                        {t("surname")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Codice Fiscale
+                        {t("fiscal_code")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Oggetto
+                        {t("subject")}
                       </span>
                     </th>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">
-                        Messaggio
+                        {t("markdown")}
                       </span>
                     </th>
                     <th className="border-0 compose-import--rows-icons">
                       <span className="text-uppercase font-weight-normal">
-                        Scadenza
+                        {t("due_date")}
                       </span>
                       <span className="text-uppercase font-weight-normal">
-                        Avviso
+                        {t("notice")}
                       </span>
                       <span className="text-uppercase font-weight-normal">
-                        Importo
+                        {t("amount")}
                       </span>
                     </th>
                   </tr>
@@ -245,9 +274,9 @@ class Compose extends Component {
                           {row[MARKDOWN] && <FaEnvelope />}
                         </td>
                         <td className="compose-import--rows-icons">
-                          {row[DUEDATE] && <FaCalendar />}
-                          {row[NOTICE] && <FaExclamation />}
-                          {row[AMOUNT] && <FaEur />}
+                          <span>{row[DUEDATE] && <FaCalendar />}</span>
+                          <span>{row[NOTICE] && <FaExclamation />}</span>
+                          <span>{row[AMOUNT] && <FaEur />}</span>
                         </td>
                       </tr>
                     );
@@ -263,10 +292,10 @@ class Compose extends Component {
               <Button
                 className="mt-3 pl-5 pr-5"
                 color="primary"
-                disabled={sent}
+                disabled={sent || !isValid}
                 onClick={this.onMessageSubmit}
               >
-                Invia
+                {t("send")}
               </Button>
             );
           }
@@ -278,7 +307,8 @@ class Compose extends Component {
 
 const enhance = compose(
   withDB,
-  withRouter
+  withRouter,
+  withNamespaces(["compose_import", "format"])
 );
 
 export default enhance(Compose);

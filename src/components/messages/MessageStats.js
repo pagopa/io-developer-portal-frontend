@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 
 import { withDB } from "react-pouchdb/browser";
+import { withNamespaces } from "react-i18next";
 
 import { Link } from "react-router-dom";
 
@@ -8,6 +9,7 @@ import FaChevronRight from "react-icons/lib/fa/chevron-right";
 
 import { getStatsFor } from "../../utils/";
 
+import compose from "recompose/compose";
 import moment from "moment";
 
 class MessageStats extends Component {
@@ -26,11 +28,11 @@ class MessageStats extends Component {
 
   render() {
     const { statuses } = this.state;
-    const { templates, entry } = this.props;
+    const { templates, entry, t } = this.props;
 
     return (
       <tr className="font-weight-bold">
-        <td>{moment(entry.message.created_at).format("DD/MM/YYYY, HH:mm")}</td>
+        <td>{moment(entry.message.created_at).format(t("format:date"))}</td>
         <td className="text-word-break">
           {templates[entry.templateId].subject}
         </td>
@@ -50,4 +52,9 @@ class MessageStats extends Component {
   }
 }
 
-export default withDB(MessageStats);
+const enhance = compose(
+  withDB,
+  withNamespaces("format")
+);
+
+export default enhance(MessageStats);

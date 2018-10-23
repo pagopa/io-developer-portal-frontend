@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 
 import { withRouter } from "react-router";
+import { withNamespaces } from "react-i18next";
+import { withDB } from "react-pouchdb/browser";
 
 import { Button } from "design-react-kit";
 
 import ContactAdd from "../components/contacts/ContactAdd";
 import TemplatesEditor from "../components/templates/TemplatesEditor";
 import MessageMetadataEditor from "../components/messages/MessageMetadataEditor";
-
-import { withDB } from "react-pouchdb/browser";
 
 import {
   isMaskValid,
@@ -86,7 +86,7 @@ class Compose extends Component {
 
   onMessageSubmit = async () => {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
-    const { db } = this.props;
+    const { db, t } = this.props;
 
     // No need to await
     const contact = profileGetAndPersist({
@@ -102,10 +102,14 @@ class Compose extends Component {
       type: "template",
       ...message
     });
-    console.log(template);
 
-    let content = createMessageContent({ message, dueDate, amount, notice });
-    console.log(content);
+    let content = createMessageContent({
+      message,
+      dueDate,
+      amount,
+      notice,
+      dueDateFormat: t("format:date")
+    });
 
     const result = await messagePostAndPersist({
       db,
@@ -128,6 +132,7 @@ class Compose extends Component {
 
   render() {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
+    const { t } = this.props;
 
     const isCodeValid = isMaskValid(code, codeMask);
     const isSubjectValid = isLengthValid(subject, [SUBJECT.MIN, SUBJECT.MAX]);
@@ -190,7 +195,7 @@ class Compose extends Component {
               disabled={isValid.includes(false)}
               onClick={this.onMessageSubmit}
             >
-              Invia
+              {t("send")}
             </Button>
           );
         })()}
@@ -201,7 +206,8 @@ class Compose extends Component {
 
 const enhance = compose(
   withDB,
-  withRouter
+  withRouter,
+  withNamespaces(["compose", "format"])
 );
 
 export default enhance(Compose);

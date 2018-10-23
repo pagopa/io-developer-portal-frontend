@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { InputGroup, InputGroupAddon } from "design-react-kit";
 import MaskedInput from "react-text-mask";
 
@@ -9,6 +11,7 @@ const { CODE } = LIMITS;
 class ContactAdd extends Component {
   render() {
     const { code, codeMask, isCodeValid, onInputCode, onInputAdd } = this.props;
+    const { t } = this.props;
 
     return (
       <InputGroup className="pb-3">
@@ -16,8 +19,8 @@ class ContactAdd extends Component {
           type="text"
           autoFocus
           className="form-control shadow-none"
-          placeholder="Codice Fiscale"
-          aria-label="Codice Fiscale"
+          placeholder={t("fiscal_code")}
+          aria-label={t("fiscal_code")}
           minLength={CODE.MIN}
           maxLength={CODE.MAX}
           value={code}
@@ -41,7 +44,7 @@ class ContactAdd extends Component {
         {code &&
           !isCodeValid && (
             <div className="invalid-feedback d-block">
-              Per favore digita {CODE.MAX} caratteri alfanumerici
+              {t("validation:fiscal_code", { max: CODE.MAX })}
             </div>
           )}
       </InputGroup>
@@ -49,4 +52,4 @@ class ContactAdd extends Component {
   }
 }
 
-export default ContactAdd;
+export default withNamespaces(["contacts", "validation"])(ContactAdd);

@@ -1,10 +1,13 @@
 import React, { Component } from "react";
-import { Button } from "design-react-kit";
-import { getFromBackend, putToBackend } from "../utils/backend";
 
+import { withNamespaces } from "react-i18next";
+
+import { Button } from "design-react-kit";
+
+import { getFromBackend, putToBackend } from "../utils/backend";
 import { StorageContext } from "../context/storage";
 
-export default class SubscriptionService extends Component {
+class SubscriptionService extends Component {
   state = {};
 
   async componentDidMount() {
@@ -49,13 +52,17 @@ export default class SubscriptionService extends Component {
 
   render() {
     const service = this.state.service;
+    const { t } = this.props;
+
     return service ? (
       <StorageContext.Consumer>
         {storage => (
           <div>
-            <h4>Servizio {service.service_id}</h4>
+            <h4>
+              {t("title")} {service.service_id}
+            </h4>
             <form className="mb-5 mt-1">
-              <label className="m-0">Nome servizio</label>
+              <label className="m-0">{t("name")}</label>
               <input
                 name="service_name"
                 type="text"
@@ -64,7 +71,7 @@ export default class SubscriptionService extends Component {
                 className="mb-4"
               />
 
-              <label className="m-0">Dipartimento</label>
+              <label className="m-0">{t("department")}</label>
               <input
                 name="department_name"
                 type="text"
@@ -73,7 +80,7 @@ export default class SubscriptionService extends Component {
                 className="mb-4"
               />
 
-              <label className="m-0">Ente</label>
+              <label className="m-0">{t("organization")}</label>
               <input
                 name="organization_name"
                 type="text"
@@ -82,7 +89,7 @@ export default class SubscriptionService extends Component {
                 className="mb-4"
               />
 
-              <label className="m-0">Codice fiscale ente</label>
+              <label className="m-0">{t("organization_fiscal_code")}</label>
               <input
                 name="organization_fiscal_code"
                 type="text"
@@ -93,14 +100,18 @@ export default class SubscriptionService extends Component {
 
               {storage.isApiAdmin && (
                 <div>
-                  <label className="m-0">Importo massimo autorizzato</label>
+                  <label className="m-0">
+                    {t("max_allowed_payment_amount")}
+                  </label>
                   <input
                     name="max_allowed_payment_amount"
                     type="text"
                     defaultValue={service.max_allowed_payment_amount}
                     onChange={this.handleInputChange}
                     className="mb-4"
-                  /></div>)}
+                  />
+                </div>
+              )}
 
               {storage.isApiAdmin && (
                 <div>
@@ -111,33 +122,37 @@ export default class SubscriptionService extends Component {
                     onChange={this.handleInputChange}
                     className="mb-4 mr-2"
                   />
-                  <label className="m-0">Visibile nella lista servizi</label>
+                  <label className="m-0">{t("visible_service")}</label>
                 </div>)}
 
-              < Button color="primary" onClick={this.handleSubmit}>Salva i dati del servizio</Button>
+              <Button color="primary" onClick={this.handleSubmit}>
+                {t("save")}
+              </Button>
             </form>
 
             {service.authorized_recipients.length > 0 && (
               <div className="mb-3">
-                Codici fiscali destinatari autorizzati:{" "}
-                {service.authorized_recipients}
+                {t("authorized_recipients")}: {service.authorized_recipients}
               </div>
             )}
 
             {service.authorized_cidrs.length > 0 && (
               <div className="mb-3">
-                IP di origine autorizzati: {service.authorized_cidrs}
+                {t("authorized_ips")}: {service.authorized_cidrs}
               </div>
             )}
 
             {!storage.isApiAdmin && (
               <div className="mb-3">
-                Importo massimo autorizzato: {service.max_allowed_payment_amount}{" "}
-                eurocents
-            </div>)}
-
-          </div>)}
+                {t("max_allowed_payment_amount")}:{" "}
+                {service.max_allowed_payment_amount} {t("eurocents")}
+              </div>
+            )}
+          </div>
+        )}
       </StorageContext.Consumer>
     ) : null;
   }
 }
+
+export default withNamespaces("service")(SubscriptionService);

@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Link } from "react-router-dom";
 
 import {
@@ -34,14 +36,12 @@ class TemplatesList extends Component {
 
   render() {
     const { selected } = this.state;
-    const { docs } = this.props;
+    const { docs, t } = this.props;
 
     if (!docs.length) {
-      return (
-        <Alert color="warning">Non ci sono template salvati</Alert>
-      );
+      return <Alert color="warning">Non ci sono template salvati</Alert>;
     }
-    
+
     return (
       <Accordion>
         {(() => {
@@ -95,19 +95,19 @@ class TemplatesList extends Component {
                         placement="top"
                         target={`edit-${template._id}`}
                       >
-                        Modifica
+                        {t("edit")}
                       </UncontrolledTooltip>
                       <UncontrolledTooltip
                         placement="top"
                         target={`single-${template._id}`}
                       >
-                        Invia ad un destinatario
+                        {t("send")}
                       </UncontrolledTooltip>
                       <UncontrolledTooltip
                         placement="top"
                         target={`list-${template._id}`}
                       >
-                        Invia ad una lista
+                        {t("send_batch")}
                       </UncontrolledTooltip>
                     </div>
                   </div>
@@ -130,4 +130,4 @@ class TemplatesList extends Component {
   }
 }
 
-export default TemplatesList;
+export default withNamespaces("templates")(TemplatesList);

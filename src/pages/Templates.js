@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 
 import { withRouter } from "react-router";
+import { withNamespaces } from "react-i18next";
+import { withDB, Find } from "react-pouchdb/browser";
+
 import { Link } from "react-router-dom";
 
 import { Button } from "design-react-kit";
@@ -8,8 +11,6 @@ import { Button } from "design-react-kit";
 import SelectedService from "../components/SelectedService";
 import TemplatesList from "../components/templates/TemplatesList";
 import TemplatesEditor from "../components/templates/TemplatesEditor";
-
-import { withDB, Find } from "react-pouchdb/browser";
 
 import compose from "recompose/compose";
 
@@ -122,6 +123,7 @@ class Templates extends Component {
         params: { template_id }
       }
     } = this.props;
+    const { t } = this.props;
 
     const isSubjectValid = isLengthValid(subject, [SUBJECT.MIN, SUBJECT.MAX]);
     const isMarkdownValid = isLengthValid(markdown, [
@@ -141,7 +143,7 @@ class Templates extends Component {
                     className="btn btn-primary mb-3"
                     to={{ pathname: "templates/new" }}
                   >
-                    Aggiungi template
+                    {t("add")}
                   </Link>
                 </div>
 
@@ -176,7 +178,7 @@ class Templates extends Component {
                 disabled={[isSubjectValid, isMarkdownValid].includes(false)}
                 onClick={this.onSaveTemplate}
               >
-                Salva
+                {t("save")}
               </Button>
             </section>
           );
@@ -188,7 +190,8 @@ class Templates extends Component {
 
 const enhance = compose(
   withDB,
-  withRouter
+  withRouter,
+  withNamespaces("template")
 );
 
 export default enhance(Templates);

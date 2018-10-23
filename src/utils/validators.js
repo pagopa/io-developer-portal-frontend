@@ -1,32 +1,8 @@
 import { conformToMask } from "react-text-mask";
+import toPairs from "lodash/toPairs";
 
-const LIMITS = {
-  SUBJECT: {
-    // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L246
-    MIN: 10,
-    MAX: 119
-  },
-  MARKDOWN: {
-    // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L260
-    MIN: 80,
-    MAX: 9999
-  },
-  CODE: {
-    // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L234
-    MIN: 16,
-    MAX: 16
-  },
-  AMOUNT: {
-    // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L129
-    MIN: 1,
-    MAX: 9999999999
-  },
-  NOTICE: {
-    // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L120
-    MIN: 18,
-    MAX: 18
-  }
-};
+import { LIMITS, CONSTANTS } from "./constants";
+const { CSV, CSV_HEADERS } = CONSTANTS;
 
 module.exports.LIMITS = LIMITS;
 
@@ -47,3 +23,30 @@ const isValueRangeValid = (value, [min, max]) => {
 };
 
 module.exports.isValueRangeValid = isValueRangeValid;
+
+const areHeadersValid = value => {
+  if (!value.length) {
+    return false;
+  }
+
+  const keyIndexTuples = toPairs(CSV);
+  if (value.length !== keyIndexTuples.length) {
+    return false;
+  }
+
+  const isValid = keyIndexTuples.map((keyIndex, i) => {
+    const [key, index] = keyIndex;
+    if (index !== i) {
+      return false;
+    }
+    if (CSV_HEADERS[key] !== value[index]) {
+      return false;
+    }
+
+    return true;
+  });
+
+  return !isValid.includes(false);
+};
+
+module.exports.areHeadersValid = areHeadersValid;

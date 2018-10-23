@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Input, Button } from "design-react-kit";
 
 import TemplatePreview from "./TemplatePreview";
@@ -20,6 +22,7 @@ class TemplatesEditor extends Component {
       isMarkdownValid
     } = this.props;
     const { onChangeSubject, onChangeMarkdown } = this.props;
+    const { t } = this.props;
 
     return (
       <section className="h-90 d-flex flex-column">
@@ -28,7 +31,7 @@ class TemplatesEditor extends Component {
           type="text"
           autoFocus
           value={subject}
-          placeholder="Oggetto"
+          placeholder={t("subject")}
           minLength={SUBJECT.MIN}
           maxLength={SUBJECT.MAX}
           onChange={onChangeSubject}
@@ -36,7 +39,7 @@ class TemplatesEditor extends Component {
         {subject &&
           !isSubjectValid && (
             <div className="invalid-feedback d-block">
-              L'oggetto deve essere di {subjectLength.join("-")} caratteri
+              {t("validation:subject", { length: subjectLength.join("-") })}
             </div>
           )}
 
@@ -53,7 +56,7 @@ class TemplatesEditor extends Component {
             {markdown &&
               !isMarkdownValid && (
                 <div className="invalid-feedback d-block">
-                  Il testo deve essere di {markdownLength.join("-")} caratteri
+                  {t("validation:markdown", { length: markdownLength.join("-") })}
                 </div>
               )}
           </div>
@@ -65,4 +68,4 @@ class TemplatesEditor extends Component {
   }
 }
 
-export default TemplatesEditor;
+export default withNamespaces(["template", "validation"])(TemplatesEditor);

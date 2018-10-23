@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Alert, ListGroup, ListGroupItem } from "design-react-kit";
 
 const getUserIcon = ({ sender_allowed, status }) => {
@@ -15,6 +17,7 @@ const getUserIcon = ({ sender_allowed, status }) => {
 class ContactsList extends Component {
   render() {
     const { docs, selected, onContactSelect } = this.props;
+    const { t } = this.props;
 
     if (!docs) {
       return null;
@@ -24,7 +27,7 @@ class ContactsList extends Component {
       <ListGroup className="flex-1">
         {(() => {
           if (!docs.length) {
-            return <Alert color="warning">Non ci sono contatti salvati</Alert>;
+            return <Alert color="warning">{t("no_contacts")}</Alert>;
           }
           return docs.map(contact => {
             return (
@@ -54,4 +57,4 @@ class ContactsList extends Component {
   }
 }
 
-export default ContactsList;
+export default withNamespaces("contacts")(ContactsList);

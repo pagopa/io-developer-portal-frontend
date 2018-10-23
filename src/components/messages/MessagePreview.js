@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from "react";
 
+import { withNamespaces } from "react-i18next";
+
 import { Row, Col, Card } from "design-react-kit";
 
 import TemplatePreview from "../templates/TemplatePreview";
@@ -9,14 +11,16 @@ const { SUBJECT, MARKDOWN } = LIMITS;
 
 class MessagePreview extends Component {
   render() {
-    const { message } = this.props;
+    const { message, t } = this.props;
 
     return (
       <Fragment>
         <div className="mb-5">
           <Row>
             <Col lg="6">
-              <header className="text-uppercase mb-2 ml-2">Oggetto</header>
+              <header className="text-uppercase mb-2 ml-2">
+                {t("subject")}
+              </header>
             </Col>
             <Col className="text-right text-muted">
               {message.subject.length}/{SUBJECT.MAX}
@@ -29,7 +33,9 @@ class MessagePreview extends Component {
         <div className="mt-5 mb-5">
           <Row>
             <Col lg="6">
-              <header className="text-uppercase mb-2 ml-2">Testo</header>
+              <header className="text-uppercase mb-2 ml-2">
+                {t("markdown")}
+              </header>
             </Col>
             <Col className="text-right text-muted">
               {message.markdown.length}/{MARKDOWN.MAX}
@@ -42,4 +48,4 @@ class MessagePreview extends Component {
   }
 }
 
-export default MessagePreview;
+export default withNamespaces("compose")(MessagePreview);
