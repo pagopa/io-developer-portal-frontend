@@ -86,7 +86,7 @@ class Compose extends Component {
 
   onMessageSubmit = async () => {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
-    const { db } = this.props;
+    const { db, t } = this.props;
 
     // No need to await
     const contact = profileGetAndPersist({
@@ -102,10 +102,14 @@ class Compose extends Component {
       type: "template",
       ...message
     });
-    console.log(template);
 
-    let content = createMessageContent({ message, dueDate, amount, notice });
-    console.log(content);
+    let content = createMessageContent({
+      message,
+      dueDate,
+      amount,
+      notice,
+      dueDateFormat: t("format:date")
+    });
 
     const result = await messagePostAndPersist({
       db,
@@ -203,7 +207,7 @@ class Compose extends Component {
 const enhance = compose(
   withDB,
   withRouter,
-  withNamespaces("compose")
+  withNamespaces(["compose", "format"])
 );
 
 export default enhance(Compose);

@@ -210,6 +210,7 @@ class Message extends Component {
     const { batch, selected, dueDate, notice, amount } = this.state;
     const {
       db,
+      t,
       location: {
         state: { type, templateId }
       }
@@ -220,7 +221,13 @@ class Message extends Component {
     });
     const message = messages.docs[0];
 
-    let content = createMessageContent({ message, dueDate, amount, notice });
+    let content = createMessageContent({
+      message,
+      dueDate,
+      amount,
+      notice,
+      dueDateFormat: t("format:date")
+    });
 
     let result;
     if (!batch) {
@@ -484,7 +491,6 @@ class Message extends Component {
                 onClick={this.onMessageSubmit}
               >
                 {t("send")}
-                
               </Button>
             );
           }

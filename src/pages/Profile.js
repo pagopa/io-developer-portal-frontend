@@ -357,7 +357,7 @@ class Profile extends Component {
               )}
               onChange={this.handleInputChange}
             />
-            <label>{t("organization_fiscal_code")}</label>
+            <label>{t("service:organization_fiscal_code")}</label>
             <input
               name="organization_fiscal_code"
               type="text"

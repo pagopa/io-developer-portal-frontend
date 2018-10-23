@@ -44,7 +44,8 @@ const it = {
     due_date: "Scadenza",
     notice: "Avviso",
     amount: "Importo",
-    send: "invia"
+    send: "invia",
+    invalid_headers: "Gli header del documento non sono validi"
   },
   message: {
     recipient: "Destinatario",

@@ -2,6 +2,13 @@ import { get, post } from "./api";
 import { upsert } from "./db";
 
 import moment from "moment";
+import template from "lodash/template";
+import toPairs from "lodash/toPairs";
+
+import { CONSTANTS } from "./constants";
+const { CSV, CSV_HEADERS } = CONSTANTS;
+
+const templateSettings = { interpolate: /{{([\s\S]+?)}}/g };
 
 const profileGetAndPersist = async ({ db, dbName, url, code, batchId }) => {
   let profile = await get({ dbName, url, path: `profiles/${code}` });
@@ -84,14 +91,20 @@ const messagePostAndPersist = async ({
 
 module.exports.messagePostAndPersist = messagePostAndPersist;
 
-const createMessageContent = ({ message, dueDate, amount, notice }) => {
+const createMessageContent = ({
+  message,
+  dueDate,
+  amount,
+  notice,
+  dueDateFormat
+}) => {
   let content = {
     subject: message.subject,
     markdown: message.markdown,
-    due_date: dueDate && moment(dueDate).toISOString()
+    due_date: dueDate && moment(dueDate, dueDateFormat).toISOString()
   };
 
-  if (amount || notice) {
+  if (amount && notice) {
     content = Object.assign(content, {
       payment_data: {
         amount: amount.valueOf(),
@@ -104,3 +117,30 @@ const createMessageContent = ({ message, dueDate, amount, notice }) => {
 };
 
 module.exports.createMessageContent = createMessageContent;
+
+const getMessageValues = row => {
+  const values = {};
+
+  if (!row) {
+    return values;
+  }
+
+  const keyIndexTuples = toPairs(CSV);
+  keyIndexTuples.forEach(keyIndex => {
+    const [key, index] = keyIndex;
+    values[CSV_HEADERS[key]] = row[index];
+  });
+
+  return values;
+};
+
+module.exports.getMessageValues = getMessageValues;
+
+const interpolateMarkdown = (markdown, row) => {
+  const compiled = template(markdown, templateSettings);
+  const values = getMessageValues(row);
+
+  return compiled(values);
+};
+
+module.exports.interpolateMarkdown = interpolateMarkdown;

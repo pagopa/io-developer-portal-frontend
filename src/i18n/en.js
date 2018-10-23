@@ -44,7 +44,8 @@ const en = {
     due_date: "Due date",
     notice: "Notice",
     amount: "Amount",
-    send: "send"
+    send: "send",
+    invalid_headers: "Header for the document are invalid"
   },
   message: {
     recipient: "Recipient",
