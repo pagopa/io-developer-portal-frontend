@@ -1,14 +1,24 @@
-import { get, post } from "./api";
-import { upsert } from "./db";
-
 import moment from "moment";
 import template from "lodash/template";
 import toPairs from "lodash/toPairs";
+import zipObject from "lodash/zipObject";
+import map from "lodash/map";
+
+import { get, post } from "./api";
+import { upsert } from "./db";
 
 import { CONSTANTS } from "./constants";
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
 const templateSettings = { interpolate: /{{([\s\S]+?)}}/g };
+
+const currencyFormatter = new Intl.NumberFormat("it-IT", {
+  style: "currency",
+  currency: "EUR",
+  currencyDisplay: "symbol",
+  minimumFractionDigits: 2,
+  useGrouping: false
+});
 
 const profileGetAndPersist = async ({ db, dbName, url, code, batchId }) => {
   let profile = await get({ dbName, url, path: `profiles/${code}` });
@@ -136,9 +146,46 @@ const getMessageValues = row => {
 
 module.exports.getMessageValues = getMessageValues;
 
+const interpolateAmount = string => {
+  if (!!string) {
+    // Amount is in Euro `cents`
+    const amount = Number(string) / 100; 
+    const formatParts = currencyFormatter.formatToParts(amount);
+    /* `formatParts` is now;
+    [
+      {
+        "type": "integer",
+        "value": "1"
+      },
+      ...
+    ]
+    */
+
+    const parts = zipObject(
+      map(formatParts, "type"),
+      map(formatParts, "value")
+    );
+    /* `parts` is now
+      {
+        "integer": "1",
+        "decimal": ",",
+        "fraction": "23",
+        "literal": " ",
+        "currency": "€"
+      }
+    */
+    const { integer, fraction, currency } = parts;
+    return `${integer}.${fraction}${currency}`;
+  }
+
+  return "";
+};
+
 const interpolateMarkdown = (markdown, row) => {
   const compiled = template(markdown, templateSettings);
   const values = getMessageValues(row);
+
+  values.amount = interpolateAmount(values.amount);
 
   return compiled(values);
 };
