@@ -1,6 +1,6 @@
 export const DEFAULT_BACKEND_URL = process.env.NODE_ENV === "production" ?
-  "https://apim-portal-prod.azurewebsites.net" :
-  "https://apim-portal-dev.azurewebsites.net";
+  "https://ioitalia-devportal-backend-prod.azurewebsites.net" :
+  "https://ioitalia-devportal-backend-dev.azurewebsites.net";
 
 export const getBackendUrl = () => window.localStorage.getItem("backendEndpoint") || DEFAULT_BACKEND_URL;
 
