@@ -148,7 +148,9 @@ module.exports.getMessageValues = getMessageValues;
 
 const interpolateAmount = string => {
   if (!!string) {
-    const formatParts = currencyFormatter.formatToParts(string);
+    // Amount is in Euro `cents`
+    const amount = Number(string) / 100;
+    const formatParts = currencyFormatter.formatToParts(amount);
     /* `formatParts` is now;
     [
       {
@@ -172,7 +174,7 @@ const interpolateAmount = string => {
         "currency": "€"
       }
     */
-    const { integer, fraction, currency} = parts;
+    const { integer, fraction, currency } = parts;
     return `${integer}.${fraction}${currency}`;
   }
 
