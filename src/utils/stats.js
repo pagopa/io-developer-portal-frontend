@@ -1,7 +1,7 @@
 import groupBy from "lodash/groupBy";
 
 const getStatsFor = async (entry, db) => {
-  // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L140
+  // https://github.com/teamdigitale/io-functions/blob/master/api/definitions.yaml#L140
   // The processing status of a message.
   // "ACCEPTED": the message has been accepted and will be processed for delivery;
   //   we'll try to store its content in the user's inbox and notify him on his preferred channels
