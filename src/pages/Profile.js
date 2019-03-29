@@ -217,6 +217,7 @@ class Profile extends Component {
     const firstName = get(this.state, "userData.apimUser.firstName");
     const lastName = get(this.state, "userData.apimUser.lastName");
 
+    const userGroups = get(this.state, "userData.apimUser.groupNames");
     return (
       <Fragment>
         <div>
@@ -238,6 +239,16 @@ class Profile extends Component {
               </a>
             </div>
           )}
+          <p
+            style={{ maxWidth: "30em", wordWrap: "break-word" }}
+            className="mt-4"
+          >
+            Autorizzazioni: {userGroups && userGroups.join(",")}
+          </p>
+          <p>
+            Limitato:{" "}
+            {userGroups && userGroups.indexOf("ApiMessageWrite") ? "no" : "si"}
+          </p>
         </div>
         <div>
           <h4 className="mt-4">{t("services")}</h4>
