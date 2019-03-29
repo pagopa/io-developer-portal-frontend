@@ -247,7 +247,9 @@ class Profile extends Component {
           </p>
           <p>
             Limitato:{" "}
-            {userGroups && userGroups.indexOf("ApiMessageWrite") ? "no" : "si"}
+            {userGroups && userGroups.indexOf("ApiMessageWrite") !== -1
+              ? "no"
+              : "si"}
           </p>
         </div>
         <div>
