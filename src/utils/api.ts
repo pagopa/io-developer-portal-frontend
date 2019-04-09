@@ -2,7 +2,7 @@ export let DEFAULT_URL = "";
 if (process.env.NODE_ENV === "production") {
   DEFAULT_URL = "https://api.cd.italia.it/api/v1";
 } else {
-  // Uses `api-proxy.js`
+  // Uses `api-proxy.ts`
   DEFAULT_URL = "http://localhost:3000";
 }
 
