@@ -12,5 +12,7 @@ node_modules/
 # local files used for development
 local.*
 .vscode
+.idea/
+*.iml
 
 dist
