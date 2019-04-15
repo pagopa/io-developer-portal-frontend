@@ -5,7 +5,7 @@ export const DEFAULT_BACKEND_URL = process.env.NODE_ENV === "production" ?
 export const getBackendUrl = () => window.localStorage.getItem("backendEndpoint") || DEFAULT_BACKEND_URL;
 
 const getOptions = token => {
-  const f = localStorage.getItem("userToken");
+  const defaultToken = localStorage.getItem("userToken");
   const OPTIONS = {
     headers: Object.assign({}, {
       "Content-Type": "application/json",
@@ -14,7 +14,15 @@ const getOptions = token => {
   return OPTIONS;
 };
 
-export const getFromBackend = async ({ url, path, token, options }) => {
+interface GetFromBackendParams {
+  url?: any;
+  path: any;
+  token?: any;
+  options?: any
+}
+
+export const getFromBackend = async (params: GetFromBackendParams) => {
+  const { url, path, token, options } = params;
   const response = await fetch(`${url || getBackendUrl()}/${path}`, {
     ...getOptions(token),
     ...options,
@@ -46,7 +54,15 @@ export const getFromBackend = async ({ url, path, token, options }) => {
   return jsonRes;
 };
 
-export const postToBackend = async ({ url, path, token, options }) => {
+interface PostToBackendParams {
+  url?: any;
+  path: any;
+  token?: any;
+  options: any;
+}
+
+export const postToBackend = async (params: PostToBackendParams) => {
+  const { url, path, token, options } = params;
   const response = await fetch(`${url || getBackendUrl()}/${path}`, {
     ...getOptions(token),
     ...options,
@@ -73,7 +89,15 @@ export const postToBackend = async ({ url, path, token, options }) => {
   return jsonRes;
 };
 
-export const putToBackend = async ({ url, path, token, options }) => {
+interface PutToBackendParams {
+  url?: any;
+  path: any;
+  token?: any;
+  options: any;
+}
+
+export const putToBackend = async (params: PutToBackendParams) => {
+  const { url, path, token, options } = params;
   const response = await fetch(`${url || getBackendUrl()}/${path}`, {
     ...getOptions(token),
     ...options,

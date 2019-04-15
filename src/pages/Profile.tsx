@@ -156,7 +156,7 @@ class Profile extends Component<any, ProfileState> {
 
     const userSubscriptionsObj = Object.keys(userSubscriptions).reduce(
       (p, key) =>
-        isNaN(key)
+        isNaN(Number(key))
           ? p
           : {
               ...p,

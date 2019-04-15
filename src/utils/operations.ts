@@ -20,7 +20,16 @@ const currencyFormatter = new Intl.NumberFormat("it-IT", {
   useGrouping: false
 });
 
-export async function profileGetAndPersist ({ db, dbName, url, code, batchId }) {
+interface ProfileGetAndPersistParams {
+  db: any;
+  dbName?: any;
+  url?: any;
+  code: any;
+  batchId?: any;
+}
+
+export async function profileGetAndPersist (params: ProfileGetAndPersistParams) {
+  const { db, dbName, url, code, batchId } = params;
   let profile = await get({ dbName, url, path: `profiles/${code}` });
 
   // The API returns errors with shape { detail, status, title }

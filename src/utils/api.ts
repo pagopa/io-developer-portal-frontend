@@ -30,7 +30,15 @@ const getOptions = dbName => {
   return OPTIONS;
 };
 
-export function get({ dbName, url, path, options }){
+interface GetParams{
+  dbName?: any;
+  url?: any;
+  path: any;
+  options?:any
+}
+
+export function get(params: GetParams){
+  const { dbName, url, path, options } = params;
   return fetch(`${url || getUrl()}/${path}`, {
     ...getOptions(dbName),
     ...options,
@@ -58,7 +66,15 @@ export function get({ dbName, url, path, options }){
     });
 };
 
-export function post({ dbName, url, path, options }) {
+interface PostParams{
+  dbName?: any;
+  url?: any;
+  path: any;
+  options: any;
+}
+
+export function post(params: PostParams) {
+  const { dbName, url, path, options } = params;
   return fetch(`${url || getUrl()}/${path}`, {
     ...getOptions(dbName),
     ...options,

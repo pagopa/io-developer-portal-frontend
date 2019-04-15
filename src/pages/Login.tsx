@@ -36,7 +36,7 @@ class Login extends Component<any, any> {
           apimUser.apimUser &&
           new Set(apimUser.apimUser.groupNames).has("ApiAdmin");
 
-        localStorage.setItem("isApiAdmin", isApiAdmin);
+        localStorage.setItem("isApiAdmin", isApiAdmin.toString());
         window.location.replace("/");
       }
     } catch (e) {

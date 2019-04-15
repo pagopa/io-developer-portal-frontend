@@ -5,7 +5,7 @@ import { LIMITS, CONSTANTS } from "./constants";
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
 export const isMaskValid = (value, mask) => {
-  return conformToMask(value, mask).conformedValue.indexOf("_") === -1;
+  return conformToMask(value, mask, undefined).conformedValue.indexOf("_") === -1;
 };
 
 export const isLengthValid = (value, [min, max]) => {

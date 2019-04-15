@@ -42,7 +42,7 @@ class Compose extends Component<any, ComposeState> {
     notice: ""
   };
 
-  state = {
+  state: ComposeState = {
     code: this.initialState.code,
     subject: this.initialState.subject,
     markdown: this.initialState.markdown,
@@ -78,13 +78,11 @@ class Compose extends Component<any, ComposeState> {
   };
 
   onChangeAmount = ({ target: { value } }) => {
-    this.setState({ amount: value && new Number(value) });
+    this.setState({ amount: value && Number(value).toString() }); // TODO: verify if this is correct
   };
 
-  onReset = field => {
-    this.setState({
-      [field]: this.initialState[field]
-    });
+  onReset = () => {
+    this.setState(this.initialState);
   };
 
   onMessageSubmit = async () => {

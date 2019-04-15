@@ -30,7 +30,7 @@ self.addEventListener("message", async e => {
   batch.concurrency(1);
   batch.on("progress", e => {});
 
-  messages.docs.forEach(entry => {
+  messages.docs.forEach((entry: any) => {
     batch.push(async done => {
       const { id, fiscal_code } = entry.message;
       const path = `messages/${fiscal_code}/${id}`;
@@ -57,7 +57,7 @@ self.addEventListener("message", async e => {
       postMessage({
         ...e.data,
         completed: true
-      });
+      }, undefined);  // TODO: set the proper targetOrigin
     }
   });
 });

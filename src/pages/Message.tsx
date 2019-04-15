@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from "react";
-import ReactDOM from "react-dom";
 
 import { withDB, Find } from "react-pouchdb/browser";
 import { withNamespaces } from "react-i18next";
+
+import { parse } from 'papaparse';
 
 import {
   Row,
@@ -86,7 +87,7 @@ class Message extends Component<any, MessageState> {
     progress: this.initialState.progress
   };
 
-  fileInput = React.createRef();
+  fileInput = React.createRef<HTMLInputElement>();
 
   componentDidMount() {
     GetProfileWorker.addEventListener("message", ({ data }) => {
@@ -97,7 +98,7 @@ class Message extends Component<any, MessageState> {
     });
   }
 
-  onToggleRecipientOpen = selected => {
+  onToggleRecipientOpen = () => {
     this.setState(prevState => {
       return {
         recipientOpen: !prevState.recipientOpen
@@ -119,12 +120,11 @@ class Message extends Component<any, MessageState> {
   };
 
   onTriggerUpload = () => {
-    const el = ReactDOM.findDOMNode(this.fileInput.current);
-    el.click();
+    this.fileInput.current.click();
   };
 
   onFileUpdate = ({ target: { files } }) => {
-    Papa.parse(files[0], {
+    parse(files[0], {
       skipEmptyLines: true,
       error: (error) => {
         console.error(error);
@@ -164,13 +164,11 @@ class Message extends Component<any, MessageState> {
   };
 
   onChangeAmount = ({ target: { value } }) => {
-    this.setState({ amount: value && new Number(value) });
+    this.setState({ amount: value && Number(value).toString() });
   };
 
-  onReset = field => {
-    this.setState({
-      [field]: this.initialState[field]
-    });
+  onReset = () => {
+    this.setState(this.initialState);
   };
 
   onSaveContacts = () => {
@@ -183,10 +181,10 @@ class Message extends Component<any, MessageState> {
       }
     } = this.props;
 
-    Papa.parse(list, {
+    parse(list, {
       skipEmptyLines: true,
-      error: (err, file, inputElem, reason) => {
-        console.error(reason);
+      error: (error) => {
+        console.error(error);
       },
       complete: async (results, file) => {
         const batch = await db.post({

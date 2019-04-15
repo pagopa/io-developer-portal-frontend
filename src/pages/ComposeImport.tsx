@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 
 import { withRouter } from "react-router";
 import { withNamespaces } from "react-i18next";
+
+import { parse } from 'papaparse';
 
 import {
   Row,
@@ -62,11 +63,10 @@ class Compose extends Component<any, ComposeState> {
     sent: this.initialState.sent
   };
 
-  fileInput = React.createRef();
+  fileInput = React.createRef<HTMLInputElement>();
 
   onTriggerUpload = () => {
-    const el = ReactDOM.findDOMNode(this.fileInput.current);
-    el.click();
+    this.fileInput.current.click();
   };
 
   onFileUpdate = ({ target: { files } }) => {
@@ -84,7 +84,7 @@ class Compose extends Component<any, ComposeState> {
       return;
     }
 
-    Papa.parse(file, {
+    parse(file, {
       // header: false,
       skipEmptyLines: true,
       error: (error) => {
