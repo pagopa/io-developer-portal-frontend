@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "parcel index.html",
     "dev:proxy": "node api-proxy.js",
+    "type-check": "tsc --noEmit",
+    "prebuild": "npm run type-check",
     "build": "parcel build index.html --public-url /",
     "postbuild": "shx cp CNAME 404.html web.config dist/",
     "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'"
