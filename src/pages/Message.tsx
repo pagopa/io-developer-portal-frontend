@@ -59,7 +59,7 @@ type MessageState = {
 };
 
 class Message extends Component<any, MessageState> {
-  initialState = {
+  initialState: MessageState = {
     list: "",
     contacts: [],
     file: undefined,
@@ -73,7 +73,7 @@ class Message extends Component<any, MessageState> {
     progress: false
   };
 
-  state = {
+  state: MessageState = {
     list: this.initialState.list,
     contacts: this.initialState.contacts,
     file: this.initialState.file,
@@ -120,7 +120,7 @@ class Message extends Component<any, MessageState> {
   };
 
   onTriggerUpload = () => {
-    this.fileInput.current.click();
+    this.fileInput.current && this.fileInput.current.click();
   };
 
   onFileUpdate = ({ target: { files } }) => {
@@ -133,10 +133,10 @@ class Message extends Component<any, MessageState> {
         // data is an array of rows.
         // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
-        const filtered = [];
+        const filtered: any[] = [];
 
         results.data.map(line =>
-          line.map(value => {
+          line.map((value) => {
             // TODO Test it against validator (will be validated against API anyway)
             if (value.length === CODE.MAX) {
               filtered.push(value);
@@ -248,7 +248,7 @@ class Message extends Component<any, MessageState> {
         })
       ];
     } else {
-      const promises = [];
+      const promises: Promise<void>[] = [];
       const list = await db.find({
         selector: {
           type: "contact",
@@ -475,7 +475,7 @@ class Message extends Component<any, MessageState> {
         />
 
         {(() => {
-          const isValid = [];
+          const isValid: any[] = [];
           if (dueDate) {
             isValid.push(moment(dueDate).isValid());
           }

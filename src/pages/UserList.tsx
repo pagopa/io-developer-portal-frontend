@@ -11,11 +11,11 @@ import { getFromBackend } from "../utils/backend";
 import FaUser from "react-icons/lib/fa/user";
 
 type UserListState = {
-  users: { items: undefined[], length: number }
+  users: { items: any[], length: number }
 };
 
 class UserList extends Component<any, UserListState> {
-  state = {
+  state: UserListState = {
     users: { items: [], length: 0 }
   };
 

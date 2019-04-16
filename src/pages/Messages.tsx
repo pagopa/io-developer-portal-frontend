@@ -13,14 +13,14 @@ import keyBy from "lodash/keyBy";
 import { emit } from 'cluster';
 
 type MessagesState = {
-  templates: undefined[],
-  messages: undefined[],
-  batches: undefined[],
+  templates: any[],
+  messages: any[],
+  batches: any[],
   stats: {}
 };
 
 class Messages extends Component<any, MessagesState> {
-  state = {
+  state: MessagesState = {
     templates: [],
     messages: [],
     batches: [],
@@ -99,7 +99,7 @@ class Messages extends Component<any, MessagesState> {
     });
 
     const orderedMessages = orderBy(
-      [].concat(messages, batchesMessages),
+      messages.concat(batchesMessages),
       ["message.created_at"],
       ["desc"]
     );

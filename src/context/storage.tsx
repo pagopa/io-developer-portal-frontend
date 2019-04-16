@@ -1,13 +1,18 @@
 import React from "react";
 
 export const getStorage = () => {
+  function getParsedItem(itemName: string) {
+    const serviceItem = localStorage.getItem(itemName);
+    return serviceItem ? JSON.parse(serviceItem) : serviceItem;
+  }
+
   return {
     backendEndpoint: localStorage.getItem("backendEndpoint"),
     isApiAdmin: localStorage.getItem("isApiAdmin") === "true",
-    service: JSON.parse(localStorage.getItem("service")),
+    service: getParsedItem("service"),
     serviceEndpoint: localStorage.getItem("serviceEndpoint"),
     serviceKey: localStorage.getItem("serviceKey"),
-    userData: JSON.parse(localStorage.getItem("userData")),
+    userData: getParsedItem("userData"),
     userToken: localStorage.getItem("userToken")
   };
 };

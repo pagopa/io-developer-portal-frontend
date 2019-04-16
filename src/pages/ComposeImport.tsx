@@ -26,7 +26,6 @@ const {
   CSV: { NAME, SURNAME, FISCALCODE, SUBJECT, MARKDOWN, AMOUNT, NOTICE, DUEDATE }
 } = CONSTANTS;
 
-import Papa from "papaparse";
 import moment from "moment";
 import compose from "recompose/compose";
 
@@ -39,7 +38,7 @@ import "./Pages.css";
 import "./ComposeImport.css";
 
 type ComposeState = {
-  file: any,
+  file: File | undefined,
   fileData: any[],
   headers: any[],
   ignoreHeaders: boolean,
@@ -47,15 +46,15 @@ type ComposeState = {
 };
 
 class Compose extends Component<any, ComposeState> {
-  initialState = {
+  initialState: ComposeState = {
     file: undefined,
-    fileData: [],
+    fileData: [] as any[],
     headers: [],
     ignoreHeaders: false,
     sent: false
   };
 
-  state = {
+  state: ComposeState = {
     file: this.initialState.file,
     fileData: this.initialState.fileData,
     headers: this.initialState.headers,
@@ -66,7 +65,7 @@ class Compose extends Component<any, ComposeState> {
   fileInput = React.createRef<HTMLInputElement>();
 
   onTriggerUpload = () => {
-    this.fileInput.current.click();
+    this.fileInput.current && this.fileInput.current.click();
   };
 
   onFileUpdate = ({ target: { files } }) => {
@@ -118,7 +117,7 @@ class Compose extends Component<any, ComposeState> {
 
     const template = await db.post({
       type: "template",
-      subject: file.name,
+      subject: file && file.name,
       markdown: ""
     });
     const batch = await db.post({
@@ -127,7 +126,7 @@ class Compose extends Component<any, ComposeState> {
       created_at: moment().toISOString()
     });
 
-    const promises = [];
+    const promises: Promise<any>[] = [];
     fileData.forEach(row => {
       const message = {
         subject: row[SUBJECT],

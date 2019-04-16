@@ -57,7 +57,7 @@ self.addEventListener("message", async e => {
       postMessage({
         ...e.data,
         completed: true
-      }, undefined);  // TODO: set the proper targetOrigin
+      }, '*');  // TODO: set the proper targetOrigin
     }
   });
 });

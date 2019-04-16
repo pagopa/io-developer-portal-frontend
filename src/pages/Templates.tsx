@@ -27,7 +27,7 @@ type TemplatesState = { subject: string, markdown: string, doc: any } & {
 } & any & { subject: string, markdown: string, doc: any };
 
 class Templates extends Component<any, TemplatesState> {
-  initialState = {
+  initialState: TemplatesState = {
     subject: "",
     markdown: "",
     doc: undefined
