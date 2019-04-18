@@ -24,12 +24,17 @@ type TemplatesListState = {
   selected: string
 };
 
+interface Template {
+  _id: string;
+  subject: any;
+}
+
 class TemplatesList extends Component<any, TemplatesListState> {
   state = {
     selected: ""
   };
 
-  onSetSelected = selected => {
+  onSetSelected = (selected: string) => {
     this.setState((prevState, props) => {
       selected = prevState.selected === selected ? "" : selected;
       return {
@@ -49,7 +54,7 @@ class TemplatesList extends Component<any, TemplatesListState> {
     return (
       <Accordion>
         {(() => {
-          return docs.map(template => {
+          return docs.map((template: Template) => {
             return (
               <Fragment key={template._id}>
                 <AccordionHeader

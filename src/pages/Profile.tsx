@@ -14,7 +14,7 @@ import FaEyeSlash from "react-icons/lib/fa/eye-slash";
 
 import Confirmation from "../components/modal/Confirmation";
 
-const getMail = email => (email && email !== "" ? atob(email) : undefined);
+const getMail = (email: string) => (email && email !== "" ? atob(email) : undefined);
 
 const SubscriptionService = ({ service, t }) => {
   return service ? (

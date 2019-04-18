@@ -2,6 +2,12 @@ import React, { Component } from "react";
 
 import { withNamespaces } from "react-i18next";
 
+interface MessageWithNotification {
+  _id: string;
+  message: any;
+  notification: any;
+}
+
 class MessageListReport extends Component<any, any> {
   render() {
     const { list, t } = this.props;
@@ -26,7 +32,7 @@ class MessageListReport extends Component<any, any> {
           </tr>
         </thead>
         <tbody>
-          {list.map(entry => {
+          {list.map((entry: MessageWithNotification) => {
             /*
               The status of a notification (one for each channel).
               "SENT": the notification was succesfully sent to the channel (ie. email or push notification)

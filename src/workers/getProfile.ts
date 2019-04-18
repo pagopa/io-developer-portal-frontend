@@ -15,11 +15,11 @@ self.addEventListener("message", async e => {
 
   const batch = new Batch();
   batch.concurrency(1);
-  batch.on("progress", e => {});
+  batch.on("progress", (e: any) => {});
 
   const promises = [];
-  results.forEach(async ([result]) => {
-    batch.push(async done => {
+  results.forEach(async ([result]: any) => {
+    batch.push(async (done: () => never) => {
       try {
         const operation = await profileGetAndPersist({
           db,
@@ -37,7 +37,7 @@ self.addEventListener("message", async e => {
   });
 
   // Actually startes the batch
-  batch.end((err, data) => {
+  batch.end((err: any, data: any) => {
     if (!err) {
       postMessage({
         ...e.data,

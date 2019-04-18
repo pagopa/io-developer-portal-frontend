@@ -17,7 +17,7 @@ class Notification extends Component<any, NotificationState> {
     info: this.props.info
   };
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props: any, state: NotificationState) {
     if (state.info._id && state.info._id !== props.info._id) {
       return {
         info: props.info

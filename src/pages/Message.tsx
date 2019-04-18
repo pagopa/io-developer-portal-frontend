@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { ChangeEvent, Component, Fragment } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
 import { withNamespaces } from "react-i18next";
@@ -106,11 +106,11 @@ class Message extends Component<any, MessageState> {
     });
   };
 
-  onContactSelect = selected => {
+  onContactSelect = (selected: string) => {
     this.setState({ selected });
   };
 
-  onChangeList = ({ target: { value } }) => {
+  onChangeList = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       batch: this.initialState.batch,
       contacts: this.initialState.contacts,
@@ -123,7 +123,10 @@ class Message extends Component<any, MessageState> {
     this.fileInput.current && this.fileInput.current.click();
   };
 
-  onFileUpdate = ({ target: { files } }) => {
+  onFileUpdate = ({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
+    if (!files || !files[0]) {
+      return;
+    }
     parse(files[0], {
       skipEmptyLines: true,
       error: (error) => {
@@ -155,15 +158,15 @@ class Message extends Component<any, MessageState> {
     });
   };
 
-  onChangeDueDate = date => {
+  onChangeDueDate = (date: moment.Moment) => {
     this.setState({ dueDate: date });
   };
 
-  onChangeNotice = ({ target: { value } }) => {
+  onChangeNotice = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ notice: value });
   };
 
-  onChangeAmount = ({ target: { value } }) => {
+  onChangeAmount = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ amount: value && Number(value).toString() });
   };
 

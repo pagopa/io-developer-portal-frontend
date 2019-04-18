@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import {
   Row,
@@ -42,7 +42,7 @@ class ServerPicker extends Component<any, any> {
               type="text"
               value={value}
               disabled={disabled}
-              onChange={({ target: { value } }) =>
+              onChange={({ target: { value } }: ChangeEvent<HTMLInputElement>) =>
                 onServerChange(server, value)
               }
             />

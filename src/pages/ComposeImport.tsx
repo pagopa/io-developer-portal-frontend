@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import { withRouter } from "react-router";
 import { withNamespaces } from "react-i18next";
@@ -68,17 +68,20 @@ class Compose extends Component<any, ComposeState> {
     this.fileInput.current && this.fileInput.current.click();
   };
 
-  onFileUpdate = ({ target: { files } }) => {
+  onFileUpdate = ({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
+    if (!files) {
+      return;
+    }
     this.onFileParse(files[0]);
   };
 
-  onToggleHeader = ({ target: { checked } }) => {
+  onToggleHeader = ({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ ignoreHeaders: checked }, () => {
       this.onFileParse(this.state.file);
     });
   };
 
-  onFileParse = file => {
+  onFileParse = (file: File | undefined) => {
     if (!file) {
       return;
     }
@@ -159,7 +162,7 @@ class Compose extends Component<any, ComposeState> {
     this.goHome({ result });
   };
 
-  goHome = ({ result }) => {
+  goHome = ({ result }: any) => {
     const { history } = this.props;
     const location = {
       pathname: "/",

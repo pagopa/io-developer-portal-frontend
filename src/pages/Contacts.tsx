@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import ContactAdd from "../components/contacts/ContactAdd";
-import ContactsList from "../components/contacts/ContactsList";
+import ContactsList, { ContactDoc } from "../components/contacts/ContactsList";
 
 import { withDB, Find } from "react-pouchdb/browser";
 
@@ -25,7 +25,7 @@ class Contacts extends Component<any, ContactsState> {
     code: this.initialState.code
   };
 
-  onInputCode = ({ target: { value } }) => {
+  onInputCode = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       code: value
     });
@@ -50,7 +50,7 @@ class Contacts extends Component<any, ContactsState> {
     );
   };
 
-  onContactSelect = code => {
+  onContactSelect = (code: any) => {
     this.setState((prevState, props) => {
       return {
         selected: code
@@ -77,7 +77,7 @@ class Contacts extends Component<any, ContactsState> {
             type: "contact"
           }}
           sort={["_id"]}
-          render={({ docs }) => <ContactsList docs={docs} />}
+          render={({ docs }: {docs: ContactDoc[]}) => <ContactsList docs={docs} />}
         />
       </section>
     );

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import { withRouter } from "react-router";
 import { withNamespaces } from "react-i18next";
@@ -51,33 +51,33 @@ class Compose extends Component<any, ComposeState> {
     notice: this.initialState.notice
   };
 
-  onInputCode = ({ target: { value } }) => {
+  onInputCode = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       code: value
     });
   };
 
-  onChangeSubject = ({ target: { value } }) => {
+  onChangeSubject = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       subject: value
     });
   };
 
-  onChangeMarkdown = ({ target: { value } }) => {
+  onChangeMarkdown = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       markdown: value
     });
   };
 
-  onChangeDueDate = date => {
+  onChangeDueDate = (date: moment.Moment) => {
     this.setState({ dueDate: date });
   };
 
-  onChangeNotice = ({ target: { value } }) => {
+  onChangeNotice = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ notice: value });
   };
 
-  onChangeAmount = ({ target: { value } }) => {
+  onChangeAmount = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ amount: value && Number(value).toString() }); // TODO: verify if this is correct
   };
 
@@ -122,7 +122,7 @@ class Compose extends Component<any, ComposeState> {
     this.goHome({ result });
   };
 
-  goHome = ({ result }) => {
+  goHome = ({ result }: any) => {
     const { history } = this.props;
     const location = {
       pathname: "/",

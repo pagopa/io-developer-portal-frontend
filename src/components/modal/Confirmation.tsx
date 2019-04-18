@@ -19,7 +19,7 @@ class Confirmation extends Component<any, ConfirmationState> {
     isConfirmed: false
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: any) {
     if (this.props.isOpen !== prevProps.isOpen) {
       this.setState({ isConfirmed: false });
     }

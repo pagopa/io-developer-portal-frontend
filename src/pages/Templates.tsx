@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import { withRouter } from "react-router";
 import { withNamespaces } from "react-i18next";
@@ -74,13 +74,13 @@ class Templates extends Component<any, TemplatesState> {
     }
   }
 
-  onChangeSubject = ({ target: { value } }) => {
+  onChangeSubject = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       subject: value
     });
   };
 
-  onChangeMarkdown = ({ target: { value } }) => {
+  onChangeMarkdown = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       markdown: value
     });

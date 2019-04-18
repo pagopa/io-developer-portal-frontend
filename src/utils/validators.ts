@@ -4,15 +4,15 @@ import toPairs from "lodash/toPairs";
 import { LIMITS, CONSTANTS } from "./constants";
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
-export const isMaskValid = (value, mask) => {
+export const isMaskValid = (value: string, mask: RegExp[]) => {
   return conformToMask(value, mask, undefined).conformedValue.indexOf("_") === -1;
 };
 
-export const isLengthValid = (value, [min, max]) => {
+export const isLengthValid = (value: string, [min, max]: [number, number]) => {
   return isValueRangeValid(value.length, [min, max]);
 };
 
-export const isValueRangeValid = (value, [min, max]) => {
+export const isValueRangeValid = (value: number, [min, max]: [number, number]) => {
   return value >= min && value <= max;
 };
 

@@ -4,7 +4,13 @@ import { withNamespaces } from "react-i18next";
 
 import { Alert, ListGroup, ListGroupItem } from "design-react-kit";
 
-const getUserIcon = ({ sender_allowed, status }) => {
+export interface ContactDoc {
+  _id: string;
+  sender_allowed: boolean;
+  status: any;
+};
+
+const getUserIcon = ({ sender_allowed, status }: ContactDoc) => {
   if (sender_allowed === true) {
     return "it-check";
   } else if (sender_allowed === false) {
@@ -29,7 +35,7 @@ class ContactsList extends Component<any, any> {
           if (!docs.length) {
             return <Alert color="warning">{t("no_contacts")}</Alert>;
           }
-          return docs.map(contact => {
+          return docs.map((contact: ContactDoc) => {
             return (
               <ListGroupItem
                 key={contact._id}
