@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { ChangeEvent, Component, Fragment } from "react";
 
 import { withNamespaces } from "react-i18next";
 
@@ -16,7 +16,7 @@ import Confirmation from "../components/modal/Confirmation";
 
 const getMail = (email: string) => (email && email !== "" ? atob(email) : undefined);
 
-const SubscriptionService = ({ service, t }) => {
+const SubscriptionService = ({ service, t }: any) => {
   return service ? (
     <div>
       <h5>{service.service_id}</h5>
@@ -52,20 +52,20 @@ type ProfileState = {
   applicationConfig: any,
   userData: any,
   newSubscription: {
-    service_name: any,
-    department_name: any,
-    organization_name: any,
-    organization_fiscal_code: string,
-    new_user: { adb2c_id: any, first_name: any, last_name: any, email: any }
+    service_name?: any,
+    department_name?: any,
+    organization_name?: any,
+    organization_fiscal_code?: string,
+    new_user?: { adb2c_id: any, first_name: any, last_name: any, email: any }
   },
   userSubscriptions: any,
-  [x: number]: boolean,
+  [x: string]: any,
   services: any,
   isConfirmationOpen: boolean,
   onConfirmOperation: () => void
 };
 class Profile extends Component<any, ProfileState> {
-  state: any = {
+  state: ProfileState = {
     userData: {},
     userSubscriptions: {},
     services: {},
@@ -154,7 +154,7 @@ class Profile extends Component<any, ProfileState> {
       path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : "")
     });
 
-    const userSubscriptionsObj = Object.keys(userSubscriptions).reduce(
+    const userSubscriptionsObj: {[key: string]: any} = Object.keys(userSubscriptions).reduce(
       (p, key) =>
         isNaN(Number(key))
           ? p
@@ -181,17 +181,17 @@ class Profile extends Component<any, ProfileState> {
     });
   }
 
-  onToggleKey(keyIdx) {
+  onToggleKey(keyIdx: string) {
     this.setState({ [keyIdx]: !this.state[keyIdx] });
   }
 
-  onSetKey = (serviceKey, service) => () => {
+  onSetKey = (serviceKey: string, service: any) => () => {
     localStorage.setItem("serviceKey", serviceKey);
     localStorage.setItem("service", JSON.stringify(service));
     window.location.replace("/compose");
   };
 
-  onRegenerateKey = (keyType, subscriptionId) => async () => {
+  onRegenerateKey = (keyType: string, subscriptionId: string) => async () => {
     this.setState({
       isConfirmationOpen: true,
       onConfirmOperation: async () => {
@@ -210,7 +210,7 @@ class Profile extends Component<any, ProfileState> {
     });
   };
 
-  handleInputChange = event => {
+  handleInputChange = (event:  ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;

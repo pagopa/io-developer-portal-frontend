@@ -56,7 +56,7 @@ const Layout = ({ children }: any) => (
   </section>
 );
 
-const PrivateRoute = ({ component: Component, dbName = "", ...rest }) => (
+const PrivateRoute = ({ component: Component, dbName = "", ...rest }: any) => (
   <Route
     {...rest}
     render={props =>

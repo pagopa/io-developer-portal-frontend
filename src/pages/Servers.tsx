@@ -16,11 +16,11 @@ const { localStorage } = window;
 
 type ServersState = {
   selected: undefined,
-  servers: {}
+  servers: any
 };
 
 class Servers extends Component<any, ServersState> {
-  state = {
+  state: ServersState = {
     selected: undefined,
     servers: {}
   };
@@ -37,8 +37,8 @@ class Servers extends Component<any, ServersState> {
       }
     });
 
-    const newServers = {};
-    servers.docs.map(server => (newServers[server._id] = server));
+    const newServers: any = {};
+    servers.docs.map((server: any) => (newServers[server._id] = server));
 
     this.setState({
       servers: newServers
@@ -54,14 +54,14 @@ class Servers extends Component<any, ServersState> {
     await this.syncStatewithDB();
   };
 
-  onServerSelect = server => {
+  onServerSelect = (server: any) => {
     localStorage.setItem("serviceEndpoint", server.endpoint);
     this.setState({
       selected: server
     });
   };
 
-  onServerChange = async (server, value) => {
+  onServerChange = async (server: any, value: string) => {
     const { db } = this.props;
     const doc = await upsert(db, server._id, {
       ...server,
@@ -86,7 +86,7 @@ class Servers extends Component<any, ServersState> {
     );
   };
 
-  onServerDelete = async server => {
+  onServerDelete = async (server: any) => {
     const { db } = this.props;
     const doc = db.remove(server);
     await this.syncStatewithDB();

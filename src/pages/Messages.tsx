@@ -16,7 +16,7 @@ type MessagesState = {
   templates: any[],
   messages: any[],
   batches: any[],
-  stats: {}
+  stats: any
 };
 
 class Messages extends Component<any, MessagesState> {
@@ -54,7 +54,7 @@ class Messages extends Component<any, MessagesState> {
     });
     const counts = await db.query(
       {
-        map: doc => {
+        map: (doc: any) => {
           if (doc.type === "message") emit(doc.batchId, 1);
         },
         reduce: "_count"
@@ -62,8 +62,8 @@ class Messages extends Component<any, MessagesState> {
       { reduce: true, group: true }
     );
 
-    const stats = {};
-    counts.rows.forEach(count => {
+    const stats: any = {};
+    counts.rows.forEach((count: any) => {
       stats[count.key || "none"] = count.value;
     });
 

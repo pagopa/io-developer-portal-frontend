@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component, FormEvent } from "react";
 
 import { withNamespaces } from "react-i18next";
 
@@ -23,7 +23,7 @@ class SubscriptionService extends Component<any, SubscriptionServiceState> {
     });
   }
 
-  handleInputChange = event => {
+  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;

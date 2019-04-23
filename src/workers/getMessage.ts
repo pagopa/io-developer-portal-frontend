@@ -28,10 +28,10 @@ self.addEventListener("message", async e => {
 
   const batch = new Batch();
   batch.concurrency(1);
-  batch.on("progress", e => {});
+  batch.on("progress", (e: any) => {});
 
   messages.docs.forEach((entry: any) => {
-    batch.push(async done => {
+    batch.push(async (done: () => never) => {
       const { id, fiscal_code } = entry.message;
       const path = `messages/${fiscal_code}/${id}`;
       const message = await get({ dbName, url, path });
@@ -52,7 +52,7 @@ self.addEventListener("message", async e => {
   });
 
   // Actually startes the batch
-  batch.end((err, data) => {
+  batch.end((err: any, data: any) => {
     if (!err) {
       postMessage({
         ...e.data,

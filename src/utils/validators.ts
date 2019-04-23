@@ -12,11 +12,11 @@ export const isLengthValid = (value: string, [min, max]: [number, number]) => {
   return isValueRangeValid(value.length, [min, max]);
 };
 
-export const isValueRangeValid = (value: number, [min, max]: [number, number]) => {
+export const isValueRangeValid = (value: any, [min, max]: [number, number]) => {
   return value >= min && value <= max;
 };
 
-export const areHeadersValid = value => {
+export const areHeadersValid = (value: any[]) => {
   if (!value.length) {
     return false;
   }

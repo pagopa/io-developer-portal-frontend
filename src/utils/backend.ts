@@ -4,7 +4,7 @@ export const DEFAULT_BACKEND_URL = process.env.NODE_ENV === "production" ?
 
 export const getBackendUrl = () => window.localStorage.getItem("backendEndpoint") || DEFAULT_BACKEND_URL;
 
-const getOptions = token => {
+const getOptions = (token: string) => {
   const defaultToken = localStorage.getItem("userToken");
   const OPTIONS = {
     headers: Object.assign({}, {
@@ -124,9 +124,17 @@ export const putToBackend = async (params: PutToBackendParams) => {
   return jsonRes;
 };
 
-const getRetryTimeout = message => {
-  const string = message.match(/\d+ seconds/g)[0];
-  const digits = string.match(/\d+/)[0];
+const getRetryTimeout = (message: string) => {
+  try {
+    const messageMatch = message.match(/\d+ seconds/g);
+    if (!messageMatch) throw new Error();
+    const string = messageMatch[0];
+    const stringMatch = string.match(/\d+/);
+    if (!stringMatch) throw new Error();
+    const digits = Number(stringMatch[0]);
 
-  return isFinite(digits) ? digits * 1000 : 1 * 1000;
+    return isFinite(digits) ? digits * 1000 : 1 * 1000;
+  } catch (error) {
+    return 1 * 1000;
+  }
 };

@@ -39,7 +39,7 @@ class Templates extends Component<any, TemplatesState> {
     doc: this.initialState.doc
   };
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: any) {
     const {
       match: {
         params: { template_id }
@@ -158,7 +158,7 @@ class Templates extends Component<any, TemplatesState> {
                     type: "template"
                   }}
                   sort={["_id"]}
-                  render={({ docs }) => <TemplatesList docs={docs} />}
+                  render={({ docs }: any) => <TemplatesList docs={docs} />}
                 />
               </div>
             );

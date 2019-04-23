@@ -47,7 +47,7 @@ export async function profileGetAndPersist (params: ProfileGetAndPersistParams) 
   return upsert(db, code, newDoc);
 };
 
-export async function messagePostAndPersist({db, code, content, templateId, batchId = ""}) {
+export async function messagePostAndPersist({db, code, content, templateId, batchId = ""}: any) {
   const sent = await post({
     path: `messages/${code}`,
     options: {
@@ -100,7 +100,7 @@ export async function messagePostAndPersist({db, code, content, templateId, batc
   };
 };
 
-export function createMessageContent({message, dueDate, amount, notice, dueDateFormat}) {
+export function createMessageContent({message, dueDate, amount, notice, dueDateFormat}: any) {
   let content = {
     subject: message.subject,
     markdown: message.markdown,
@@ -119,14 +119,14 @@ export function createMessageContent({message, dueDate, amount, notice, dueDateF
   return content;
 };
 
-export function getMessageValues(row) {
+export function getMessageValues(row: any) {
   const values: any = {};
 
   if (!row) {
     return values;
   }
 
-  const keyIndexTuples = toPairs(CSV);
+  const keyIndexTuples: [string, number][] = toPairs(CSV);
   keyIndexTuples.forEach(keyIndex => {
     const [key, index] = keyIndex;
     values[CSV_HEADERS[key]] = row[index];
@@ -135,7 +135,7 @@ export function getMessageValues(row) {
   return values;
 };
 
-const interpolateAmount = string => {
+const interpolateAmount = (string: string) => {
   if (!!string) {
     // Amount is in Euro `cents`
     const amount = Number(string) / 100;
@@ -170,7 +170,7 @@ const interpolateAmount = string => {
   return "";
 };
 
-export function interpolateMarkdown(markdown, row) {
+export function interpolateMarkdown(markdown: any, row: any) {
   const compiled = template(markdown, templateSettings);
   const values = getMessageValues(row);
 

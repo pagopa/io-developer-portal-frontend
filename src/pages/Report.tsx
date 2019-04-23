@@ -50,7 +50,7 @@ class Report extends Component<any, ReportState> {
     });
   };
 
-  onSetSelected = selected => {
+  onSetSelected = (selected: string) => {
     this.setState((prevState, props) => {
       selected = prevState.selected === selected ? "" : selected;
       return {
@@ -74,7 +74,7 @@ class Report extends Component<any, ReportState> {
           type: "message",
           [entry_type === "batch" ? `batchId` : `_id`]: entry_id
         }}
-        render={({ docs }) => {
+        render={({ docs }: any) => {
           if (!docs.length) {
             return null;
           }
@@ -88,7 +88,7 @@ class Report extends Component<any, ReportState> {
                 type: "template",
                 _id: templateId
               }}
-              render={({ docs }) => {
+              render={({ docs }: any) => {
                 if (!docs.length) {
                   return null;
                 }

@@ -139,7 +139,7 @@ class Message extends Component<any, MessageState> {
         const filtered: any[] = [];
 
         results.data.map(line =>
-          line.map((value) => {
+          line.map((value: any) => {
             // TODO Test it against validator (will be validated against API anyway)
             if (value.length === CODE.MAX) {
               filtered.push(value);
@@ -259,7 +259,7 @@ class Message extends Component<any, MessageState> {
         }
       });
 
-      list.docs.map(doc =>
+      list.docs.map((doc: any) =>
         promises.push(
           messagePostAndPersist({
             db,
@@ -277,7 +277,7 @@ class Message extends Component<any, MessageState> {
     this.goHome({ result });
   };
 
-  goHome = ({ result }) => {
+  goHome = ({ result }: any) => {
     const { history } = this.props;
     const location = {
       pathname: "/",
@@ -358,7 +358,7 @@ class Message extends Component<any, MessageState> {
                                     type: "contact"
                                   }}
                                   sort={["_id"]}
-                                  render={({ docs }) => (
+                                  render={({ docs }: any) => (
                                     <ContactsList
                                       docs={docs}
                                       selected={selected}
@@ -410,7 +410,7 @@ class Message extends Component<any, MessageState> {
                                     batchId: batch
                                   }}
                                   sort={["_id"]}
-                                  render={({ docs }) => <ContactsList docs={docs} selected={selected} />}
+                                  render={({ docs }: any) => <ContactsList docs={docs} selected={selected} />}
                                 />
                               </div>
                             )}
@@ -454,7 +454,7 @@ class Message extends Component<any, MessageState> {
               _id: templateId
             }}
             sort={["_id"]}
-            render={({ docs }) => {
+            render={({ docs }: any) => {
               const message = docs[0];
 
               if (!message) {

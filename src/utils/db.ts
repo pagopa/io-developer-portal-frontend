@@ -1,13 +1,13 @@
-const tryAndPut = (db, doc) => {
+const tryAndPut = (db: any, doc: any) => {
   return db.put(doc).then(
-    res => {
+    (res: any) => {
       return {
         updated: true,
         rev: res.rev,
         id: doc._id
       };
     },
-    err => {
+    (err: any) => {
       if (err.status !== 409) {
         throw err;
       }
@@ -16,20 +16,20 @@ const tryAndPut = (db, doc) => {
   );
 };
 
-export function upsert (db, docId, newDoc) {
+export function upsert (db: any, docId: string | undefined, newDoc: any) {
   if (typeof docId !== "string") {
     throw new Error("doc id is required");
   }
 
   return db
     .get(docId)
-    .catch(err => {
+    .catch((err: any) => {
       if (err.status !== 404) {
         throw err;
       }
       return {};
     })
-    .then(doc => {
+    .then((doc: any) => {
       // the user might change the _rev, so save it for posterity
       const docRev = doc._rev;
 

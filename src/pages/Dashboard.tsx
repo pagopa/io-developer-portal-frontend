@@ -18,7 +18,7 @@ class Dashboard extends Component<any, any> {
       <section className="d-flex">
         <section className="position-fixed dashboard--notifications-container">
           {location.state &&
-            location.state.map(info => {
+            location.state.map((info: any) => {
               return <Notification key={info._id} info={info} />;
             })}
         </section>
@@ -26,7 +26,7 @@ class Dashboard extends Component<any, any> {
           selector={{
             type: "template"
           }}
-          render={({ docs }) => {
+          render={({ docs }: any) => {
             return (
               <Card className="flex-1 bg-primary text-white p-3 m-3">
                 <CardBody>
@@ -41,7 +41,7 @@ class Dashboard extends Component<any, any> {
           selector={{
             type: "message"
           }}
-          render={({ docs }) => {
+          render={({ docs }: any) => {
             return (
               <Card className="flex-1 bg-primary text-white p-3 m-3">
                 <CardBody>
@@ -56,7 +56,7 @@ class Dashboard extends Component<any, any> {
           selector={{
             type: "contact"
           }}
-          render={({ docs }) => {
+          render={({ docs }: any) => {
             return (
               <Card className="flex-1 bg-primary text-white p-3 m-3">
                 <CardBody>

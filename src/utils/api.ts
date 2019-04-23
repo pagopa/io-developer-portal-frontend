@@ -19,7 +19,7 @@ export function getUrl(){
   return URL;
 };
 
-const getOptions = dbName => {
+const getOptions = (dbName: string) => {
   const OPTIONS = {
     headers: {
       "Content-Type": "application/json",
@@ -103,11 +103,18 @@ export function post(params: PostParams) {
     });
 };
 
-const getRetryTimeout = message => {
-  const string = message.match(/\d+ seconds/g)[0];
-  const digits = string.match(/\d+/)[0];
-
-  return isFinite(digits) ? digits * 1000 : 1 * 1000;
+const getRetryTimeout = (message: string) => {
+  try {
+    const messageMatch = message.match(/\d+ seconds/g);
+    if (!messageMatch) throw new Error();
+    const string = messageMatch[0];
+    const stringMatch = string.match(/\d+/);
+    if (!stringMatch) throw new Error();
+    const digits = Number(stringMatch[0]);
+    return isFinite(digits) ? digits * 1000 : 1 * 1000;
+  } catch (error) {
+    return 1 * 1000;
+  }
 };
 
 export default { DEFAULT_URL, getUrl, get, post }
