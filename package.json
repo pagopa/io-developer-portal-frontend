@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "engines": {
     "node": "6.11.2",
-    "npm": "6.1.0"
+    "yarn": "1.15.2"
   },
   "scripts": {
     "dev": "parcel index.html",
