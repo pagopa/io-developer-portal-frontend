@@ -13,7 +13,7 @@ import compose from "recompose/compose";
 import moment from "moment";
 
 type MessageStatsState = {
-  statuses: {}
+  statuses: any
 };
 
 type Props = {
@@ -24,7 +24,7 @@ type Props = {
 type MessageStatsProps =  WithNamespaces & Props;
 
 class MessageStats extends Component<MessageStatsProps, MessageStatsState> {
-  state: any = {
+  state: MessageStatsState = {
     statuses: {}
   };
 

@@ -20,12 +20,12 @@ type ContactsState = {
 };
 
 class Contacts extends Component<ContactsProps, ContactsState> {
-  initialState = {
+  initialState: ContactsState = {
     selected: "",
     code: ""
   };
 
-  state = {
+  state: ContactsState = {
     selected: this.initialState.selected,
     code: this.initialState.code
   };

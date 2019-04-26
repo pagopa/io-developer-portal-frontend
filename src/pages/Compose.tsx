@@ -39,7 +39,7 @@ type ComposeState = {
 };
 
 class Compose extends Component<ComposeProps, ComposeState> {
-  initialState = {
+  initialState: ComposeState = {
     code: "",
     subject: "",
     markdown: "",

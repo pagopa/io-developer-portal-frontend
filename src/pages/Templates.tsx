@@ -35,7 +35,7 @@ class Templates extends Component<TemplatesProps, TemplatesState> {
     doc: undefined
   };
 
-  state = {
+  state: TemplatesState = {
     subject: this.initialState.subject,
     markdown: this.initialState.markdown,
     doc: this.initialState.doc

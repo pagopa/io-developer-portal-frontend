@@ -16,7 +16,10 @@ type SubscriptionServiceState = {
 };
 
 class SubscriptionService extends Component<SubscriptionServiceProps, SubscriptionServiceState> {
-  state: any = {};
+  state: SubscriptionServiceState = {
+    service: undefined
+  };
+
   async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
     const service = await getFromBackend({

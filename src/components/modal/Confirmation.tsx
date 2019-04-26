@@ -24,7 +24,7 @@ type ConfirmationState = {
 };
 
 class Confirmation extends Component<ConfirmationProps, ConfirmationState> {
-  state = {
+  state: ConfirmationState = {
     isConfirmed: false
   };
 

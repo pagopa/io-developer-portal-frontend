@@ -15,11 +15,11 @@ type Props = {
 type NotificationProps = WithNamespaces & Props;
 
 class Notification extends Component<NotificationProps, NotificationState> {
-  initialState = {
+  initialState: NotificationState = {
     info: {}
   };
 
-  state = {
+  state: NotificationState = {
     info: this.props.info
   };
 

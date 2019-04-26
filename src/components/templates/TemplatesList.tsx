@@ -35,7 +35,7 @@ interface Template {
 }
 
 class TemplatesList extends Component<TemplatesListProps, TemplatesListState> {
-  state = {
+  state: TemplatesListState = {
     selected: ""
   };
 

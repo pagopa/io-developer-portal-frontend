@@ -28,12 +28,12 @@ type Props = {
 type ReportProps = RouteComponentProps<{entry_type: string; entry_id: string}> & WithNamespaces & Props;
 
   type ReportState = {
-  statuses: {},
+  statuses: any,
   selected: string
 };
 
 class Report extends Component<ReportProps, ReportState> {
-  state = {
+  state: ReportState = {
     statuses: {},
     selected: ""
   };
@@ -66,7 +66,7 @@ class Report extends Component<ReportProps, ReportState> {
   };
 
   render() {
-    const { statuses, selected }: any = this.state;
+    const { statuses, selected } = this.state;
     const {
       match: {
         params: { entry_type, entry_id }
