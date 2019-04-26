@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, ReactNode } from "react";
 import { render } from "react-dom";
 
 import { PouchDB } from "react-pouchdb/browser";
@@ -43,7 +43,7 @@ import "bootstrap-italia/dist/css/italia-icon-font.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./index.css";
 
-const Layout = ({ children }: any) => (
+const Layout = ({ children }: {children: ReactNode}) => (
   <section className="row">
     <div className="col-3">
       <div className="ml-4 pt-5 pb-5">
