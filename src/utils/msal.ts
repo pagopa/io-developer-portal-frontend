@@ -9,9 +9,19 @@ import { UserAgentApplication } from "msal";
 
 export async function getUserTokenOrRedirect(configuration: any) {
   const userAgentApplication = new UserAgentApplication(
-    configuration.clientID, configuration.authority, (errorDesc, token, error, tokenType, userState) => {
-      console.debug("getDefaultUserAgentApplication::params", errorDesc, token, error, tokenType, userState);
-    });
+    configuration.clientID,
+    configuration.authority,
+    (errorDesc, token, error, tokenType, userState) => {
+      console.debug(
+        "getDefaultUserAgentApplication::params",
+        errorDesc,
+        token,
+        error,
+        tokenType,
+        userState
+      );
+    }
+  );
 
   const user = userAgentApplication.getUser();
   console.debug("getUserTokenOrRedirect::user", user);
@@ -22,18 +32,19 @@ export async function getUserTokenOrRedirect(configuration: any) {
   }
 
   try {
-    const token = await userAgentApplication.acquireTokenSilent(configuration.b2cScopes);
+    const token = await userAgentApplication.acquireTokenSilent(
+      configuration.b2cScopes
+    );
     console.debug("getUserTokenOrRedirect::token", token);
 
     if (!token) {
       throw new Error("getUserTokenOrRedirect: cannot get user token");
     }
-    return ({
+    return {
       token,
       user: userAgentApplication.getUser()
-    });
-  }
-  catch (e) {
+    };
+  } catch (e) {
     console.debug("getUserTokenOrRedirect::error", e);
     return userAgentApplication.loginRedirect(configuration.b2cScopes);
   }

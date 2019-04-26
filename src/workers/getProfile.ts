@@ -7,7 +7,9 @@ import Batch from "batch";
 import { profileGetAndPersist } from "../utils/operations";
 
 self.addEventListener("message", async e => {
-  if (!e) return;
+  if (!e) {
+    return;
+  }
 
   const { action, dbName, url, batchId, results } = e.data;
 
@@ -17,7 +19,7 @@ self.addEventListener("message", async e => {
   batch.concurrency(1);
   batch.on("progress", (e: any) => {});
 
-  const promises = [];
+  const promises: ReadonlyArray<any> = [];
   results.forEach(async ([result]: any) => {
     batch.push(async (done: () => never) => {
       try {
@@ -39,10 +41,13 @@ self.addEventListener("message", async e => {
   // Actually startes the batch
   batch.end((err: any, data: any) => {
     if (!err) {
-      postMessage({
-        ...e.data,
-        completed: true
-      }, '*');  // TODO: set the proper targetOrigin
+      postMessage(
+        {
+          ...e.data,
+          completed: true
+        },
+        "*"
+      ); // TODO: set the proper targetOrigin
     }
   });
 });

@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 
-import { withDB, Find } from "react-pouchdb/browser";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { withDB } from "react-pouchdb/browser";
 
-import { Col, Row, ListGroup, ListGroupItem, Button } from "design-react-kit";
+import { Button, Col, ListGroup, ListGroupItem, Row } from "design-react-kit";
 
 import ServerPicker from "../components/servers/ServerPicker";
 
 import { DEFAULT_URL } from "../utils/api";
 import { upsert } from "../utils/db";
 
+import { RouteComponentProps } from "react-router";
 import compose from "recompose/compose";
-import { RouteComponentProps } from 'react-router';
 
 const { localStorage } = window;
 type Props = {
@@ -20,21 +20,21 @@ type Props = {
 type ServersProps = RouteComponentProps & WithNamespaces & Props;
 
 type ServersState = {
-  selected: undefined,
-  servers: any
+  selected: undefined;
+  servers: any;
 };
 
 class Servers extends Component<ServersProps, ServersState> {
-  state: ServersState = {
+  public state: ServersState = {
     selected: undefined,
     servers: {}
   };
 
-  componentDidMount = async () => {
+  public componentDidMount = async () => {
     await this.syncStatewithDB();
   };
 
-  syncStatewithDB = async () => {
+  public syncStatewithDB = async () => {
     const { db } = this.props;
     const servers = await db.find({
       selector: {
@@ -50,7 +50,7 @@ class Servers extends Component<ServersProps, ServersState> {
     });
   };
 
-  onServerAdd = async () => {
+  public onServerAdd = async () => {
     const { db } = this.props;
     const server = await db.post({
       type: "server",
@@ -59,14 +59,14 @@ class Servers extends Component<ServersProps, ServersState> {
     await this.syncStatewithDB();
   };
 
-  onServerSelect = (server: any) => {
+  public onServerSelect = (server: any) => {
     localStorage.setItem("serviceEndpoint", server.endpoint);
     this.setState({
       selected: server
     });
   };
 
-  onServerChange = async (server: any, value: string) => {
+  public onServerChange = async (server: any, value: string) => {
     const { db } = this.props;
     const doc = await upsert(db, server._id, {
       ...server,
@@ -91,13 +91,13 @@ class Servers extends Component<ServersProps, ServersState> {
     );
   };
 
-  onServerDelete = async (server: any) => {
+  public onServerDelete = async (server: any) => {
     const { db } = this.props;
     const doc = db.remove(server);
     await this.syncStatewithDB();
   };
 
-  render() {
+  public render() {
     const { servers } = this.state;
     const { t } = this.props;
 
@@ -130,7 +130,7 @@ class Servers extends Component<ServersProps, ServersState> {
             }
             onServerSelect={this.onServerSelect}
             onServerChange={this.onServerChange}
-            disabled
+            disabled={true}
           />
           {Object.keys(servers).map(key => {
             const server = servers[key];

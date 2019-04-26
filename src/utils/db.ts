@@ -16,7 +16,7 @@ const tryAndPut = (db: any, doc: any) => {
   );
 };
 
-export function upsert (db: any, docId: string | undefined, newDoc: any) {
+export function upsert(db: any, docId: string | undefined, newDoc: any) {
   if (typeof docId !== "string") {
     throw new Error("doc id is required");
   }
@@ -39,6 +39,6 @@ export function upsert (db: any, docId: string | undefined, newDoc: any) {
       newDoc._rev = docRev;
       return tryAndPut(db, newDoc);
     });
-};
+}
 
-export default { upsert }
+export default { upsert };

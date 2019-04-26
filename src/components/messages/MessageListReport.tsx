@@ -14,9 +14,9 @@ type Props = {
 type MessageListReportProps = WithNamespaces & Props;
 
 class MessageListReport extends Component<MessageListReportProps, never> {
-  render() {
+  public render() {
     const { list, t } = this.props;
-    
+
     if (!list) {
       return null;
     }

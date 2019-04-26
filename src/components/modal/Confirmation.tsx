@@ -3,11 +3,11 @@ import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import {
+  Button,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
-  Button
+  ModalHeader
 } from "design-react-kit";
 
 type Props = {
@@ -20,21 +20,21 @@ type Props = {
 type ConfirmationProps = WithNamespaces & Props;
 
 type ConfirmationState = {
-  isConfirmed: boolean
+  isConfirmed: boolean;
 };
 
 class Confirmation extends Component<ConfirmationProps, ConfirmationState> {
-  state: ConfirmationState = {
+  public state: ConfirmationState = {
     isConfirmed: false
   };
 
-  componentDidUpdate(prevProps: any) {
+  public componentDidUpdate(prevProps: any) {
     if (this.props.isOpen !== prevProps.isOpen) {
       this.setState({ isConfirmed: false });
     }
   }
 
-  render() {
+  public render() {
     const { isConfirmed } = this.state;
     const { title, body, isOpen, onCancel, onConfirm } = this.props;
     const { t } = this.props;

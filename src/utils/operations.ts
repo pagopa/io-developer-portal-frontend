@@ -1,8 +1,8 @@
-import moment from "moment";
+import map from "lodash/map";
 import template from "lodash/template";
 import toPairs from "lodash/toPairs";
 import zipObject from "lodash/zipObject";
-import map from "lodash/map";
+import moment from "moment";
 
 import { get, post } from "./api";
 import { upsert } from "./db";
@@ -28,9 +28,9 @@ interface ProfileGetAndPersistParams {
   batchId?: any;
 }
 
-export async function profileGetAndPersist (params: ProfileGetAndPersistParams) {
+export async function profileGetAndPersist(params: ProfileGetAndPersistParams) {
   const { db, dbName, url, code, batchId } = params;
-  let profile = await get({ dbName, url, path: `profiles/${code}` });
+  const profile = await get({ dbName, url, path: `profiles/${code}` });
 
   // The API returns errors with shape { detail, status, title }
   if (profile.status) {
@@ -45,9 +45,15 @@ export async function profileGetAndPersist (params: ProfileGetAndPersistParams) 
   };
 
   return upsert(db, code, newDoc);
-};
+}
 
-export async function messagePostAndPersist({db, code, content, templateId, batchId = ""}: any) {
+export async function messagePostAndPersist({
+  db,
+  code,
+  content,
+  templateId,
+  batchId = ""
+}: any) {
   const sent = await post({
     path: `messages/${code}`,
     options: {
@@ -98,10 +104,16 @@ export async function messagePostAndPersist({db, code, content, templateId, batc
     ...details,
     _id: sent.id
   };
-};
+}
 
-export function createMessageContent({message, dueDate, amount, notice, dueDateFormat}: any) {
-  let content = {
+export function createMessageContent({
+  message,
+  dueDate,
+  amount,
+  notice,
+  dueDateFormat
+}: any) {
+  const content = {
     subject: message.subject,
     markdown: message.markdown,
     due_date: dueDate && moment(dueDate, dueDateFormat).toISOString()
@@ -117,7 +129,7 @@ export function createMessageContent({message, dueDate, amount, notice, dueDateF
   }
 
   return content;
-};
+}
 
 export function getMessageValues(row: any) {
   const values: any = {};
@@ -126,14 +138,14 @@ export function getMessageValues(row: any) {
     return values;
   }
 
-  const keyIndexTuples: [string, number][] = toPairs(CSV);
+  const keyIndexTuples: ReadonlyArray<readonly [string, number]> = toPairs(CSV);
   keyIndexTuples.forEach(keyIndex => {
     const [key, index] = keyIndex;
     values[CSV_HEADERS[key]] = row[index];
   });
 
   return values;
-};
+}
 
 const interpolateAmount = (string: string) => {
   if (!!string) {
@@ -177,6 +189,11 @@ export function interpolateMarkdown(markdown: any, row: any) {
   values.amount = interpolateAmount(values.amount);
 
   return compiled(values);
-};
+}
 
-export default {profileGetAndPersist, createMessageContent, getMessageValues, interpolateMarkdown}
+export default {
+  profileGetAndPersist,
+  createMessageContent,
+  getMessageValues,
+  interpolateMarkdown
+};

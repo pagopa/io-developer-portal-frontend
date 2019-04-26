@@ -12,10 +12,11 @@ import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
 import FaEye from "react-icons/lib/fa/eye";
 import FaEyeSlash from "react-icons/lib/fa/eye-slash";
 
+import { RouteComponentProps } from "react-router";
 import Confirmation from "../components/modal/Confirmation";
-import { RouteComponentProps } from 'react-router';
 
-const getMail = (email: string) => (email && email !== "" ? atob(email) : undefined);
+const getMail = (email: string) =>
+  email && email !== "" ? atob(email) : undefined;
 
 const SubscriptionService = ({ service, t }: any) => {
   return service ? (
@@ -49,27 +50,27 @@ const SubscriptionService = ({ service, t }: any) => {
   ) : null;
 };
 
-type ProfileProps = RouteComponentProps<{email: string}> & WithNamespaces;
+type ProfileProps = RouteComponentProps<{ email: string }> & WithNamespaces;
 
 type ProfileState = {
-  applicationConfig: any,
-  userData: any,
+  applicationConfig: any;
+  userData: any;
   newSubscription: {
-    service_name?: any,
-    department_name?: any,
-    organization_name?: any,
-    organization_fiscal_code?: string,
-    new_user?: { adb2c_id: any, first_name: any, last_name: any, email: any }
-  },
-  userSubscriptions: any,
-  [x: string]: any,
-  services: any,
-  isConfirmationOpen: boolean,
-  onConfirmOperation: () => void
+    service_name?: any;
+    department_name?: any;
+    organization_name?: any;
+    organization_fiscal_code?: string;
+    new_user?: { adb2c_id: any; first_name: any; last_name: any; email: any };
+  };
+  userSubscriptions: any;
+  [x: string]: any;
+  services: any;
+  isConfirmationOpen: boolean;
+  onConfirmOperation: () => void;
 };
 
 class Profile extends Component<ProfileProps, ProfileState> {
-  state: ProfileState = {
+  public state: ProfileState = {
     userData: {},
     userSubscriptions: {},
     services: {},
@@ -79,7 +80,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     onConfirmOperation: () => {}
   };
 
-  onAddSubscription = async () => {
+  public onAddSubscription = async () => {
     const email = getMail(this.props.match.params.email);
 
     const userSubscription = await postToBackend({
@@ -117,7 +118,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     });
   };
 
-  async componentDidMount() {
+  public async componentDidMount() {
     const email = getMail(this.props.match.params.email);
 
     const applicationConfig = await getFromBackend({ path: "configuration" });
@@ -158,7 +159,9 @@ class Profile extends Component<ProfileProps, ProfileState> {
       path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : "")
     });
 
-    const userSubscriptionsObj: {[key: string]: any} = Object.keys(userSubscriptions).reduce(
+    const userSubscriptionsObj: { [key: string]: any } = Object.keys(
+      userSubscriptions
+    ).reduce(
       (p, key) =>
         isNaN(Number(key))
           ? p
@@ -185,17 +188,20 @@ class Profile extends Component<ProfileProps, ProfileState> {
     });
   }
 
-  onToggleKey(keyIdx: string) {
+  public onToggleKey(keyIdx: string) {
     this.setState({ [keyIdx]: !this.state[keyIdx] });
   }
 
-  onSetKey = (serviceKey: string, service: any) => () => {
+  public onSetKey = (serviceKey: string, service: any) => () => {
     localStorage.setItem("serviceKey", serviceKey);
     localStorage.setItem("service", JSON.stringify(service));
     window.location.replace("/compose");
   };
 
-  onRegenerateKey = (keyType: string, subscriptionId: string) => async () => {
+  public onRegenerateKey = (
+    keyType: string,
+    subscriptionId: string
+  ) => async () => {
     this.setState({
       isConfirmationOpen: true,
       onConfirmOperation: async () => {
@@ -214,7 +220,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     });
   };
 
-  handleInputChange = (event:  ChangeEvent<HTMLInputElement>) => {
+  public handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
@@ -227,7 +233,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     });
   };
 
-  render() {
+  public render() {
     const { userSubscriptions, services } = this.state;
     const { isConfirmationOpen, onConfirmOperation } = this.state;
     const { t } = this.props;
@@ -290,7 +296,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     ? subscription.primaryKey
                     : t("key")}
                   <Button
-                    outline
+                    outline={true}
                     color="primary"
                     size="xs"
                     className="ml-1 mr-1"
@@ -327,7 +333,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     ? subscription.secondaryKey
                     : t("key")}
                   <Button
-                    outline
+                    outline={true}
                     color="primary"
                     size="xs"
                     className="ml-1 mr-1"

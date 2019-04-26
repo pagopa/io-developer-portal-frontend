@@ -1,26 +1,31 @@
-import React, { ChangeEvent, Component, FormEvent } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Button } from "design-react-kit";
 
-import { getFromBackend, putToBackend } from "../utils/backend";
+import { RouteComponentProps } from "react-router";
 import { StorageContext } from "../context/storage";
-import { RouteComponentProps } from 'react-router';
+import { getFromBackend, putToBackend } from "../utils/backend";
 
 type Props = {};
-type SubscriptionServiceProps = RouteComponentProps<{service_id: string}> & WithNamespaces & Props;
+type SubscriptionServiceProps = RouteComponentProps<{ service_id: string }> &
+  WithNamespaces &
+  Props;
 
 type SubscriptionServiceState = {
-  service: any
+  service: any;
 };
 
-class SubscriptionService extends Component<SubscriptionServiceProps, SubscriptionServiceState> {
-  state: SubscriptionServiceState = {
+class SubscriptionService extends Component<
+  SubscriptionServiceProps,
+  SubscriptionServiceState
+> {
+  public state: SubscriptionServiceState = {
     service: undefined
   };
 
-  async componentDidMount() {
+  public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
     const service = await getFromBackend({
       path: "services/" + serviceId
@@ -30,7 +35,7 @@ class SubscriptionService extends Component<SubscriptionServiceProps, Subscripti
     });
   }
 
-  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+  public handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
@@ -42,7 +47,7 @@ class SubscriptionService extends Component<SubscriptionServiceProps, Subscripti
     });
   };
 
-  handleSubmit = async () => {
+  public handleSubmit = async () => {
     const service = this.state.service;
     const res = await putToBackend({
       path: "services/" + service.service_id,
@@ -53,14 +58,16 @@ class SubscriptionService extends Component<SubscriptionServiceProps, Subscripti
           organization_name: service.organization_name,
           department_name: service.department_name,
           service_name: service.service_name,
-          max_allowed_payment_amount: parseInt(service.max_allowed_payment_amount),
+          max_allowed_payment_amount: parseInt(
+            service.max_allowed_payment_amount
+          ),
           is_visible: new Boolean(service.is_visible)
         }
       }
     });
   };
 
-  render() {
+  public render() {
     const service = this.state.service;
     const { t } = this.props;
 
@@ -133,7 +140,8 @@ class SubscriptionService extends Component<SubscriptionServiceProps, Subscripti
                     className="mb-4 mr-2"
                   />
                   <label className="m-0">{t("visible_service")}</label>
-                </div>)}
+                </div>
+              )}
 
               <Button color="primary" onClick={this.handleSubmit}>
                 {t("save")}

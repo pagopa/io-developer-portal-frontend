@@ -1,4 +1,4 @@
-export let DEFAULT_URL = "";
+export const DEFAULT_URL = "";
 if (process.env.NODE_ENV === "production") {
   DEFAULT_URL = "https://api.cd.italia.it/api/v1";
 } else {
@@ -6,18 +6,18 @@ if (process.env.NODE_ENV === "production") {
   DEFAULT_URL = "http://localhost:3000";
 }
 
-export function getUrl(){
+export function getUrl() {
   const { localStorage } = window;
   const serviceEndpoint = localStorage.getItem("serviceEndpoint");
 
-  let URL = "";
+  const URL = "";
   if (serviceEndpoint) {
     URL = serviceEndpoint;
   } else {
     URL = DEFAULT_URL;
   }
   return URL;
-};
+}
 
 const getOptions = (dbName: string) => {
   const OPTIONS = {
@@ -30,14 +30,14 @@ const getOptions = (dbName: string) => {
   return OPTIONS;
 };
 
-interface GetParams{
+interface GetParams {
   dbName?: any;
   url?: any;
   path: any;
-  options?:any
+  options?: any;
 }
 
-export function get(params: GetParams){
+export function get(params: GetParams) {
   const { dbName, url, path, options } = params;
   return fetch(`${url || getUrl()}/${path}`, {
     ...getOptions(dbName),
@@ -64,9 +64,9 @@ export function get(params: GetParams){
       }
       return response;
     });
-};
+}
 
-interface PostParams{
+interface PostParams {
   dbName?: any;
   url?: any;
   path: any;
@@ -101,15 +101,19 @@ export function post(params: PostParams) {
       }
       return response;
     });
-};
+}
 
 const getRetryTimeout = (message: string) => {
   try {
     const messageMatch = message.match(/\d+ seconds/g);
-    if (!messageMatch) throw new Error();
+    if (!messageMatch) {
+      throw new Error();
+    }
     const string = messageMatch[0];
     const stringMatch = string.match(/\d+/);
-    if (!stringMatch) throw new Error();
+    if (!stringMatch) {
+      throw new Error();
+    }
     const digits = Number(stringMatch[0]);
     return isFinite(digits) ? digits * 1000 : 1 * 1000;
   } catch (error) {
@@ -117,4 +121,4 @@ const getRetryTimeout = (message: string) => {
   }
 };
 
-export default { DEFAULT_URL, getUrl, get, post }
+export default { DEFAULT_URL, getUrl, get, post };

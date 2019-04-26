@@ -1,15 +1,25 @@
-export const DEFAULT_BACKEND_URL = process.env.NODE_ENV === "production" ?
-  "https://apim-portal-prod.azurewebsites.net" :
-  "https://apim-portal-dev.azurewebsites.net";
+export const DEFAULT_BACKEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://apim-portal-prod.azurewebsites.net"
+    : "https://apim-portal-dev.azurewebsites.net";
 
-export const getBackendUrl = () => window.localStorage.getItem("backendEndpoint") || DEFAULT_BACKEND_URL;
+export const getBackendUrl = () =>
+  window.localStorage.getItem("backendEndpoint") || DEFAULT_BACKEND_URL;
 
 const getOptions = (token: string) => {
   const defaultToken = localStorage.getItem("userToken");
   const OPTIONS = {
-    headers: Object.assign({}, {
-      "Content-Type": "application/json",
-    }, token ? { Authorization: "Bearer " + token } : (defaultToken ? { Authorization: "Bearer " + defaultToken } : {}))
+    headers: Object.assign(
+      {},
+      {
+        "Content-Type": "application/json"
+      },
+      token
+        ? { Authorization: "Bearer " + token }
+        : defaultToken
+        ? { Authorization: "Bearer " + defaultToken }
+        : {}
+    )
   };
   return OPTIONS;
 };
@@ -18,7 +28,7 @@ interface GetFromBackendParams {
   url?: any;
   path: any;
   token?: any;
-  options?: any
+  options?: any;
 }
 
 export const getFromBackend = async (params: GetFromBackendParams) => {
@@ -89,7 +99,7 @@ export const postToBackend = async (params: PostToBackendParams) => {
   return jsonRes;
 };
 
-interface PutToBackendParams {
+interface PutToBackendParams {
   url?: any;
   path: any;
   token?: any;
@@ -127,10 +137,14 @@ export const putToBackend = async (params: PutToBackendParams) => {
 const getRetryTimeout = (message: string) => {
   try {
     const messageMatch = message.match(/\d+ seconds/g);
-    if (!messageMatch) throw new Error();
+    if (!messageMatch) {
+      throw new Error();
+    }
     const string = messageMatch[0];
     const stringMatch = string.match(/\d+/);
-    if (!stringMatch) throw new Error();
+    if (!stringMatch) {
+      throw new Error();
+    }
     const digits = Number(stringMatch[0]);
 
     return isFinite(digits) ? digits * 1000 : 1 * 1000;

@@ -6,13 +6,13 @@ import { Alert } from "design-react-kit";
 
 const { localStorage } = window;
 
-import { getUserTokenOrRedirect } from "../utils/msal";
 import { getFromBackend } from "../utils/backend";
+import { getUserTokenOrRedirect } from "../utils/msal";
 
 import "./Login.css";
 
 class Login extends Component<WithNamespaces, never> {
-  componentDidMount = async () => {
+  public componentDidMount = async () => {
     try {
       const configuration = await getFromBackend({ path: "configuration" });
       const user: any = await getUserTokenOrRedirect(configuration);
@@ -44,7 +44,7 @@ class Login extends Component<WithNamespaces, never> {
     }
   };
 
-  render() {
+  public render() {
     const { t } = this.props;
 
     return (

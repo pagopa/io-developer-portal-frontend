@@ -4,17 +4,17 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Find } from "react-pouchdb/browser";
 
-import { Card, CardBody, CardTitle, CardText } from "design-react-kit";
+import { Card, CardBody, CardText, CardTitle } from "design-react-kit";
 
 import Notification from "../components/notifications/Notification";
 
+import { RouteComponentProps } from "react-router";
 import "./Dashboard.css";
-import { RouteComponentProps } from 'react-router';
 
 type DashboardProps = RouteComponentProps & WithNamespaces;
 
 class Dashboard extends Component<DashboardProps, never> {
-  render() {
+  public render() {
     const { location, t } = this.props;
 
     return (

@@ -3,13 +3,12 @@ import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import {
-    Row,
-    Col,
-    Label,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText
+  Col,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Label,
+  Row
 } from "design-react-kit";
 
 import DatePicker from "react-datepicker";
@@ -17,8 +16,8 @@ import MaskedInput from "react-text-mask";
 
 import FaCalendar from "react-icons/lib/fa/calendar";
 
-import { noticeMask, amountMask } from "../../utils/masks";
 import { LIMITS } from "../../utils/constants";
+import { amountMask, noticeMask } from "../../utils/masks";
 const { NOTICE } = LIMITS;
 
 import "./MessageMetadataEditor.css";
@@ -36,8 +35,11 @@ type Props = {
 };
 type MessageMetadataEditorProps = WithNamespaces & Props;
 
-class MessageMetadataEditor extends Component<MessageMetadataEditorProps, never> {
-  render() {
+class MessageMetadataEditor extends Component<
+  MessageMetadataEditorProps,
+  never
+> {
+  public render() {
     const {
       dueDate,
       notice,
@@ -63,11 +65,11 @@ class MessageMetadataEditor extends Component<MessageMetadataEditorProps, never>
               selected={dueDate}
               onChange={onChangeDueDate}
               dateFormat={t("format:date")}
-              showTimeSelect
+              showTimeSelect={true}
               timeCaption={t("time")}
               timeFormat={t("format:time")}
               timeIntervals={60}
-              disabledKeyboardNavigation
+              disabledKeyboardNavigation={true}
             />
 
             {dueDate && (
@@ -136,7 +138,7 @@ class MessageMetadataEditor extends Component<MessageMetadataEditorProps, never>
             {(notice || amount) &&
               (!isAmountValid && (
                 <div className="invalid-feedback d-block">
-                {t("validation:amount")}
+                  {t("validation:amount")}
                 </div>
               ))}
 

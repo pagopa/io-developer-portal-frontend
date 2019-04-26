@@ -4,21 +4,21 @@ import { RouteComponentProps } from "react-router-dom";
 import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
 
-import { Navbar, Collapse, Nav, NavItem, NavLink } from "design-react-kit";
+import { Collapse, Nav, Navbar, NavItem, NavLink } from "design-react-kit";
 
-import SignOut from "react-icons/lib/fa/sign-out";
 import Server from "react-icons/lib/fa/server";
+import SignOut from "react-icons/lib/fa/sign-out";
 
 import { StorageContext } from "../context/storage";
 
 class Header extends Component<RouteComponentProps, never> {
-  onSignOut = () => {
+  public onSignOut = () => {
     localStorage.removeItem("userData");
 
     this.goHome();
   };
 
-  goHome = () => {
+  public goHome = () => {
     const { history } = this.props;
     const location = {
       pathname: "/"
@@ -26,14 +26,14 @@ class Header extends Component<RouteComponentProps, never> {
     history.replace(location);
   };
 
-  render() {
+  public render() {
     return (
       <header>
         <StorageContext.Consumer>
           {storage => (
             <Navbar expand="lg">
-              <Collapse isOpen navbar>
-                <Nav navbar className="justify-content-between">
+              <Collapse isOpen={true} navbar={true}>
+                <Nav navbar={true} className="justify-content-between">
                   <section>
                     <NavItem>
                       <NavLink href={process.env.PUBLIC_URL || "/"}>

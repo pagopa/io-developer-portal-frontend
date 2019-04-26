@@ -1,44 +1,49 @@
 import React, { Component } from "react";
 
-import { withDB, Find } from "react-pouchdb/browser";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { Find, withDB } from "react-pouchdb/browser";
 
 import {
-  Row,
-  Col,
   Accordion,
+  AccordionBody,
   AccordionHeader,
-  AccordionBody
+  Col,
+  Row
 } from "design-react-kit";
 
-import compose from "recompose/compose";
-import sortBy from "lodash/sortBy";
 import groupBy from "lodash/groupBy";
+import sortBy from "lodash/sortBy";
 import moment from "moment";
+import compose from "recompose/compose";
 
 import { getStatsFor } from "../utils/stats";
 
+import { RouteComponentProps } from "react-router";
 import MessageListReport from "../components/messages/MessageListReport";
 import MessagePreview from "../components/messages/MessagePreview";
-import { RouteComponentProps } from 'react-router';
 
 type Props = {
   db: any;
 };
-type ReportProps = RouteComponentProps<{entry_type: string; entry_id: string}> & WithNamespaces & Props;
+type ReportProps = RouteComponentProps<{
+  entry_type: string;
+  entry_id: string;
+}> &
+  WithNamespaces &
+  Props;
 
-  type ReportState = {
-  statuses: any,
-  selected: string
+type ReportState = {
+  statuses: any;
+  selected: string;
 };
 
 class Report extends Component<ReportProps, ReportState> {
-  state: ReportState = {
+  public state: ReportState = {
     statuses: {},
     selected: ""
   };
 
-  componentDidMount = async () => {
+  public componentDidMount = async () => {
     const {
       db,
       match: {
@@ -56,7 +61,7 @@ class Report extends Component<ReportProps, ReportState> {
     });
   };
 
-  onSetSelected = (selected: string) => {
+  public onSetSelected = (selected: string) => {
     this.setState((prevState, props) => {
       selected = prevState.selected === selected ? "" : selected;
       return {
@@ -65,7 +70,7 @@ class Report extends Component<ReportProps, ReportState> {
     });
   };
 
-  render() {
+  public render() {
     const { statuses, selected } = this.state;
     const {
       match: {

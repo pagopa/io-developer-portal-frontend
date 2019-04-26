@@ -5,10 +5,10 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import {
-  Alert,
   Accordion,
-  AccordionHeader,
   AccordionBody,
+  AccordionHeader,
+  Alert,
   UncontrolledTooltip
 } from "design-react-kit";
 
@@ -26,7 +26,7 @@ type Props = {
 type TemplatesListProps = WithNamespaces & Props;
 
 type TemplatesListState = {
-  selected: string
+  selected: string;
 };
 
 interface Template {
@@ -35,11 +35,11 @@ interface Template {
 }
 
 class TemplatesList extends Component<TemplatesListProps, TemplatesListState> {
-  state: TemplatesListState = {
+  public state: TemplatesListState = {
     selected: ""
   };
 
-  onSetSelected = (selected: string) => {
+  public onSetSelected = (selected: string) => {
     this.setState((prevState, props) => {
       selected = prevState.selected === selected ? "" : selected;
       return {
@@ -48,7 +48,7 @@ class TemplatesList extends Component<TemplatesListProps, TemplatesListState> {
     });
   };
 
-  render() {
+  public render() {
     const { selected } = this.state;
     const { docs, t } = this.props;
 

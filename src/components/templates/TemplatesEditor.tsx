@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
-import { Input, Button } from "design-react-kit";
+import { Input } from "design-react-kit";
 
 import TemplatePreview from "./TemplatePreview";
 
@@ -23,8 +23,8 @@ type Props = {
 };
 type TemplatesEditorProps = WithNamespaces & Props;
 
-class TemplatesEditor extends Component<TemplatesEditorProps, never>  {
-  render() {
+class TemplatesEditor extends Component<TemplatesEditorProps, never> {
+  public render() {
     const {
       subject,
       markdown,
@@ -41,19 +41,18 @@ class TemplatesEditor extends Component<TemplatesEditorProps, never>  {
         <Input
           className="font-weight-normal"
           type="text"
-          autoFocus
+          autoFocus={true}
           value={subject}
           placeholder={t("subject")}
           minLength={SUBJECT.MIN}
           maxLength={SUBJECT.MAX}
           onChange={onChangeSubject}
         />
-        {subject &&
-          !isSubjectValid && (
-            <div className="invalid-feedback d-block">
-              {t("validation:subject", { length: subjectLength.join("-") })}
-            </div>
-          )}
+        {subject && !isSubjectValid && (
+          <div className="invalid-feedback d-block">
+            {t("validation:subject", { length: subjectLength.join("-") })}
+          </div>
+        )}
 
         <section className="flex-1 d-flex flex-row">
           <div className="flex-1 h-100">
@@ -65,12 +64,11 @@ class TemplatesEditor extends Component<TemplatesEditorProps, never>  {
               maxLength={MARKDOWN.MAX}
               onChange={onChangeMarkdown}
             />
-            {markdown &&
-              !isMarkdownValid && (
-                <div className="invalid-feedback d-block">
-                  {t("validation:markdown", { length: markdownLength.join("-") })}
-                </div>
-              )}
+            {markdown && !isMarkdownValid && (
+              <div className="invalid-feedback d-block">
+                {t("validation:markdown", { length: markdownLength.join("-") })}
+              </div>
+            )}
           </div>
 
           <TemplatePreview markdown={markdown} />

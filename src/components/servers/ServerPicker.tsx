@@ -1,15 +1,6 @@
 import React, { ChangeEvent, Component } from "react";
 
-import {
-  Row,
-  Col,
-  ListGroup,
-  ListGroupItem,
-  InputGroup,
-  InputGroupAddon,
-  Input,
-  Label
-} from "design-react-kit";
+import { Col, Input, InputGroup, InputGroupAddon, Row } from "design-react-kit";
 
 import Trash from "react-icons/lib/fa/trash";
 
@@ -24,7 +15,7 @@ type ServerPickerProps = {
 };
 
 class ServerPicker extends Component<ServerPickerProps, never> {
-  render() {
+  public render() {
     const {
       server,
       value,
@@ -52,7 +43,9 @@ class ServerPicker extends Component<ServerPickerProps, never> {
               type="text"
               value={value}
               disabled={disabled}
-              onChange={({ target: { value } }: ChangeEvent<HTMLInputElement>) =>
+              onChange={({
+                target: { value }
+              }: ChangeEvent<HTMLInputElement>) =>
                 onServerChange(server, value)
               }
             />
@@ -61,7 +54,9 @@ class ServerPicker extends Component<ServerPickerProps, never> {
                 addonType="append"
                 onClick={() => onServerDelete(server)}
               >
-                <span className="input-group-text cursor-pointer"><Trash /></span>
+                <span className="input-group-text cursor-pointer">
+                  <Trash />
+                </span>
               </InputGroupAddon>
             )}
           </InputGroup>

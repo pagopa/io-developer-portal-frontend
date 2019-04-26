@@ -3,41 +3,42 @@ import React, { ChangeEvent, Component } from "react";
 import ContactAdd from "../components/contacts/ContactAdd";
 import ContactsList, { ContactDoc } from "../components/contacts/ContactsList";
 
-import { withDB, Find } from "react-pouchdb/browser";
+import { Find, withDB } from "react-pouchdb/browser";
 
-import { profileGetAndPersist } from "../utils/operations";
 import { codeMask } from "../utils/masks";
+import { profileGetAndPersist } from "../utils/operations";
 import { isMaskValid } from "../utils/validators";
-
 
 type ContactsProps = {
   db: any;
 };
 
 type ContactsState = {
-  selected: string,
-  code: string
+  selected: string;
+  code: string;
 };
 
 class Contacts extends Component<ContactsProps, ContactsState> {
-  initialState: ContactsState = {
+  public initialState: ContactsState = {
     selected: "",
     code: ""
   };
 
-  state: ContactsState = {
+  public state: ContactsState = {
     selected: this.initialState.selected,
     code: this.initialState.code
   };
 
-  onInputCode = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onInputCode = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       code: value
     });
   };
 
-  onInputAdd = () => {
-    let { code } = this.state;
+  public onInputAdd = () => {
+    const { code } = this.state;
     code = code.toUpperCase();
 
     if (!code) {
@@ -55,7 +56,7 @@ class Contacts extends Component<ContactsProps, ContactsState> {
     );
   };
 
-  onContactSelect = (code: any) => {
+  public onContactSelect = (code: any) => {
     this.setState((prevState, props) => {
       return {
         selected: code
@@ -63,7 +64,7 @@ class Contacts extends Component<ContactsProps, ContactsState> {
     });
   };
 
-  render() {
+  public render() {
     const { code } = this.state;
     const isCodeValid = isMaskValid(code, codeMask);
 
@@ -82,7 +83,9 @@ class Contacts extends Component<ContactsProps, ContactsState> {
             type: "contact"
           }}
           sort={["_id"]}
-          render={({ docs }: {docs: ContactDoc[]}) => <ContactsList docs={docs} />}
+          render={({ docs }: { docs: readonly ContactDoc[] }) => (
+            <ContactsList docs={docs} />
+          )}
         />
       </section>
     );

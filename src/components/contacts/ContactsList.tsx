@@ -8,7 +8,7 @@ export interface ContactDoc {
   _id: string;
   sender_allowed: boolean;
   status: any;
-};
+}
 
 const getUserIcon = ({ sender_allowed, status }: ContactDoc) => {
   if (sender_allowed === true) {
@@ -23,12 +23,12 @@ const getUserIcon = ({ sender_allowed, status }: ContactDoc) => {
 type Props = {
   docs: any;
   selected?: any;
-  onContactSelect?: any
+  onContactSelect?: any;
 };
 type ContactsListProps = WithNamespaces & Props;
 
 class ContactsList extends Component<ContactsListProps, never> {
-  render() {
+  public render() {
     const { docs, selected, onContactSelect } = this.props;
     const { t } = this.props;
 

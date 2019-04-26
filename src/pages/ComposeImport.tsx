@@ -1,25 +1,21 @@
 import React, { ChangeEvent, Component } from "react";
 
-import { RouteComponentProps, withRouter } from "react-router";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { RouteComponentProps, withRouter } from "react-router";
 
-import { parse } from 'papaparse';
+import { parse } from "papaparse";
 
-import {
-  Row,
-  Col,
-  FormGroup,
-  Alert,
-  Input,
-  Toggle,
-  Button
-} from "design-react-kit";
+import { Alert, Button, Col, FormGroup, Input, Toggle } from "design-react-kit";
 import SelectedService from "../components/SelectedService";
 
 import { withDB } from "react-pouchdb/browser";
 
-import { CONSTANTS } from "../utils/constants"
-import { createMessageContent, messagePostAndPersist, interpolateMarkdown } from "../utils/operations";
+import { CONSTANTS } from "../utils/constants";
+import {
+  createMessageContent,
+  interpolateMarkdown,
+  messagePostAndPersist
+} from "../utils/operations";
 import { areHeadersValid } from "../utils/validators";
 
 const {
@@ -29,13 +25,13 @@ const {
 import moment from "moment";
 import compose from "recompose/compose";
 
-import FaEnvelope from "react-icons/lib/fa/envelope-o";
 import FaCalendar from "react-icons/lib/fa/calendar";
-import FaExclamation from "react-icons/lib/fa/exclamation";
+import FaEnvelope from "react-icons/lib/fa/envelope-o";
 import FaEur from "react-icons/lib/fa/eur";
+import FaExclamation from "react-icons/lib/fa/exclamation";
 
-import "./Pages.css";
 import "./ComposeImport.css";
+import "./Pages.css";
 
 type Props = {
   db: any;
@@ -43,23 +39,23 @@ type Props = {
 type ComposeProps = RouteComponentProps & WithNamespaces & Props;
 
 type ComposeState = {
-  file: File | undefined,
-  fileData: any[],
-  headers: any[],
-  ignoreHeaders: boolean,
-  sent: boolean
+  file: File | undefined;
+  fileData: readonly any[];
+  headers: readonly any[];
+  ignoreHeaders: boolean;
+  sent: boolean;
 };
 
 class Compose extends Component<ComposeProps, ComposeState> {
-  initialState: ComposeState = {
+  public initialState: ComposeState = {
     file: undefined,
-    fileData: [] as any[],
+    fileData: [] as readonly any[],
     headers: [],
     ignoreHeaders: false,
     sent: false
   };
 
-  state: ComposeState = {
+  public state: ComposeState = {
     file: this.initialState.file,
     fileData: this.initialState.fileData,
     headers: this.initialState.headers,
@@ -67,26 +63,30 @@ class Compose extends Component<ComposeProps, ComposeState> {
     sent: this.initialState.sent
   };
 
-  fileInput = React.createRef<HTMLInputElement>();
+  public fileInput = React.createRef<HTMLInputElement>();
 
-  onTriggerUpload = () => {
+  public onTriggerUpload = () => {
     this.fileInput.current && this.fileInput.current.click();
   };
 
-  onFileUpdate = ({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
+  public onFileUpdate = ({
+    target: { files }
+  }: ChangeEvent<HTMLInputElement>) => {
     if (!files) {
       return;
     }
     this.onFileParse(files[0]);
   };
 
-  onToggleHeader = ({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
+  public onToggleHeader = ({
+    target: { checked }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ ignoreHeaders: checked }, () => {
       this.onFileParse(this.state.file);
     });
   };
 
-  onFileParse = (file: File | undefined) => {
+  public onFileParse = (file: File | undefined) => {
     if (!file) {
       return;
     }
@@ -94,7 +94,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     parse(file, {
       // header: false,
       skipEmptyLines: true,
-      error: (error) => {
+      error: error => {
         console.error(error);
       },
       complete: (results, file) => {
@@ -104,7 +104,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
         const { ignoreHeaders } = this.state;
         const { data } = results;
 
-        let headers;
+        const headers;
         if (ignoreHeaders) {
           headers = data.shift();
         } else {
@@ -115,7 +115,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     });
   };
 
-  onMessageSubmit = async () => {
+  public onMessageSubmit = async () => {
     this.setState({
       sent: true
     });
@@ -134,7 +134,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
       created_at: moment().toISOString()
     });
 
-    const promises: Promise<any>[] = [];
+    const promises: ReadonlyArray<Promise<any>> = [];
     fileData.forEach(row => {
       const message = {
         subject: row[SUBJECT],
@@ -167,7 +167,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     this.goHome({ result });
   };
 
-  goHome = ({ result }: any) => {
+  public goHome = ({ result }: any) => {
     const { history } = this.props;
     const location = {
       pathname: "/",
@@ -176,7 +176,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     history.push(location);
   };
 
-  render() {
+  public render() {
     const { file, fileData, headers, ignoreHeaders, sent } = this.state;
     const { t } = this.props;
 
@@ -210,7 +210,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
             ref={this.fileInput}
             onChange={this.onFileUpdate}
           />
-          <FormGroup check className="m-3">
+          <FormGroup check={true} className="m-3">
             <Toggle label={t("ignore_header")} onChange={this.onToggleHeader} />
           </FormGroup>
         </Col>
@@ -220,14 +220,13 @@ class Compose extends Component<ComposeProps, ComposeState> {
             return (
               <table className="table mb-0 rounded">
                 <thead>
-                  {ignoreHeaders &&
-                    !isValid && (
-                      <tr>
-                        <td colSpan={6}>
-                          <Alert color="danger">{t("invalid_headers")}</Alert>
-                        </td>
-                      </tr>
-                    )}
+                  {ignoreHeaders && !isValid && (
+                    <tr>
+                      <td colSpan={6}>
+                        <Alert color="danger">{t("invalid_headers")}</Alert>
+                      </td>
+                    </tr>
+                  )}
                   <tr>
                     <th className="border-0">
                       <span className="text-uppercase font-weight-normal">

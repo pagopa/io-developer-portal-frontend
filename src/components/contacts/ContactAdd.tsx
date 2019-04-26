@@ -6,7 +6,6 @@ import { InputGroup, InputGroupAddon } from "design-react-kit";
 import MaskedInput from "react-text-mask";
 
 import { LIMITS } from "../../utils/constants";
-import { isLengthValid } from "../../utils/validators";
 const { CODE } = LIMITS;
 
 type Props = {
@@ -19,7 +18,7 @@ type Props = {
 type ContactAddProps = WithNamespaces & Props;
 
 class ContactAdd extends Component<ContactAddProps, never> {
-  render() {
+  public render() {
     const { code, codeMask, isCodeValid, onInputCode, onInputAdd } = this.props;
     const { t } = this.props;
 
@@ -27,7 +26,7 @@ class ContactAdd extends Component<ContactAddProps, never> {
       <InputGroup className="pb-3">
         <MaskedInput
           type="text"
-          autoFocus
+          autoFocus={true}
           className="form-control shadow-none"
           placeholder={t("fiscal_code")}
           aria-label={t("fiscal_code")}
@@ -51,12 +50,11 @@ class ContactAdd extends Component<ContactAddProps, never> {
             />
           </InputGroupAddon>
         )}
-        {code &&
-          !isCodeValid && (
-            <div className="invalid-feedback d-block">
-              {t("validation:fiscal_code", { max: CODE.MAX })}
-            </div>
-          )}
+        {code && !isCodeValid && (
+          <div className="invalid-feedback d-block">
+            {t("validation:fiscal_code", { max: CODE.MAX })}
+          </div>
+        )}
       </InputGroup>
     );
   }

@@ -4,11 +4,13 @@ PouchDB.plugin(find);
 
 import Batch from "batch";
 
-import { upsert } from "../utils/db";
 import { get } from "../utils/api";
+import { upsert } from "../utils/db";
 
 self.addEventListener("message", async e => {
-  if (!e) return;
+  if (!e) {
+    return;
+  }
 
   const { action, dbName, url } = e.data;
 
@@ -54,10 +56,13 @@ self.addEventListener("message", async e => {
   // Actually startes the batch
   batch.end((err: any, data: any) => {
     if (!err) {
-      postMessage({
-        ...e.data,
-        completed: true
-      }, '*');  // TODO: set the proper targetOrigin
+      postMessage(
+        {
+          ...e.data,
+          completed: true
+        },
+        "*"
+      ); // TODO: set the proper targetOrigin
     }
   });
 });

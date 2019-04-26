@@ -1,6 +1,6 @@
 export const CONSTANTS: {
-  CSV: {[key: string]: number},
-  CSV_HEADERS: {[key: string]: string}
+  CSV: { [key: string]: number };
+  CSV_HEADERS: { [key: string]: string };
 } = {
   CSV: {
     NAME: 0,

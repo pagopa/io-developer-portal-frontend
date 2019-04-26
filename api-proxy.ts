@@ -1,4 +1,4 @@
-import express, { Request, Response} from 'express';
+import express, { Request, Response } from "express";
 const request = require("request");
 const cors = require("cors");
 

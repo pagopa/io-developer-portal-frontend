@@ -1,22 +1,30 @@
-import { conformToMask } from "react-text-mask";
 import toPairs from "lodash/toPairs";
+import { conformToMask } from "react-text-mask";
 
-import { LIMITS, CONSTANTS } from "./constants";
+import { CONSTANTS, LIMITS } from "./constants";
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
-export const isMaskValid = (value: string, mask: RegExp[]) => {
-  return conformToMask(value, mask, undefined).conformedValue.indexOf("_") === -1;
+export const isMaskValid = (value: string, mask: readonly RegExp[]) => {
+  return (
+    conformToMask(value, mask, undefined).conformedValue.indexOf("_") === -1
+  );
 };
 
-export const isLengthValid = (value: string, [min, max]: [number, number]) => {
+export const isLengthValid = (
+  value: string,
+  [min, max]: readonly [number, number]
+) => {
   return isValueRangeValid(value.length, [min, max]);
 };
 
-export const isValueRangeValid = (value: any, [min, max]: [number, number]) => {
+export const isValueRangeValid = (
+  value: any,
+  [min, max]: readonly [number, number]
+) => {
   return value >= min && value <= max;
 };
 
-export const areHeadersValid = (value: any[]) => {
+export const areHeadersValid = (value: readonly any[]) => {
   if (!value.length) {
     return false;
   }
@@ -41,4 +49,10 @@ export const areHeadersValid = (value: any[]) => {
   return !isValid.includes(false);
 };
 
-export default { LIMITS, isMaskValid, isLengthValid, isValueRangeValid, areHeadersValid }
+export default {
+  LIMITS,
+  isMaskValid,
+  isLengthValid,
+  isValueRangeValid,
+  areHeadersValid
+};

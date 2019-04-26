@@ -7,7 +7,7 @@ import { Alert } from "design-react-kit";
 import { StorageContext } from "../context/storage";
 
 class Service extends Component<WithNamespaces, never> {
-  render() {
+  public render() {
     const { t } = this.props;
 
     return (

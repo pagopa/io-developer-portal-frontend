@@ -1,49 +1,45 @@
 import React, { ChangeEvent, Component, Fragment } from "react";
 
-import { withDB, Find } from "react-pouchdb/browser";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { Find, withDB } from "react-pouchdb/browser";
 
-import { parse } from 'papaparse';
+import { parse } from "papaparse";
 
 import {
-  Row,
-  Col,
   Accordion,
-  AccordionHeader,
   AccordionBody,
+  AccordionHeader,
   Badge,
+  Button,
   Card,
-  FormGroup,
-  Form,
-  Label,
-  InputGroup,
+  Col,
   Input,
-  InputGroupAddon,
-  InputGroupText,
-  Button
+  Row
 } from "design-react-kit";
 
-import compose from "recompose/compose";
 import moment from "moment";
-import Papa from "papaparse";
+import compose from "recompose/compose";
 
 import FaSpinner from "react-icons/lib/fa/spinner";
 
-import MessagePreview from "../components/messages/MessagePreview";
 import ContactsList from "../components/contacts/ContactsList";
 import MessageMetadataEditor from "../components/messages/MessageMetadataEditor";
+import MessagePreview from "../components/messages/MessagePreview";
 
-import { createMessageContent, messagePostAndPersist } from '../utils/operations';
-import { LIMITS } from '../utils/constants';
-import { isMaskValid, isValueRangeValid } from '../utils/validators';
-import { get, post, getUrl } from "../utils/api";
+import { getUrl } from "../utils/api";
+import { LIMITS } from "../utils/constants";
 import { noticeMask } from "../utils/masks";
+import {
+  createMessageContent,
+  messagePostAndPersist
+} from "../utils/operations";
+import { isMaskValid, isValueRangeValid } from "../utils/validators";
 const { AMOUNT, CODE } = LIMITS;
 
 import { GetProfileWorker } from "../workers/";
 
+import { RouteComponentProps } from "react-router";
 import "./Message.css";
-import { RouteComponentProps } from 'react-router';
 
 type Props = {
   db: any;
@@ -52,21 +48,21 @@ type Props = {
 type MessageProps = RouteComponentProps & WithNamespaces & Props;
 
 type MessageState = {
-  list: string,
-  contacts: any[],
-  file: any,
-  batch: string,
-  selected: string,
-  dueDate: any,
-  amount: string,
-  notice: string,
-  recipientOpen: boolean,
-  sent: boolean,
-  progress: boolean
+  list: string;
+  contacts: readonly any[];
+  file: any;
+  batch: string;
+  selected: string;
+  dueDate: any;
+  amount: string;
+  notice: string;
+  recipientOpen: boolean;
+  sent: boolean;
+  progress: boolean;
 };
 
 class Message extends Component<MessageProps, MessageState> {
-  initialState: MessageState = {
+  public initialState: MessageState = {
     list: "",
     contacts: [],
     file: undefined,
@@ -80,7 +76,7 @@ class Message extends Component<MessageProps, MessageState> {
     progress: false
   };
 
-  state: MessageState = {
+  public state: MessageState = {
     list: this.initialState.list,
     contacts: this.initialState.contacts,
     file: this.initialState.file,
@@ -94,9 +90,9 @@ class Message extends Component<MessageProps, MessageState> {
     progress: this.initialState.progress
   };
 
-  fileInput = React.createRef<HTMLInputElement>();
+  public fileInput = React.createRef<HTMLInputElement>();
 
-  componentDidMount() {
+  public componentDidMount() {
     GetProfileWorker.addEventListener("message", ({ data }) => {
       this.setState({
         progress: this.initialState.progress,
@@ -105,7 +101,7 @@ class Message extends Component<MessageProps, MessageState> {
     });
   }
 
-  onToggleRecipientOpen = () => {
+  public onToggleRecipientOpen = () => {
     this.setState(prevState => {
       return {
         recipientOpen: !prevState.recipientOpen
@@ -113,11 +109,13 @@ class Message extends Component<MessageProps, MessageState> {
     });
   };
 
-  onContactSelect = (selected: string) => {
+  public onContactSelect = (selected: string) => {
     this.setState({ selected });
   };
 
-  onChangeList = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeList = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       batch: this.initialState.batch,
       contacts: this.initialState.contacts,
@@ -126,24 +124,26 @@ class Message extends Component<MessageProps, MessageState> {
     });
   };
 
-  onTriggerUpload = () => {
+  public onTriggerUpload = () => {
     this.fileInput.current && this.fileInput.current.click();
   };
 
-  onFileUpdate = ({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
+  public onFileUpdate = ({
+    target: { files }
+  }: ChangeEvent<HTMLInputElement>) => {
     if (!files || !files[0]) {
       return;
     }
     parse(files[0], {
       skipEmptyLines: true,
-      error: (error) => {
+      error: error => {
         console.error(error);
       },
       complete: (results, file) => {
         // data is an array of rows.
         // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
-        const filtered: any[] = [];
+        const filtered: readonly any[] = [];
 
         results.data.map(line =>
           line.map((value: any) => {
@@ -165,23 +165,27 @@ class Message extends Component<MessageProps, MessageState> {
     });
   };
 
-  onChangeDueDate = (date: moment.Moment) => {
+  public onChangeDueDate = (date: moment.Moment) => {
     this.setState({ dueDate: date });
   };
 
-  onChangeNotice = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeNotice = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ notice: value });
   };
 
-  onChangeAmount = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeAmount = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ amount: value && Number(value).toString() });
   };
 
-  onReset = () => {
+  public onReset = () => {
     this.setState(this.initialState);
   };
 
-  onSaveContacts = () => {
+  public onSaveContacts = () => {
     const { list } = this.state;
     const {
       db,
@@ -193,7 +197,7 @@ class Message extends Component<MessageProps, MessageState> {
 
     parse(list, {
       skipEmptyLines: true,
-      error: (error) => {
+      error: error => {
         console.error(error);
       },
       complete: async (results, file) => {
@@ -219,7 +223,7 @@ class Message extends Component<MessageProps, MessageState> {
     });
   };
 
-  onMessageSubmit = async () => {
+  public onMessageSubmit = async () => {
     this.setState({
       sent: true
     });
@@ -238,7 +242,7 @@ class Message extends Component<MessageProps, MessageState> {
     });
     const message = messages.docs[0];
 
-    let content = createMessageContent({
+    const content = createMessageContent({
       message,
       dueDate,
       amount,
@@ -246,7 +250,7 @@ class Message extends Component<MessageProps, MessageState> {
       dueDateFormat: t("format:date")
     });
 
-    let result;
+    const result;
     if (!batch) {
       result = [
         await messagePostAndPersist({
@@ -258,7 +262,7 @@ class Message extends Component<MessageProps, MessageState> {
         })
       ];
     } else {
-      const promises: Promise<void>[] = [];
+      const promises: ReadonlyArray<Promise<void>> = [];
       const list = await db.find({
         selector: {
           type: "contact",
@@ -284,7 +288,7 @@ class Message extends Component<MessageProps, MessageState> {
     this.goHome({ result });
   };
 
-  goHome = ({ result }: any) => {
+  public goHome = ({ result }: any) => {
     const { history } = this.props;
     const location = {
       pathname: "/",
@@ -293,7 +297,7 @@ class Message extends Component<MessageProps, MessageState> {
     history.push(location);
   };
 
-  render() {
+  public render() {
     const {
       list,
       contacts,
@@ -392,23 +396,22 @@ class Message extends Component<MessageProps, MessageState> {
                                 </Card>
                               </Col>
                             </Row>
-                            {list &&
-                              !batch && (
-                                <Row>
-                                  <Col>
-                                    <Button
-                                      className="mt-3"
-                                      block
-                                      color="primary"
-                                      onClick={this.onSaveContacts}
-                                      disabled={progress}
-                                    >
-                                      {progress ? <FaSpinner /> : t("save")}
-                                    </Button>
-                                  </Col>
-                                  <Col />
-                                </Row>
-                              )}
+                            {list && !batch && (
+                              <Row>
+                                <Col>
+                                  <Button
+                                    className="mt-3"
+                                    block={true}
+                                    color="primary"
+                                    onClick={this.onSaveContacts}
+                                    disabled={progress}
+                                  >
+                                    {progress ? <FaSpinner /> : t("save")}
+                                  </Button>
+                                </Col>
+                                <Col />
+                              </Row>
+                            )}
                             {batch && (
                               <div className="message--contacts-list mt-4">
                                 <Find
@@ -417,7 +420,12 @@ class Message extends Component<MessageProps, MessageState> {
                                     batchId: batch
                                   }}
                                   sort={["_id"]}
-                                  render={({ docs }: any) => <ContactsList docs={docs} selected={selected} />}
+                                  render={({ docs }: any) => (
+                                    <ContactsList
+                                      docs={docs}
+                                      selected={selected}
+                                    />
+                                  )}
                                 />
                               </div>
                             )}
@@ -485,7 +493,7 @@ class Message extends Component<MessageProps, MessageState> {
         />
 
         {(() => {
-          const isValid: any[] = [];
+          const isValid: readonly any[] = [];
           if (dueDate) {
             isValid.push(moment(dueDate).isValid());
           }

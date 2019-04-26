@@ -1,12 +1,12 @@
-import React, { Component, Fragment, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { render } from "react-dom";
 
 import { PouchDB } from "react-pouchdb/browser";
 
 import {
   BrowserRouter as Router,
-  Route,
   Redirect,
+  Route,
   Switch
 } from "react-router-dom";
 
@@ -19,31 +19,31 @@ import "moment/locale/it";
 
 const { localStorage } = window;
 
-import Header from "./src/components/Header";
 import Aside from "./src/components/Aside";
+import Header from "./src/components/Header";
 import Worker from "./src/components/Worker";
 
-import Login from "./src/pages/Login";
 import Compose from "./src/pages/Compose";
 import ComposeImport from "./src/pages/ComposeImport";
 import Contacts from "./src/pages/Contacts";
 import Dashboard from "./src/pages/Dashboard";
-import Messages from "./src/pages/Messages";
+import Login from "./src/pages/Login";
 import Message from "./src/pages/Message";
+import Messages from "./src/pages/Messages";
 import Report from "./src/pages/Report";
 import Servers from "./src/pages/Servers";
 import Templates from "./src/pages/Templates";
 
 import Profile from "./src/pages/Profile";
-import UserList from "./src/pages/UserList";
 import SubscriptionService from "./src/pages/SubscriptionService";
+import UserList from "./src/pages/UserList";
 
 import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./index.css";
 
-const Layout = ({ children }: {children: ReactNode}) => (
+const Layout = ({ children }: { children: ReactNode }) => (
   <section className="row">
     <div className="col-3">
       <div className="ml-4 pt-5 pb-5">
@@ -87,43 +87,55 @@ const Root = () => {
           <Worker dbName={dbName} />
 
           <Switch>
-            <Route exact path="/login" component={Login} />
-            <PrivateRoute exact path="/" component={Dashboard} />
-            <PrivateRoute exact path="/compose" component={Compose} />
+            <Route exact={true} path="/login" component={Login} />
+            <PrivateRoute exact={true} path="/" component={Dashboard} />
+            <PrivateRoute exact={true} path="/compose" component={Compose} />
             <PrivateRoute
-              exact
+              exact={true}
               path="/compose/import"
               component={ComposeImport}
             />
-            <PrivateRoute exact path="/config/servers" component={Servers} />
-            <PrivateRoute exact path="/contacts" component={Contacts} />
-            <PrivateRoute exact path="/messages" component={Messages} />
-            <PrivateRoute exact path="/users" component={UserList} />
             <PrivateRoute
-              exact
+              exact={true}
+              path="/config/servers"
+              component={Servers}
+            />
+            <PrivateRoute exact={true} path="/contacts" component={Contacts} />
+            <PrivateRoute exact={true} path="/messages" component={Messages} />
+            <PrivateRoute exact={true} path="/users" component={UserList} />
+            <PrivateRoute
+              exact={true}
               path="/message"
               component={Message}
               dbName={dbName}
             />
             <PrivateRoute
-              exact
+              exact={true}
               path="/report/:entry_type/:entry_id"
               component={Report}
             />
-            <PrivateRoute exact path="/templates" component={Templates} />
             <PrivateRoute
-              exact
+              exact={true}
+              path="/templates"
+              component={Templates}
+            />
+            <PrivateRoute
+              exact={true}
               path="/templates/edit/:template_id"
               component={Templates}
             />
             <PrivateRoute
-              exact
+              exact={true}
               path="/templates/:template_id"
               component={Templates}
             />
-            <PrivateRoute exact path="/profile/:email?" component={Profile} />
             <PrivateRoute
-              exact
+              exact={true}
+              path="/profile/:email?"
+              component={Profile}
+            />
+            <PrivateRoute
+              exact={true}
               path="/service/:service_id"
               component={SubscriptionService}
             />

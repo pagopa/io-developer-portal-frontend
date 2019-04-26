@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
-import { Row, Col, Card } from "design-react-kit";
+import { Card, Col, Row } from "design-react-kit";
 
 import TemplatePreview from "../templates/TemplatePreview";
 
@@ -15,7 +15,7 @@ type Props = {
 type MessagePreviewProps = WithNamespaces & Props;
 
 class MessagePreview extends Component<MessagePreviewProps, never> {
-  render() {
+  public render() {
     const { message, t } = this.props;
 
     return (

@@ -1,6 +1,4 @@
-import React, { Component } from "react";
-
-import { withDB } from "react-pouchdb/browser";
+import { Component } from "react";
 
 import { GetMessageWorker } from "../workers";
 
@@ -11,9 +9,9 @@ type WorkerProps = {
 };
 
 class Worker extends Component<WorkerProps, never> {
-  working = false;
+  public working = false;
 
-  componentDidMount() {
+  public componentDidMount() {
     GetMessageWorker.addEventListener("message", ({ data }) => {
       this.working = !data.completed;
     });
@@ -25,7 +23,7 @@ class Worker extends Component<WorkerProps, never> {
     }, 5 * 1000);
   }
 
-  start = () => {
+  public start = () => {
     this.working = true;
 
     const { dbName } = this.props;
@@ -37,7 +35,7 @@ class Worker extends Component<WorkerProps, never> {
     });
   };
 
-  render() {
+  public render() {
     return null;
   }
 }

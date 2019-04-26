@@ -1,19 +1,27 @@
 import React, { ChangeEvent, Component } from "react";
 
-import { RouteComponentProps, withRouter } from "react-router";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withDB } from "react-pouchdb/browser";
+import { RouteComponentProps, withRouter } from "react-router";
 
 import { Button } from "design-react-kit";
 
 import ContactAdd from "../components/contacts/ContactAdd";
-import TemplatesEditor from "../components/templates/TemplatesEditor";
 import MessageMetadataEditor from "../components/messages/MessageMetadataEditor";
+import TemplatesEditor from "../components/templates/TemplatesEditor";
 
-import { LIMITS } from '../utils/constants';
-import { createMessageContent, messagePostAndPersist, profileGetAndPersist } from "../utils/operations";
-import { isLengthValid, isMaskValid, isValueRangeValid } from '../utils/validators';
+import { LIMITS } from "../utils/constants";
 import { codeMask, noticeMask } from "../utils/masks";
+import {
+  createMessageContent,
+  messagePostAndPersist,
+  profileGetAndPersist
+} from "../utils/operations";
+import {
+  isLengthValid,
+  isMaskValid,
+  isValueRangeValid
+} from "../utils/validators";
 const { SUBJECT, MARKDOWN, AMOUNT } = LIMITS;
 
 import moment from "moment";
@@ -23,23 +31,22 @@ import SelectedService from "../components/SelectedService";
 
 import "./Pages.css";
 
-
 type Props = {
   db: any;
 };
 type ComposeProps = RouteComponentProps & WithNamespaces & Props;
 
 type ComposeState = {
-  code: string,
-  subject: string,
-  markdown: string,
-  dueDate: any,
-  amount: string,
-  notice: string
+  code: string;
+  subject: string;
+  markdown: string;
+  dueDate: any;
+  amount: string;
+  notice: string;
 };
 
 class Compose extends Component<ComposeProps, ComposeState> {
-  initialState: ComposeState = {
+  public initialState: ComposeState = {
     code: "",
     subject: "",
     markdown: "",
@@ -48,7 +55,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     notice: ""
   };
 
-  state: ComposeState = {
+  public state: ComposeState = {
     code: this.initialState.code,
     subject: this.initialState.subject,
     markdown: this.initialState.markdown,
@@ -57,41 +64,51 @@ class Compose extends Component<ComposeProps, ComposeState> {
     notice: this.initialState.notice
   };
 
-  onInputCode = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onInputCode = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       code: value
     });
   };
 
-  onChangeSubject = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeSubject = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       subject: value
     });
   };
 
-  onChangeMarkdown = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeMarkdown = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       markdown: value
     });
   };
 
-  onChangeDueDate = (date: moment.Moment) => {
+  public onChangeDueDate = (date: moment.Moment) => {
     this.setState({ dueDate: date });
   };
 
-  onChangeNotice = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeNotice = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ notice: value });
   };
 
-  onChangeAmount = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeAmount = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({ amount: value && Number(value).toString() }); // TODO: verify if this is correct
   };
 
-  onReset = () => {
+  public onReset = () => {
     this.setState(this.initialState);
   };
 
-  onMessageSubmit = async () => {
+  public onMessageSubmit = async () => {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
     const { db, t } = this.props;
 
@@ -110,7 +127,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
       ...message
     });
 
-    let content = createMessageContent({
+    const content = createMessageContent({
       message,
       dueDate,
       amount,
@@ -128,7 +145,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     this.goHome({ result });
   };
 
-  goHome = ({ result }: any) => {
+  public goHome = ({ result }: any) => {
     const { history } = this.props;
     const location = {
       pathname: "/",
@@ -137,7 +154,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     history.push(location);
   };
 
-  render() {
+  public render() {
     const { code, subject, markdown, dueDate, notice, amount } = this.state;
     const { t } = this.props;
 
@@ -186,7 +203,11 @@ class Compose extends Component<ComposeProps, ComposeState> {
         />
 
         {(() => {
-          const isValid = [isCodeValid, isSubjectValid, isMarkdownValid];
+          const isValid: ReadonlyArray<any> = [
+            isCodeValid,
+            isSubjectValid,
+            isMarkdownValid
+          ];
 
           if (dueDate) {
             isValid.push(moment(dueDate).isValid());

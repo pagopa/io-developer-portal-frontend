@@ -1,16 +1,16 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 
-import { withDB, Find } from "react-pouchdb/browser";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { withDB } from "react-pouchdb/browser";
 
 import { Alert } from "design-react-kit";
 
 import MessageStats from "../components/messages/MessageStats";
 
-import compose from "recompose/compose";
-import orderBy from "lodash/orderBy";
+import { emit } from "cluster";
 import keyBy from "lodash/keyBy";
-import { emit } from 'cluster';
+import orderBy from "lodash/orderBy";
+import compose from "recompose/compose";
 
 type Props = {
   db: any;
@@ -18,25 +18,25 @@ type Props = {
 type MessagesProps = WithNamespaces & Props;
 
 type MessagesState = {
-  templates: any[],
-  messages: any[],
-  batches: any[],
-  stats: any
+  templates: readonly any[];
+  messages: readonly any[];
+  batches: readonly any[];
+  stats: any;
 };
 
 class Messages extends Component<MessagesProps, MessagesState> {
-  state: MessagesState = {
+  public state: MessagesState = {
     templates: [],
     messages: [],
     batches: [],
     stats: {}
   };
 
-  componentDidMount = async () => {
+  public componentDidMount = async () => {
     await this.queryDB();
   };
 
-  queryDB = async () => {
+  public queryDB = async () => {
     const { db } = this.props;
 
     const templates = await db.find({
@@ -60,7 +60,9 @@ class Messages extends Component<MessagesProps, MessagesState> {
     const counts = await db.query(
       {
         map: (doc: any) => {
-          if (doc.type === "message") emit(doc.batchId, 1);
+          if (doc.type === "message") {
+            emit(doc.batchId, 1);
+          }
         },
         reduce: "_count"
       },
@@ -80,7 +82,7 @@ class Messages extends Component<MessagesProps, MessagesState> {
     });
   };
 
-  render() {
+  public render() {
     const { templates, messages, batches, stats } = this.state;
     const { db, t } = this.props;
 

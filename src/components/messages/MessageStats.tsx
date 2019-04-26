@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 
-import { withDB } from "react-pouchdb/browser";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { withDB } from "react-pouchdb/browser";
 
 import { Link } from "react-router-dom";
 
@@ -9,26 +9,26 @@ import FaChevronRight from "react-icons/lib/fa/chevron-right";
 
 import { getStatsFor } from "../../utils/stats";
 
-import compose from "recompose/compose";
 import moment from "moment";
+import compose from "recompose/compose";
 
 type MessageStatsState = {
-  statuses: any
+  statuses: any;
 };
 
 type Props = {
-  db?: any,
-  entry: any,
-  templates: any,
+  db?: any;
+  entry: any;
+  templates: any;
 };
-type MessageStatsProps =  WithNamespaces & Props;
+type MessageStatsProps = WithNamespaces & Props;
 
 class MessageStats extends Component<MessageStatsProps, MessageStatsState> {
-  state: MessageStatsState = {
+  public state: MessageStatsState = {
     statuses: {}
   };
 
-  componentDidMount = async () => {
+  public componentDidMount = async () => {
     const { entry, db } = this.props;
     const statuses = await getStatsFor(entry, db);
 
@@ -37,7 +37,7 @@ class MessageStats extends Component<MessageStatsProps, MessageStatsState> {
     });
   };
 
-  render() {
+  public render() {
     const { statuses } = this.state;
     const { templates, entry, t } = this.props;
 

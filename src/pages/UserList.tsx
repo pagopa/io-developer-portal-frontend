@@ -11,15 +11,15 @@ import { getFromBackend } from "../utils/backend";
 import FaUser from "react-icons/lib/fa/user";
 
 type UserListState = {
-  users: { items: any[], length: number }
+  users: { items: readonly any[]; length: number };
 };
 
 class UserList extends Component<WithNamespaces, UserListState> {
-  state: UserListState = {
+  public state: UserListState = {
     users: { items: [], length: 0 }
   };
 
-  componentDidMount = async () => {
+  public componentDidMount = async () => {
     const self = this;
     const users = await getFromBackend({
       path: "users"
@@ -27,7 +27,7 @@ class UserList extends Component<WithNamespaces, UserListState> {
     this.setState({ users });
   };
 
-  render() {
+  public render() {
     const { users } = this.state;
     const { t } = this.props;
 

@@ -11,7 +11,7 @@ export const getStatsFor = async (entry: any, db: any) => {
   // "PROCESSED": the message was succesfully processed and is now stored in the user's inbox;
   // we'll try to send a notification for each of the selected channels
 
-  const statuses: {[key: string]: number} = {
+  const statuses: { [key: string]: number } = {
     PROCESSED: 0,
     FAILED: 0,
     ACCEPTED: 0,
@@ -42,11 +42,11 @@ export const getStatsFor = async (entry: any, db: any) => {
 
   statuses.QUEUED = statuses.ACCEPTED + statuses.THROTTLED;
   statuses.ERRORED = statuses.FAILED + statuses.NOTSENT;
-  statuses.TOTAL = (["PROCESSED", "QUEUED", "ERRORED"]).reduce((acc, key) => {
+  statuses.TOTAL = ["PROCESSED", "QUEUED", "ERRORED"].reduce((acc, key) => {
     return acc + statuses[key];
   }, 0);
-  
+
   return statuses;
 };
 
-export default { getStatsFor }
+export default { getStatsFor };

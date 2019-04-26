@@ -1,16 +1,16 @@
 import React, { ChangeEvent, Component } from "react";
 
-import { RouteComponentProps, withRouter } from "react-router";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withDB, Find } from "react-pouchdb/browser";
+import { Find, withDB } from "react-pouchdb/browser";
+import { RouteComponentProps, withRouter } from "react-router";
 
 import { Link } from "react-router-dom";
 
 import { Button } from "design-react-kit";
 
 import SelectedService from "../components/SelectedService";
-import TemplatesList from "../components/templates/TemplatesList";
 import TemplatesEditor from "../components/templates/TemplatesEditor";
+import TemplatesList from "../components/templates/TemplatesList";
 
 import compose from "recompose/compose";
 
@@ -20,28 +20,29 @@ const { SUBJECT, MARKDOWN } = LIMITS;
 
 import "./Pages.css";
 
-type TemplatesProps = RouteComponentProps<{template_id: string}> & WithNamespaces;
+type TemplatesProps = RouteComponentProps<{ template_id: string }> &
+  WithNamespaces;
 
-type TemplatesState = { subject: string, markdown: string, doc: any } & {
-  subject: any,
-  markdown: any,
-  doc: any
-} & any & { subject: string, markdown: string, doc: any };
+type TemplatesState = { subject: string; markdown: string; doc: any } & {
+  subject: any;
+  markdown: any;
+  doc: any;
+} & any & { subject: string; markdown: string; doc: any };
 
 class Templates extends Component<TemplatesProps, TemplatesState> {
-  initialState: TemplatesState = {
+  public initialState: TemplatesState = {
     subject: "",
     markdown: "",
     doc: undefined
   };
 
-  state: TemplatesState = {
+  public state: TemplatesState = {
     subject: this.initialState.subject,
     markdown: this.initialState.markdown,
     doc: this.initialState.doc
   };
 
-  componentWillReceiveProps(nextProps: any) {
+  public componentWillReceiveProps(nextProps: any) {
     const {
       match: {
         params: { template_id }
@@ -76,19 +77,23 @@ class Templates extends Component<TemplatesProps, TemplatesState> {
     }
   }
 
-  onChangeSubject = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeSubject = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       subject: value
     });
   };
 
-  onChangeMarkdown = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  public onChangeMarkdown = ({
+    target: { value }
+  }: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       markdown: value
     });
   };
 
-  onSaveTemplate = () => {
+  public onSaveTemplate = () => {
     const { subject, markdown, doc } = this.state;
 
     const {
@@ -117,14 +122,14 @@ class Templates extends Component<TemplatesProps, TemplatesState> {
     }
   };
 
-  goBack = () => {
+  public goBack = () => {
     const { history }: any = this.props;
     const location = {
       pathname: "/templates"
     };
     history.push(location);
   };
-  render() {
+  public render() {
     const { subject, markdown } = this.state;
     const {
       match: {
@@ -181,7 +186,7 @@ class Templates extends Component<TemplatesProps, TemplatesState> {
 
               <Button
                 className="mt-5"
-                block
+                block={true}
                 color="primary"
                 disabled={[isSubjectValid, isMarkdownValid].includes(false)}
                 onClick={this.onSaveTemplate}
