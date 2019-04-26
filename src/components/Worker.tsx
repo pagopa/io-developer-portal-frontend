@@ -6,7 +6,11 @@ import { GetMessageWorker } from "../workers";
 
 import { getUrl } from "../utils/api";
 
-class Worker extends Component<any, any> {
+type WorkerProps = {
+  dbName: string;
+};
+
+class Worker extends Component<WorkerProps, never> {
   working = false;
 
   componentDidMount() {

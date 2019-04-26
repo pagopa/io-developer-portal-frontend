@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface MessageWithNotification {
   _id: string;
@@ -8,7 +8,12 @@ interface MessageWithNotification {
   notification: any;
 }
 
-class MessageListReport extends Component<any, any> {
+type Props = {
+  list: any;
+};
+type MessageListReportProps = WithNamespaces & Props;
+
+class MessageListReport extends Component<MessageListReportProps, never> {
   render() {
     const { list, t } = this.props;
     

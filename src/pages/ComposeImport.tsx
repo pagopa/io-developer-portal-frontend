@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Component } from "react";
 
-import { withRouter } from "react-router";
-import { withNamespaces } from "react-i18next";
+import { RouteComponentProps, withRouter } from "react-router";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { parse } from 'papaparse';
 
@@ -37,6 +37,11 @@ import FaEur from "react-icons/lib/fa/eur";
 import "./Pages.css";
 import "./ComposeImport.css";
 
+type Props = {
+  db: any;
+};
+type ComposeProps = RouteComponentProps & WithNamespaces & Props;
+
 type ComposeState = {
   file: File | undefined,
   fileData: any[],
@@ -45,7 +50,7 @@ type ComposeState = {
   sent: boolean
 };
 
-class Compose extends Component<any, ComposeState> {
+class Compose extends Component<ComposeProps, ComposeState> {
   initialState: ComposeState = {
     file: undefined,
     fileData: [] as any[],
@@ -311,7 +316,7 @@ class Compose extends Component<any, ComposeState> {
   }
 }
 
-const enhance = compose(
+const enhance = compose<ComposeProps, ComposeProps>(
   withDB,
   withRouter,
   withNamespaces(["compose_import", "format"])

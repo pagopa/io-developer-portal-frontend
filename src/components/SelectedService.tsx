@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert } from "design-react-kit";
 
 import { StorageContext } from "../context/storage";
 
-class Service extends Component<any, any> {
+class Service extends Component<WithNamespaces, never> {
   render() {
     const { t } = this.props;
 

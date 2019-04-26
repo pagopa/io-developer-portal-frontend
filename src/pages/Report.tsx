@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import {
   Row,
@@ -20,13 +20,19 @@ import { getStatsFor } from "../utils/stats";
 
 import MessageListReport from "../components/messages/MessageListReport";
 import MessagePreview from "../components/messages/MessagePreview";
+import { RouteComponentProps } from 'react-router';
 
-type ReportState = {
+type Props = {
+  db: any;
+};
+type ReportProps = RouteComponentProps<{entry_type: string; entry_id: string}> & WithNamespaces & Props;
+
+  type ReportState = {
   statuses: {},
   selected: string
 };
 
-class Report extends Component<any, ReportState> {
+class Report extends Component<ReportProps, ReportState> {
   state = {
     statuses: {},
     selected: ""
@@ -191,7 +197,7 @@ class Report extends Component<any, ReportState> {
   }
 }
 
-const enhance = compose(
+const enhance = compose<ReportProps, ReportProps>(
   withDB,
   withNamespaces(["messages", "format"])
 );

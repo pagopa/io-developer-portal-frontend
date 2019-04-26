@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Find } from "react-pouchdb/browser";
 
@@ -9,8 +9,11 @@ import { Card, CardBody, CardTitle, CardText } from "design-react-kit";
 import Notification from "../components/notifications/Notification";
 
 import "./Dashboard.css";
+import { RouteComponentProps } from 'react-router';
 
-class Dashboard extends Component<any, any> {
+type DashboardProps = RouteComponentProps & WithNamespaces;
+
+class Dashboard extends Component<DashboardProps, never> {
   render() {
     const { location, t } = this.props;
 

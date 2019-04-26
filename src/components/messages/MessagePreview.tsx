@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Row, Col, Card } from "design-react-kit";
 
@@ -8,7 +8,13 @@ import TemplatePreview from "../templates/TemplatePreview";
 
 import { LIMITS } from "../../utils/constants";
 const { SUBJECT, MARKDOWN } = LIMITS;
-class MessagePreview extends Component<any, any> {
+
+type Props = {
+  message: any;
+};
+type MessagePreviewProps = WithNamespaces & Props;
+
+class MessagePreview extends Component<MessagePreviewProps, never> {
   render() {
     const { message, t } = this.props;
 

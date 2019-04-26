@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Component, Fragment } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Button } from "design-react-kit";
 
@@ -13,6 +13,7 @@ import FaEye from "react-icons/lib/fa/eye";
 import FaEyeSlash from "react-icons/lib/fa/eye-slash";
 
 import Confirmation from "../components/modal/Confirmation";
+import { RouteComponentProps } from 'react-router';
 
 const getMail = (email: string) => (email && email !== "" ? atob(email) : undefined);
 
@@ -48,6 +49,8 @@ const SubscriptionService = ({ service, t }: any) => {
   ) : null;
 };
 
+type ProfileProps = RouteComponentProps<{email: string}> & WithNamespaces;
+
 type ProfileState = {
   applicationConfig: any,
   userData: any,
@@ -64,7 +67,8 @@ type ProfileState = {
   isConfirmationOpen: boolean,
   onConfirmOperation: () => void
 };
-class Profile extends Component<any, ProfileState> {
+
+class Profile extends Component<ProfileProps, ProfileState> {
   state: ProfileState = {
     userData: {},
     userSubscriptions: {},

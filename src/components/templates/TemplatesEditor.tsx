@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Input, Button } from "design-react-kit";
 
@@ -11,7 +11,19 @@ const { SUBJECT, MARKDOWN } = LIMITS;
 
 import "./TemplatesEditor.css";
 
-class TemplatesEditor extends Component<any, any>  {
+type Props = {
+  subject: any;
+  markdown: any;
+  subjectLength: any;
+  markdownLength: any;
+  isSubjectValid: any;
+  isMarkdownValid: any;
+  onChangeSubject: any;
+  onChangeMarkdown: any;
+};
+type TemplatesEditorProps = WithNamespaces & Props;
+
+class TemplatesEditor extends Component<TemplatesEditorProps, never>  {
   render() {
     const {
       subject,

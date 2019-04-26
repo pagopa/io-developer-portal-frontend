@@ -1,17 +1,21 @@
 import React, { ChangeEvent, Component, FormEvent } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Button } from "design-react-kit";
 
 import { getFromBackend, putToBackend } from "../utils/backend";
 import { StorageContext } from "../context/storage";
+import { RouteComponentProps } from 'react-router';
+
+type Props = {};
+type SubscriptionServiceProps = RouteComponentProps<{service_id: string}> & WithNamespaces & Props;
 
 type SubscriptionServiceState = {
   service: any
 };
 
-class SubscriptionService extends Component<any, SubscriptionServiceState> {
+class SubscriptionService extends Component<SubscriptionServiceProps, SubscriptionServiceState> {
   state: any = {};
   async componentDidMount() {
     const serviceId = this.props.match.params.service_id;

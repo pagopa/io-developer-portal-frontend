@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 
 import { withDB } from "react-pouchdb/browser";
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Link } from "react-router-dom";
 
@@ -16,12 +16,12 @@ type MessageStatsState = {
   statuses: {}
 };
 
-type MessageStatsProps = {
+type Props = {
   db?: any,
   entry: any,
-  t?: any,
   templates: any,
 };
+type MessageStatsProps =  WithNamespaces & Props;
 
 class MessageStats extends Component<MessageStatsProps, MessageStatsState> {
   state: any = {
@@ -63,7 +63,7 @@ class MessageStats extends Component<MessageStatsProps, MessageStatsState> {
   }
 }
 
-const enhance = compose<MessageStatsProps, any>(
+const enhance = compose<MessageStatsProps, MessageStatsProps>(
   withDB,
   withNamespaces("format")
 );

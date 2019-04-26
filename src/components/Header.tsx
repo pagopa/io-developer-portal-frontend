@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { RouteComponentProps } from "react-router-dom";
 
 import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
@@ -10,7 +11,7 @@ import Server from "react-icons/lib/fa/server";
 
 import { StorageContext } from "../context/storage";
 
-class Header extends Component<any, any> {
+class Header extends Component<RouteComponentProps, never> {
   onSignOut = () => {
     localStorage.removeItem("userData");
 

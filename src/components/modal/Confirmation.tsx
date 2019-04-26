@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import {
   Modal,
@@ -10,11 +10,20 @@ import {
   Button
 } from "design-react-kit";
 
+type Props = {
+  title?: any;
+  body?: any;
+  isOpen: any;
+  onCancel: any;
+  onConfirm: any;
+};
+type ConfirmationProps = WithNamespaces & Props;
+
 type ConfirmationState = {
   isConfirmed: boolean
 };
 
-class Confirmation extends Component<any, ConfirmationState> {
+class Confirmation extends Component<ConfirmationProps, ConfirmationState> {
   state = {
     isConfirmed: false
   };

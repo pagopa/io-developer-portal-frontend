@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import {
     Row,
@@ -23,7 +23,20 @@ const { NOTICE } = LIMITS;
 
 import "./MessageMetadataEditor.css";
 
-class MessageMetadataEditor extends Component<any, any> {
+type Props = {
+  dueDate: any;
+  notice: any;
+  amount: any;
+  isNoticeValid: any;
+  isAmountValid: any;
+  onChangeDueDate: any;
+  onChangeNotice: any;
+  onChangeAmount: any;
+  onReset: any;
+};
+type MessageMetadataEditorProps = WithNamespaces & Props;
+
+class MessageMetadataEditor extends Component<MessageMetadataEditorProps, never> {
   render() {
     const {
       dueDate,

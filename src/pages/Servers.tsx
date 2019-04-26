@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Col, Row, ListGroup, ListGroupItem, Button } from "design-react-kit";
 
@@ -11,15 +11,20 @@ import { DEFAULT_URL } from "../utils/api";
 import { upsert } from "../utils/db";
 
 import compose from "recompose/compose";
+import { RouteComponentProps } from 'react-router';
 
 const { localStorage } = window;
+type Props = {
+  db: any;
+};
+type ServersProps = RouteComponentProps & WithNamespaces & Props;
 
 type ServersState = {
   selected: undefined,
   servers: any
 };
 
-class Servers extends Component<any, ServersState> {
+class Servers extends Component<ServersProps, ServersState> {
   state: ServersState = {
     selected: undefined,
     servers: {}
@@ -147,7 +152,7 @@ class Servers extends Component<any, ServersState> {
   }
 }
 
-const enhance = compose(
+const enhance = compose<ServersProps, ServersProps>(
   withDB,
   withNamespaces(["servers", "format"])
 );

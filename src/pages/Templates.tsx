@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Component } from "react";
 
-import { withRouter } from "react-router";
-import { withNamespaces } from "react-i18next";
+import { RouteComponentProps, withRouter } from "react-router";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withDB, Find } from "react-pouchdb/browser";
 
 import { Link } from "react-router-dom";
@@ -20,13 +20,15 @@ const { SUBJECT, MARKDOWN } = LIMITS;
 
 import "./Pages.css";
 
+type TemplatesProps = RouteComponentProps<{template_id: string}> & WithNamespaces;
+
 type TemplatesState = { subject: string, markdown: string, doc: any } & {
   subject: any,
   markdown: any,
   doc: any
 } & any & { subject: string, markdown: string, doc: any };
 
-class Templates extends Component<any, TemplatesState> {
+class Templates extends Component<TemplatesProps, TemplatesState> {
   initialState: TemplatesState = {
     subject: "",
     markdown: "",
@@ -194,7 +196,7 @@ class Templates extends Component<any, TemplatesState> {
   }
 }
 
-const enhance = compose(
+const enhance = compose<TemplatesProps, TemplatesProps>(
   withDB,
   withRouter,
   withNamespaces("template")

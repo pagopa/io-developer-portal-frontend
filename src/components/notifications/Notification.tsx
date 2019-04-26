@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert } from "design-react-kit";
 
@@ -8,7 +8,13 @@ type NotificationState = {
   info: any
 };
 
-class Notification extends Component<any, NotificationState> {
+type Props = {
+  info: any;
+  autoClose?: any;
+};
+type NotificationProps = WithNamespaces & Props;
+
+class Notification extends Component<NotificationProps, NotificationState> {
   initialState = {
     info: {}
   };

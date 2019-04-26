@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Component, Fragment } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { parse } from 'papaparse';
 
@@ -43,6 +43,13 @@ const { AMOUNT, CODE } = LIMITS;
 import { GetProfileWorker } from "../workers/";
 
 import "./Message.css";
+import { RouteComponentProps } from 'react-router';
+
+type Props = {
+  db: any;
+  dbName: any;
+};
+type MessageProps = RouteComponentProps & WithNamespaces & Props;
 
 type MessageState = {
   list: string,
@@ -58,7 +65,7 @@ type MessageState = {
   progress: boolean
 };
 
-class Message extends Component<any, MessageState> {
+class Message extends Component<MessageProps, MessageState> {
   initialState: MessageState = {
     list: "",
     contacts: [],
@@ -517,7 +524,7 @@ class Message extends Component<any, MessageState> {
   }
 }
 
-const enhance = compose(
+const enhance = compose<MessageProps, MessageProps>(
   withDB,
   withNamespaces("message")
 );

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert, ListGroup, ListGroupItem } from "design-react-kit";
 
@@ -20,7 +20,14 @@ const getUserIcon = ({ sender_allowed, status }: ContactDoc) => {
   return "it-error";
 };
 
-class ContactsList extends Component<any, any> {
+type Props = {
+  docs: any;
+  selected?: any;
+  onContactSelect?: any
+};
+type ContactsListProps = WithNamespaces & Props;
+
+class ContactsList extends Component<ContactsListProps, never> {
   render() {
     const { docs, selected, onContactSelect } = this.props;
     const { t } = this.props;

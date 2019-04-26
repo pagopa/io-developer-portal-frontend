@@ -9,12 +9,17 @@ import { profileGetAndPersist } from "../utils/operations";
 import { codeMask } from "../utils/masks";
 import { isMaskValid } from "../utils/validators";
 
+
+type ContactsProps = {
+  db: any;
+};
+
 type ContactsState = {
   selected: string,
   code: string
 };
 
-class Contacts extends Component<any, ContactsState> {
+class Contacts extends Component<ContactsProps, ContactsState> {
   initialState = {
     selected: "",
     code: ""

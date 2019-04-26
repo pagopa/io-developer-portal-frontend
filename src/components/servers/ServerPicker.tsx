@@ -13,7 +13,17 @@ import {
 
 import Trash from "react-icons/lib/fa/trash";
 
-class ServerPicker extends Component<any, any> {
+type ServerPickerProps = {
+  server: any;
+  value: any;
+  checked: any;
+  disabled?: any;
+  onServerSelect: any;
+  onServerChange: any;
+  onServerDelete?: any;
+};
+
+class ServerPicker extends Component<ServerPickerProps, never> {
   render() {
     const {
       server,

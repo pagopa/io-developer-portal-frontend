@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert } from "design-react-kit";
 
@@ -11,7 +11,7 @@ import { getFromBackend } from "../utils/backend";
 
 import "./Login.css";
 
-class Login extends Component<any, any> {
+class Login extends Component<WithNamespaces, never> {
   componentDidMount = async () => {
     try {
       const configuration = await getFromBackend({ path: "configuration" });

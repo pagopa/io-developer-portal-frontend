@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Link } from "react-router-dom";
 
@@ -14,7 +14,7 @@ type UserListState = {
   users: { items: any[], length: number }
 };
 
-class UserList extends Component<any, UserListState> {
+class UserList extends Component<WithNamespaces, UserListState> {
   state: UserListState = {
     users: { items: [], length: 0 }
   };

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Link } from "react-router-dom";
 
@@ -19,7 +19,7 @@ import { StorageContext } from "../context/storage";
 
 import "./Aside.css";
 
-class Aside extends Component<any, any> {
+class Aside extends Component<WithNamespaces, never> {
   render() {
     const { t } = this.props;
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { InputGroup, InputGroupAddon } from "design-react-kit";
 import MaskedInput from "react-text-mask";
@@ -9,7 +9,16 @@ import { LIMITS } from "../../utils/constants";
 import { isLengthValid } from "../../utils/validators";
 const { CODE } = LIMITS;
 
-class ContactAdd extends Component<any, any> {
+type Props = {
+  code: any;
+  codeMask: any;
+  isCodeValid: any;
+  onInputCode: any;
+  onInputAdd?: any;
+};
+type ContactAddProps = WithNamespaces & Props;
+
+class ContactAdd extends Component<ContactAddProps, never> {
   render() {
     const { code, codeMask, isCodeValid, onInputCode, onInputAdd } = this.props;
     const { t } = this.props;

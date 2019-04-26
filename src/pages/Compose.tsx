@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Component } from "react";
 
-import { withRouter } from "react-router";
-import { withNamespaces } from "react-i18next";
+import { RouteComponentProps, withRouter } from "react-router";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withDB } from "react-pouchdb/browser";
 
 import { Button } from "design-react-kit";
@@ -23,6 +23,12 @@ import SelectedService from "../components/SelectedService";
 
 import "./Pages.css";
 
+
+type Props = {
+  db: any;
+};
+type ComposeProps = RouteComponentProps & WithNamespaces & Props;
+
 type ComposeState = {
   code: string,
   subject: string,
@@ -32,7 +38,7 @@ type ComposeState = {
   notice: string
 };
 
-class Compose extends Component<any, ComposeState> {
+class Compose extends Component<ComposeProps, ComposeState> {
   initialState = {
     code: "",
     subject: "",
@@ -205,7 +211,7 @@ class Compose extends Component<any, ComposeState> {
   }
 }
 
-const enhance = compose(
+const enhance = compose<ComposeProps, ComposeProps>(
   withDB,
   withRouter,
   withNamespaces(["compose", "format"])

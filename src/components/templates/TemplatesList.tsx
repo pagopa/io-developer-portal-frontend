@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Link } from "react-router-dom";
 
@@ -20,6 +20,11 @@ import User from "react-icons/lib/fa/user";
 
 import "./TemplatesList.css";
 
+type Props = {
+  docs: any;
+};
+type TemplatesListProps = WithNamespaces & Props;
+
 type TemplatesListState = {
   selected: string
 };
@@ -29,7 +34,7 @@ interface Template {
   subject: any;
 }
 
-class TemplatesList extends Component<any, TemplatesListState> {
+class TemplatesList extends Component<TemplatesListProps, TemplatesListState> {
   state = {
     selected: ""
   };

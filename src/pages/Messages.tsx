@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 
 import { withDB, Find } from "react-pouchdb/browser";
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert } from "design-react-kit";
 
@@ -12,6 +12,11 @@ import orderBy from "lodash/orderBy";
 import keyBy from "lodash/keyBy";
 import { emit } from 'cluster';
 
+type Props = {
+  db: any;
+};
+type MessagesProps = WithNamespaces & Props;
+
 type MessagesState = {
   templates: any[],
   messages: any[],
@@ -19,7 +24,7 @@ type MessagesState = {
   stats: any
 };
 
-class Messages extends Component<any, MessagesState> {
+class Messages extends Component<MessagesProps, MessagesState> {
   state: MessagesState = {
     templates: [],
     messages: [],
@@ -166,7 +171,7 @@ class Messages extends Component<any, MessagesState> {
   }
 }
 
-const enhance = compose(
+const enhance = compose<MessagesProps, MessagesProps>(
   withDB,
   withNamespaces("messages")
 );
