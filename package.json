@@ -2,7 +2,7 @@
   "name": "italia-backoffice",
   "version": "0.1.0",
   "engines": {
-    "node": "6.11.2",
+    "node": "^8.0.0",
     "yarn": "*"
   },
   "scripts": {
@@ -12,7 +12,8 @@
     "prebuild": "yarn run type-check",
     "build": "parcel build index.html --public-url /",
     "postbuild": "shx cp CNAME 404.html web.config dist/",
-    "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'"
+    "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'",
+    "lint": "tslint -p . -c tslint.json -t verbose"
   },
   "dependencies": {
     "batch": "^0.6.1",
@@ -60,9 +61,12 @@
     "@types/webfontloader": "^1.6.29",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "italia-tslint-rules": "^1.1.0",
     "parcel-bundler": "^1.10.2",
+    "prettier": "^1.17.0",
     "request": "^2.88.0",
     "shx": "^0.3.2",
+    "tslint": "^5.16.0",
     "typescript": "^3.4.2"
   }
 }

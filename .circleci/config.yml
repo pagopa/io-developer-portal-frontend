@@ -31,6 +31,18 @@ defaults: &defaults
   working_directory: *working_directory
 
 jobs:
+
+  lint:
+    <<: *defaults
+
+    steps:
+      - checkout
+      - restore_cache: *restore_cache
+      - run: *yarn_install
+      - run:
+          name: Lint
+          command: yarn lint   
+
   build:
     <<: *defaults
 
@@ -82,6 +94,11 @@ jobs:
 # Workflows enable multiple jobs in parallel
 workflows:
   version: 2
+
+  build:
+    jobs:
+      - build
+      - lint
 
   deploy:
     jobs:
