@@ -18,9 +18,9 @@ type Props = {
 type MessagesProps = WithNamespaces & Props;
 
 type MessagesState = {
-  templates: readonly any[];
-  messages: readonly any[];
-  batches: readonly any[];
+  templates: ReadonlyArray<any>;
+  messages: ReadonlyArray<any>;
+  batches: ReadonlyArray<any>;
   stats: any;
 };
 

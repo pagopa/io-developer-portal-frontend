@@ -49,7 +49,7 @@ type MessageProps = RouteComponentProps & WithNamespaces & Props;
 
 type MessageState = {
   list: string;
-  contacts: readonly any[];
+  contacts: ReadonlyArray<any>;
   file: any;
   batch: string;
   selected: string;

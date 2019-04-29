@@ -40,8 +40,8 @@ type ComposeProps = RouteComponentProps & WithNamespaces & Props;
 
 type ComposeState = {
   file: File | undefined;
-  fileData: readonly any[];
-  headers: readonly any[];
+  fileData: ReadonlyArray<any>;
+  headers: ReadonlyArray<any>;
   ignoreHeaders: boolean;
   sent: boolean;
 };
@@ -49,7 +49,7 @@ type ComposeState = {
 class Compose extends Component<ComposeProps, ComposeState> {
   public initialState: ComposeState = {
     file: undefined,
-    fileData: [] as readonly any[],
+    fileData: [],
     headers: [],
     ignoreHeaders: false,
     sent: false

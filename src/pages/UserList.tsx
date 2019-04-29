@@ -11,7 +11,7 @@ import { getFromBackend } from "../utils/backend";
 import FaUser from "react-icons/lib/fa/user";
 
 type UserListState = {
-  users: { items: readonly any[]; length: number };
+  users: { items: ReadonlyArray<any>; length: number };
 };
 
 class UserList extends Component<WithNamespaces, UserListState> {

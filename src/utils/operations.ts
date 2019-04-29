@@ -129,19 +129,21 @@ export function createMessageContent({
 }
 
 export function getMessageValues(row: any) {
-  const values: any = {};
-
   if (!row) {
-    return values;
+    return { amount: "" };
   }
 
-  const keyIndexTuples: ReadonlyArray<readonly [string, number]> = toPairs(CSV);
-  keyIndexTuples.forEach(keyIndex => {
-    const [key, index] = keyIndex;
-    values[CSV_HEADERS[key]] = row[index];
-  });
-
-  return values;
+  return toPairs(CSV).reduce((previousValues, keyIndexTuple) => {
+      const [key, index] = keyIndexTuple;
+      return {
+        ...previousValues,
+        [CSV_HEADERS[key]]: row[index]
+      };
+    },
+    {
+      amount: ""
+    }
+  );
 }
 
 const interpolateAmount = (string: string) => {

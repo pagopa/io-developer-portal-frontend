@@ -82,7 +82,7 @@ class Contacts extends Component<ContactsProps, ContactsState> {
             type: "contact"
           }}
           sort={["_id"]}
-          render={({ docs }: { docs: readonly ContactDoc[] }) => (
+          render={({ docs }: { docs: ReadonlyArray<ContactDoc> }) => (
             <ContactsList docs={docs} />
           )}
         />
