@@ -95,7 +95,7 @@ class MessageMetadataEditor extends Component<
               aria-label={t("notice")}
               value={notice}
               guide={false}
-              mask={noticeMask}
+              mask={[...noticeMask]}
               onChange={onChangeNotice}
             />
             {(notice || amount) &&
@@ -132,7 +132,7 @@ class MessageMetadataEditor extends Component<
               aria-label={t("format:currency")}
               value={amount}
               guide={false}
-              mask={amountMask}
+              mask={[...amountMask]}
               onChange={onChangeAmount}
             />
             {(notice || amount) &&

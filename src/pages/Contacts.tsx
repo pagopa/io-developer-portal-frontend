@@ -38,8 +38,7 @@ class Contacts extends Component<ContactsProps, ContactsState> {
   };
 
   public onInputAdd = () => {
-    const { code } = this.state;
-    code = code.toUpperCase();
+    const code = this.state.code.toUpperCase();
 
     if (!code) {
       return;

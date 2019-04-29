@@ -203,18 +203,13 @@ class Compose extends Component<ComposeProps, ComposeState> {
         />
 
         {(() => {
-          const isValid: ReadonlyArray<any> = [
+          const isValid: ReadonlyArray<boolean> = [
             isCodeValid,
             isSubjectValid,
             isMarkdownValid
-          ];
-
-          if (dueDate) {
-            isValid.push(moment(dueDate).isValid());
-          }
-          if (notice || amount) {
-            isValid.push(isNoticeValid, isAmountValid);
-          }
+          ]
+            .concat(dueDate ? moment(dueDate).isValid() : [])
+            .concat(notice || amount ? [isNoticeValid, isAmountValid] : []);
 
           return (
             <Button

@@ -143,15 +143,22 @@ class Message extends Component<MessageProps, MessageState> {
         // data is an array of rows.
         // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
-        const filtered: readonly any[] = [];
 
-        results.data.map(line =>
-          line.map((value: any) => {
-            // TODO Test it against validator (will be validated against API anyway)
-            if (value.length === CODE.MAX) {
-              filtered.push(value);
-            }
-          })
+        const filtered: ReadonlyArray<any> = results.data.reduce(
+          (
+            previousLinesValues: ReadonlyArray<any>,
+            currentLine: ReadonlyArray<any>
+          ) => [
+            ...previousLinesValues,
+            currentLine.reduce(
+              (previousValues: ReadonlyArray<any>, currentValue: any) =>
+                previousValues.concat(
+                  // TODO Test it against validator (will be validated against API anyway)
+                  currentValue.length === CODE.MAX ? currentValue : []
+                )
+            )
+          ],
+          []
         );
 
         this.setState({
@@ -250,40 +257,38 @@ class Message extends Component<MessageProps, MessageState> {
       dueDateFormat: t("format:date")
     });
 
-    const result;
-    if (!batch) {
-      result = [
-        await messagePostAndPersist({
-          db,
-          code: selected,
-          content,
-          templateId,
-          batchId: batch
-        })
-      ];
-    } else {
-      const promises: ReadonlyArray<Promise<void>> = [];
-      const list = await db.find({
-        selector: {
-          type: "contact",
-          batchId: batch
-        }
-      });
-
-      list.docs.map((doc: any) =>
-        promises.push(
-          messagePostAndPersist({
+    const result = !batch
+      ? [
+          await messagePostAndPersist({
             db,
-            code: doc._id,
+            code: selected,
             content,
             templateId,
             batchId: batch
           })
-        )
-      );
-
-      result = await Promise.all(promises);
-    }
+        ]
+      : await Promise.all(
+          (await db.find({
+            selector: {
+              type: "contact",
+              batchId: batch
+            }
+          })).docs.reduce(
+            (prevPromisesArray: ReadonlyArray<Promise<any>>, doc: any) => {
+              return [
+                ...prevPromisesArray,
+                messagePostAndPersist({
+                  db,
+                  code: doc._id,
+                  content,
+                  templateId,
+                  batchId: batch
+                })
+              ];
+            },
+            []
+          )
+        );
 
     this.goHome({ result });
   };
@@ -493,21 +498,16 @@ class Message extends Component<MessageProps, MessageState> {
         />
 
         {(() => {
-          const isValid: readonly any[] = [];
-          if (dueDate) {
-            isValid.push(moment(dueDate).isValid());
-          }
-          if (notice || amount) {
-            isValid.push(isNoticeValid, isAmountValid);
-          }
+          const isValid: ReadonlyArray<boolean> = Array()
+            .concat(dueDate ? moment(dueDate).isValid() : [])
+            .concat(notice || amount ? [isNoticeValid, isAmountValid] : []);
 
           if (type === "single") {
-            isValid.push(!!selected);
             return (
               <Button
                 className="mt-3 pl-5 pr-5"
                 color="primary"
-                disabled={isValid.includes(false)}
+                disabled={isValid.concat(!!selected).includes(false)}
                 onClick={this.onMessageSubmit}
               >
                 {t("send")}
@@ -515,12 +515,11 @@ class Message extends Component<MessageProps, MessageState> {
             );
           }
 
-          isValid.push(!!batch);
           return (
             <Button
               className="mt-3 pl-5 pr-5"
               color="primary"
-              disabled={isValid.includes(false) || sent}
+              disabled={isValid.concat(!!batch).includes(false) || sent}
               onClick={this.onMessageSubmit}
             >
               {sent ? <FaSpinner /> : t("send_batch")}

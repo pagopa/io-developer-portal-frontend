@@ -4,9 +4,9 @@ import { conformToMask } from "react-text-mask";
 import { CONSTANTS, LIMITS } from "./constants";
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
-export const isMaskValid = (value: string, mask: readonly RegExp[]) => {
+export const isMaskValid = (value: string, mask: ReadonlyArray<RegExp>) => {
   return (
-    conformToMask(value, mask, undefined).conformedValue.indexOf("_") === -1
+    conformToMask(value, [...mask], undefined).conformedValue.indexOf("_") === -1
   );
 };
 

@@ -84,7 +84,7 @@ class Messages extends Component<MessagesProps, MessagesState> {
 
   public render() {
     const { templates, messages, batches, stats } = this.state;
-    const { db, t } = this.props;
+    const { db, t, tReady, i18n } = this.props;
 
     const batchesMessages = batches
       .filter(batch => {
@@ -159,6 +159,9 @@ class Messages extends Component<MessagesProps, MessagesState> {
               return orderedMessages.map(entry => {
                 return (
                   <MessageStats
+                    t={t}
+                    tReady={tReady}
+                    i18n={i18n}
                     key={entry._id}
                     templates={templatesMap}
                     entry={entry}

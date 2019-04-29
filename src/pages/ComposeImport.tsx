@@ -104,12 +104,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
         const { ignoreHeaders } = this.state;
         const { data } = results;
 
-        const headers;
-        if (ignoreHeaders) {
-          headers = data.shift();
-        } else {
-          headers = data[0];
-        }
+        const headers = ignoreHeaders ? data.shift() : data[0];
         this.setState({ file, fileData: data, headers });
       }
     });
@@ -134,33 +129,36 @@ class Compose extends Component<ComposeProps, ComposeState> {
       created_at: moment().toISOString()
     });
 
-    const promises: ReadonlyArray<Promise<any>> = [];
-    fileData.forEach(row => {
-      const message = {
-        subject: row[SUBJECT],
-        markdown: row[MARKDOWN]
-      };
-      if (ignoreHeaders) {
-        message.markdown = interpolateMarkdown(message.markdown, row);
-      }
-      const content = createMessageContent({
-        message,
-        dueDate: !!row[DUEDATE] ? row[DUEDATE] : undefined,
-        amount: !!row[AMOUNT] ? new Number(row[AMOUNT]) : undefined,
-        notice: !!row[NOTICE] ? row[NOTICE] : undefined,
-        dueDateFormat: t("format:date")
-      });
+    const promises: ReadonlyArray<Promise<any>> = fileData.reduce(
+      (prevPromisesArray: ReadonlyArray<Promise<any>>, row) => {
+        const message = {
+          subject: row[SUBJECT],
+          markdown: row[MARKDOWN]
+        };
+        if (ignoreHeaders) {
+          message.markdown = interpolateMarkdown(message.markdown, row);
+        }
+        const content = createMessageContent({
+          message,
+          dueDate: !!row[DUEDATE] ? row[DUEDATE] : undefined,
+          amount: !!row[AMOUNT] ? new Number(row[AMOUNT]) : undefined,
+          notice: !!row[NOTICE] ? row[NOTICE] : undefined,
+          dueDateFormat: t("format:date")
+        });
 
-      promises.push(
-        messagePostAndPersist({
-          db,
-          code: row[FISCALCODE],
-          content,
-          templateId: template.id,
-          batchId: batch.id
-        })
-      );
-    });
+        return [
+          ...prevPromisesArray,
+          messagePostAndPersist({
+            db,
+            code: row[FISCALCODE],
+            content,
+            templateId: template.id,
+            batchId: batch.id
+          })
+        ];
+      },
+      []
+    );
 
     const result = await Promise.all(promises);
 

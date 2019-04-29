@@ -1,22 +1,13 @@
-export const DEFAULT_URL = "";
-if (process.env.NODE_ENV === "production") {
-  DEFAULT_URL = "https://api.cd.italia.it/api/v1";
-} else {
-  // Uses `api-proxy.ts`
-  DEFAULT_URL = "http://localhost:3000";
-}
+export const DEFAULT_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://api.cd.italia.it/api/v1"
+    : "http://localhost:3000";
 
 export function getUrl() {
   const { localStorage } = window;
   const serviceEndpoint = localStorage.getItem("serviceEndpoint");
 
-  const URL = "";
-  if (serviceEndpoint) {
-    URL = serviceEndpoint;
-  } else {
-    URL = DEFAULT_URL;
-  }
-  return URL;
+  return serviceEndpoint ? serviceEndpoint : DEFAULT_URL;
 }
 
 const getOptions = (dbName: string) => {
