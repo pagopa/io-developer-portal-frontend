@@ -45,7 +45,7 @@ const SubscriptionService = ({ service, t }: any) => {
         {t("service:max_allowed_payment_amount")}:{" "}
         {service.max_allowed_payment_amount} {t("service:eurocents")}
       </div>
-      <a href={"/service/" + service.service_id}>{t("service:edit")}</a>
+      <a href={`/service/${service.service_id}`}>{t("service:edit")}</a>
     </div>
   ) : null;
 };
@@ -110,7 +110,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     });
 
     const service = await getFromBackend({
-      path: "services/" + userSubscription.name
+      path: `services/${userSubscription.name}`
     });
 
     this.setState({
@@ -180,7 +180,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     Object.keys(userSubscriptionsObj).forEach(async subscriptionKey => {
       const subscription = userSubscriptionsObj[subscriptionKey];
       const service = await getFromBackend({
-        path: "services/" + subscription.name
+        path: `services/${subscription.name}`
       });
       this.setState({
         services: { ...this.state.services, [service.service_id]: service }
@@ -233,9 +233,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     });
   };
 
-  public render() {
-    const { userSubscriptions, services } = this.state;
-    const { isConfirmationOpen, onConfirmOperation } = this.state;
+  public renderNewUserDiv() {
     const { t } = this.props;
 
     const isSameUser = !this.props.match.params.email;
@@ -245,39 +243,49 @@ class Profile extends Component<ProfileProps, ProfileState> {
 
     const userGroups = get(this.state, "userData.apimUser.groupNames");
     return (
+      <div>
+        <h4>{get(this.state, "userData.apimUser.email", t("new_user"))}</h4>
+        {firstName && (
+          <div>
+            {t("name")}: {firstName}
+          </div>
+        )}
+        {lastName && (
+          <div>
+            {t("surname")}: {lastName}
+          </div>
+        )}
+        {isSameUser && (
+          <div>
+            <a href={this.state.applicationConfig.changePasswordLink}>
+              {t("change_password")}
+            </a>
+          </div>
+        )}
+        <p
+          style={{ maxWidth: "30em", wordWrap: "break-word" }}
+          className="mt-4"
+        >
+          Autorizzazioni: {userGroups && userGroups.join(",")}
+        </p>
+        <p>
+          Limitato:{" "}
+          {userGroups && userGroups.indexOf("ApiMessageWrite") !== -1
+            ? "no"
+            : "si"}
+        </p>
+      </div>
+    );
+  }
+
+  public render() {
+    const { userSubscriptions, services } = this.state;
+    const { isConfirmationOpen, onConfirmOperation } = this.state;
+    const { t } = this.props;
+
+    return (
       <Fragment>
-        <div>
-          <h4>{get(this.state, "userData.apimUser.email", t("new_user"))}</h4>
-          {firstName && (
-            <div>
-              {t("name")}: {firstName}
-            </div>
-          )}
-          {lastName && (
-            <div>
-              {t("surname")}: {lastName}
-            </div>
-          )}
-          {isSameUser && (
-            <div>
-              <a href={this.state.applicationConfig.changePasswordLink}>
-                {t("change_password")}
-              </a>
-            </div>
-          )}
-          <p
-            style={{ maxWidth: "30em", wordWrap: "break-word" }}
-            className="mt-4"
-          >
-            Autorizzazioni: {userGroups && userGroups.join(",")}
-          </p>
-          <p>
-            Limitato:{" "}
-            {userGroups && userGroups.indexOf("ApiMessageWrite") !== -1
-              ? "no"
-              : "si"}
-          </p>
-        </div>
+        {this.renderNewUserDiv()}
         <div>
           <h4 className="mt-4">{t("services")}</h4>
           {Object.keys(userSubscriptions).map(subscriptionName => {
@@ -292,7 +300,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                 </h6>
                 <div className="my-2">
                   {t("primary_key")}:{" "}
-                  {this.state["p_" + subscription.name]
+                  {this.state[`p_${subscription.name}`]
                     ? subscription.primaryKey
                     : t("key")}
                   <Button
@@ -300,9 +308,9 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     color="primary"
                     size="xs"
                     className="ml-1 mr-1"
-                    onClick={() => this.onToggleKey("p_" + subscription.name)}
+                    onClick={() => this.onToggleKey(`p_${subscription.name}`)}
                   >
-                    {this.state["p_" + subscription.name] ? (
+                    {this.state[`p_${subscription.name}`] ? (
                       <FaEyeSlash />
                     ) : (
                       <FaEye />
@@ -329,7 +337,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                 </div>
                 <div className="my-2">
                   {t("secondary_key")}:{" "}
-                  {this.state["s_" + subscription.name]
+                  {this.state[`s_${subscription.name}`]
                     ? subscription.secondaryKey
                     : t("key")}
                   <Button
@@ -337,9 +345,9 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     color="primary"
                     size="xs"
                     className="ml-1 mr-1"
-                    onClick={() => this.onToggleKey("s_" + subscription.name)}
+                    onClick={() => this.onToggleKey(`s_${subscription.name}`)}
                   >
-                    {this.state["s_" + subscription.name] ? (
+                    {this.state[`s_${subscription.name}`] ? (
                       <FaEyeSlash />
                     ) : (
                       <FaEye />

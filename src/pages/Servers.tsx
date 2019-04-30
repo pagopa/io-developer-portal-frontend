@@ -42,8 +42,15 @@ class Servers extends Component<ServersProps, ServersState> {
       }
     });
 
-    const newServers: any = {};
-    servers.docs.map((server: any) => (newServers[server._id] = server));
+    const newServers = servers.docs.reduce(
+      (previousServers: any, currentServer: any) => {
+        return {
+          ...previousServers,
+          [currentServer._id]: currentServer
+        };
+      },
+      {}
+    );
 
     this.setState({
       servers: newServers
@@ -52,7 +59,7 @@ class Servers extends Component<ServersProps, ServersState> {
 
   public onServerAdd = async () => {
     const { db } = this.props;
-    const server = await db.post({
+    await db.post({
       type: "server",
       endpoint: ""
     });
@@ -68,7 +75,7 @@ class Servers extends Component<ServersProps, ServersState> {
 
   public onServerChange = async (server: any, value: string) => {
     const { db } = this.props;
-    const doc = await upsert(db, server._id, {
+    await upsert(db, server._id, {
       ...server,
       endpoint: value
     });
@@ -79,7 +86,7 @@ class Servers extends Component<ServersProps, ServersState> {
     };
 
     this.setState(
-      (prevState, props) => {
+      prevState => {
         return {
           servers: {
             ...prevState.servers,
@@ -93,7 +100,7 @@ class Servers extends Component<ServersProps, ServersState> {
 
   public onServerDelete = async (server: any) => {
     const { db } = this.props;
-    const doc = db.remove(server);
+    db.remove(server);
     await this.syncStatewithDB();
   };
 
@@ -124,7 +131,7 @@ class Servers extends Component<ServersProps, ServersState> {
             server={{
               endpoint: DEFAULT_URL
             }}
-            value={`${DEFAULT_URL} (${t("default")})`}
+            endpoint={`${DEFAULT_URL} (${t("default")})`}
             checked={
               serviceEndpoint === null || serviceEndpoint === DEFAULT_URL
             }
@@ -138,7 +145,7 @@ class Servers extends Component<ServersProps, ServersState> {
               <ServerPicker
                 key={server._id}
                 server={server}
-                value={server.endpoint}
+                endpoint={server.endpoint}
                 checked={serviceEndpoint === server.endpoint}
                 onServerSelect={this.onServerSelect}
                 onServerChange={this.onServerChange}

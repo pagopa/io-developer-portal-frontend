@@ -12,9 +12,9 @@ self.addEventListener("message", async e => {
     return;
   }
 
-  const { action, dbName, url } = e.data;
+  const { dbName, url } = e.data;
 
-  const db = new PouchDB(dbName);
+  const db: any = new PouchDB(dbName);
 
   const messages = await db.find({
     selector: {
@@ -30,7 +30,7 @@ self.addEventListener("message", async e => {
 
   const batch = new Batch();
   batch.concurrency(1);
-  batch.on("progress", (e: any) => {});
+  batch.on("progress", () => {});
 
   messages.docs.forEach((entry: any) => {
     batch.push(async (done: () => never) => {
@@ -42,7 +42,7 @@ self.addEventListener("message", async e => {
         // API returned an error
         console.error(id);
       } else {
-        const operation = await upsert(db, entry._id, {
+        await upsert(db, entry._id, {
           ...entry,
           ...message,
           retrieved: true
@@ -54,7 +54,7 @@ self.addEventListener("message", async e => {
   });
 
   // Actually startes the batch
-  batch.end((err: any, data: any) => {
+  batch.end((err: any) => {
     if (!err) {
       postMessage(
         {

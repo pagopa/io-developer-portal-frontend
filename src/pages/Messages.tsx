@@ -69,10 +69,15 @@ class Messages extends Component<MessagesProps, MessagesState> {
       { reduce: true, group: true }
     );
 
-    const stats: any = {};
-    counts.rows.forEach((count: any) => {
-      stats[count.key || "none"] = count.value;
-    });
+    const stats = counts.rows.reduce(
+      (previousStats: any, currentCount: { key: any; value: any }) => {
+        return {
+          ...previousStats,
+          [currentCount.key || "none"]: currentCount.value
+        };
+      },
+      {}
+    );
 
     this.setState({
       templates: templates.docs,
@@ -84,7 +89,7 @@ class Messages extends Component<MessagesProps, MessagesState> {
 
   public render() {
     const { templates, messages, batches, stats } = this.state;
-    const { db, t, tReady, i18n } = this.props;
+    const { t, tReady, i18n } = this.props;
 
     const batchesMessages = batches
       .filter(batch => {

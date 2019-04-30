@@ -133,7 +133,8 @@ export function getMessageValues(row: any) {
     return { amount: "" };
   }
 
-  return toPairs(CSV).reduce((previousValues, keyIndexTuple) => {
+  return toPairs(CSV).reduce(
+    (previousValues, keyIndexTuple) => {
       const [key, index] = keyIndexTuple;
       return {
         ...previousValues,
@@ -146,10 +147,10 @@ export function getMessageValues(row: any) {
   );
 }
 
-const interpolateAmount = (string: string) => {
-  if (!!string) {
+const interpolateAmount = (amountString: string) => {
+  if (!!amountString) {
     // Amount is in Euro `cents`
-    const amount = Number(string) / 100;
+    const amount = Number(amountString) / 100;
     const formatParts = currencyFormatter.formatToParts(amount);
     /* `formatParts` is now;
     [
@@ -183,9 +184,12 @@ const interpolateAmount = (string: string) => {
 
 export function interpolateMarkdown(markdown: any, row: any) {
   const compiled = template(markdown, templateSettings);
-  const values = getMessageValues(row);
+  const messageValues = getMessageValues(row);
 
-  values.amount = interpolateAmount(values.amount);
+  const values = {
+    ...messageValues,
+    value: interpolateAmount(messageValues.amount)
+  };
 
   return compiled(values);
 }

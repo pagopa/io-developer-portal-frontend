@@ -19,7 +19,7 @@ class Service extends Component<WithNamespaces, never> {
               <p>
                 {t("send_as")} {service.organization_name} /{" "}
                 {service.service_name} [
-                <a href={"/service/" + service.service_id}>
+                <a href={`/service/${service.service_id}`}>
                   {service.service_id}
                 </a>
                 ]

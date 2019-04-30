@@ -27,7 +27,7 @@ type TemplatesState = { subject: string; markdown: string; doc: any } & {
   subject: any;
   markdown: any;
   doc: any;
-} & any & { subject: string; markdown: string; doc: any };
+} & any;
 
 class Templates extends Component<TemplatesProps, TemplatesState> {
   public initialState: TemplatesState = {

@@ -14,8 +14,19 @@ import "./Dashboard.css";
 type DashboardProps = RouteComponentProps & WithNamespaces;
 
 class Dashboard extends Component<DashboardProps, never> {
+  private getCard(docs: any, cardTextKey: string) {
+    const { t } = this.props;
+    return (
+      <Card className="flex-1 bg-primary text-white p-3 m-3">
+        <CardBody>
+          <CardTitle className="display-1">{docs.length}</CardTitle>
+          <CardText>{t(cardTextKey)}</CardText>
+        </CardBody>
+      </Card>
+    );
+  }
   public render() {
-    const { location, t } = this.props;
+    const { location } = this.props;
 
     return (
       <section className="d-flex">
@@ -29,46 +40,19 @@ class Dashboard extends Component<DashboardProps, never> {
           selector={{
             type: "template"
           }}
-          render={({ docs }: any) => {
-            return (
-              <Card className="flex-1 bg-primary text-white p-3 m-3">
-                <CardBody>
-                  <CardTitle className="display-1">{docs.length}</CardTitle>
-                  <CardText>{t("templates")}</CardText>
-                </CardBody>
-              </Card>
-            );
-          }}
+          render={({ docs }: any) => this.getCard(docs, "templates")}
         />
         <Find
           selector={{
             type: "message"
           }}
-          render={({ docs }: any) => {
-            return (
-              <Card className="flex-1 bg-primary text-white p-3 m-3">
-                <CardBody>
-                  <CardTitle className="display-1">{docs.length}</CardTitle>
-                  <CardText>{t("messages")}</CardText>
-                </CardBody>
-              </Card>
-            );
-          }}
+          render={({ docs }: any) => this.getCard(docs, "messages")}
         />
         <Find
           selector={{
             type: "contact"
           }}
-          render={({ docs }: any) => {
-            return (
-              <Card className="flex-1 bg-primary text-white p-3 m-3">
-                <CardBody>
-                  <CardTitle className="display-1">{docs.length}</CardTitle>
-                  <CardText>{t("contacts")}</CardText>
-                </CardBody>
-              </Card>
-            );
-          }}
+          render={({ docs }: any) => this.getCard(docs, "contacts")}
         />
       </section>
     );

@@ -11,19 +11,18 @@ self.addEventListener("message", async e => {
     return;
   }
 
-  const { action, dbName, url, batchId, results } = e.data;
+  const { dbName, url, batchId, results } = e.data;
 
-  const db = new PouchDB(dbName);
+  const db = new PouchDB<any>(dbName);
 
   const batch = new Batch();
   batch.concurrency(1);
-  batch.on("progress", (e: any) => {});
+  batch.on("progress", () => {});
 
-  const promises: ReadonlyArray<any> = [];
   results.forEach(async ([result]: any) => {
     batch.push(async (done: () => never) => {
       try {
-        const operation = await profileGetAndPersist({
+        await profileGetAndPersist({
           db,
           dbName,
           url,
@@ -39,7 +38,7 @@ self.addEventListener("message", async e => {
   });
 
   // Actually startes the batch
-  batch.end((err: any, data: any) => {
+  batch.end((err: any) => {
     if (!err) {
       postMessage(
         {

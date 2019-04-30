@@ -62,7 +62,7 @@ class Report extends Component<ReportProps, ReportState> {
   };
 
   public onSetSelected = (selected: string) => {
-    this.setState((prevState, props) => {
+    this.setState(prevState => {
       selected = prevState.selected === selected ? "" : selected;
       return {
         selected
@@ -85,11 +85,11 @@ class Report extends Component<ReportProps, ReportState> {
           type: "message",
           [entry_type === "batch" ? `batchId` : `_id`]: entry_id
         }}
-        render={({ docs }: any) => {
-          if (!docs.length) {
+        render={({ messageDocs }: any) => {
+          if (!messageDocs.length) {
             return null;
           }
-          const messages = sortBy(docs, ["message.created_at"]);
+          const messages = sortBy(messageDocs, ["message.created_at"]);
           const groups = groupBy(messages, "status");
 
           const { message, templateId } = messages[0];
@@ -99,12 +99,12 @@ class Report extends Component<ReportProps, ReportState> {
                 type: "template",
                 _id: templateId
               }}
-              render={({ docs }: any) => {
-                if (!docs.length) {
+              render={({ templateDocs }: any) => {
+                if (!templateDocs.length) {
                   return null;
                 }
 
-                const template = docs[0];
+                const template = templateDocs[0];
                 return (
                   <Row>
                     <Col lg="6">

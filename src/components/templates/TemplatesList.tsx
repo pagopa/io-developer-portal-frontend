@@ -40,7 +40,7 @@ class TemplatesList extends Component<TemplatesListProps, TemplatesListState> {
   };
 
   public onSetSelected = (selected: string) => {
-    this.setState((prevState, props) => {
+    this.setState(prevState => {
       selected = prevState.selected === selected ? "" : selected;
       return {
         selected

@@ -125,7 +125,9 @@ class Message extends Component<MessageProps, MessageState> {
   };
 
   public onTriggerUpload = () => {
-    this.fileInput.current && this.fileInput.current.click();
+    if (this.fileInput.current) {
+      this.fileInput.current.click();
+    }
   };
 
   public onFileUpdate = ({
@@ -139,7 +141,7 @@ class Message extends Component<MessageProps, MessageState> {
       error: error => {
         console.error(error);
       },
-      complete: (results, file) => {
+      complete: results => {
         // data is an array of rows.
         // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
@@ -207,7 +209,7 @@ class Message extends Component<MessageProps, MessageState> {
       error: error => {
         console.error(error);
       },
-      complete: async (results, file) => {
+      complete: async results => {
         const batch = await db.post({
           type: "batch",
           templateId,
@@ -240,7 +242,7 @@ class Message extends Component<MessageProps, MessageState> {
       db,
       t,
       location: {
-        state: { type, templateId }
+        state: { templateId }
       }
     } = this.props;
 
@@ -302,20 +304,170 @@ class Message extends Component<MessageProps, MessageState> {
     history.push(location);
   };
 
-  public render() {
+  public renderAccordion = () => {
     const {
       list,
       contacts,
       file,
       batch,
       selected,
-      dueDate,
-      notice,
-      amount,
       recipientOpen,
-      sent,
       progress
     } = this.state;
+    const {
+      location: {
+        state: { type }
+      }
+    } = this.props;
+    const { t } = this.props;
+    return (
+      <Accordion className="border-0">
+        <AccordionHeader
+          className="border-0 p-2 text-decoration-none font-weight-normal"
+          active={recipientOpen}
+          onToggle={() => this.onToggleRecipientOpen()}
+        >
+          <span className="text-uppercase text-secondary">
+            {type === "single" ? t("recipient") : t("recipients")}
+          </span>
+          {(list || selected) && (
+            <Badge
+              color=""
+              className="font-weight-normal ml-3 bg-custom-pale-blue color-custom-denim-blue"
+            >
+              {(() => {
+                if (type === "single") {
+                  return selected;
+                }
+
+                return (
+                  <span>
+                    {file && file.name
+                      ? `${file.name} (${contacts.length})`
+                      : contacts.length}
+                  </span>
+                );
+              })()}
+            </Badge>
+          )}
+        </AccordionHeader>
+        <AccordionBody className="p-0" active={recipientOpen}>
+          {(() => {
+            if (type === "single") {
+              return (
+                <Fragment>
+                  <div className="message--contacts-list mb-4">
+                    <Find
+                      selector={{
+                        type: "contact"
+                      }}
+                      sort={["_id"]}
+                      render={({ docs }: any) => (
+                        <ContactsList
+                          docs={docs}
+                          selected={selected}
+                          onContactSelect={this.onContactSelect}
+                        />
+                      )}
+                    />
+                  </div>
+                </Fragment>
+              );
+            }
+
+            return (
+              <Fragment>
+                <Row>
+                  <Col>
+                    <Card>
+                      <Input
+                        className="flex-1 h-100 border-0 shadow-none"
+                        type="textarea"
+                        value={list}
+                        onChange={this.onChangeList}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
+                {list && !batch && (
+                  <Row>
+                    <Col>
+                      <Button
+                        className="mt-3"
+                        block={true}
+                        color="primary"
+                        onClick={this.onSaveContacts}
+                        disabled={progress}
+                      >
+                        {progress ? <FaSpinner /> : t("save")}
+                      </Button>
+                    </Col>
+                    <Col />
+                  </Row>
+                )}
+                {batch && (
+                  <div className="message--contacts-list mt-4">
+                    <Find
+                      selector={{
+                        type: "contact",
+                        batchId: batch
+                      }}
+                      sort={["_id"]}
+                      render={({ docs }: any) => (
+                        <ContactsList docs={docs} selected={selected} />
+                      )}
+                    />
+                  </div>
+                )}
+              </Fragment>
+            );
+          })()}
+        </AccordionBody>
+      </Accordion>
+    );
+  };
+
+  public renderSubmitButton = () => {
+    const { batch, selected, dueDate, notice, amount, sent } = this.state;
+    const {
+      location: {
+        state: { type }
+      }
+    } = this.props;
+    const { t } = this.props;
+    const isNoticeValid = isMaskValid(notice, noticeMask);
+    const isAmountValid = isValueRangeValid(amount, [AMOUNT.MIN, AMOUNT.MAX]);
+    const isValid: ReadonlyArray<boolean> = Array()
+      .concat(dueDate ? moment(dueDate).isValid() : [])
+      .concat(notice || amount ? [isNoticeValid, isAmountValid] : []);
+
+    if (type === "single") {
+      return (
+        <Button
+          className="mt-3 pl-5 pr-5"
+          color="primary"
+          disabled={isValid.concat(!!selected).includes(false)}
+          onClick={this.onMessageSubmit}
+        >
+          {t("send")}
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        className="mt-3 pl-5 pr-5"
+        color="primary"
+        disabled={isValid.concat(!!batch).includes(false) || sent}
+        onClick={this.onMessageSubmit}
+      >
+        {sent ? <FaSpinner /> : t("send_batch")}
+      </Button>
+    );
+  };
+
+  public render() {
+    const { dueDate, notice, amount } = this.state;
     const {
       location: {
         state: { type, templateId }
@@ -332,114 +484,7 @@ class Message extends Component<MessageProps, MessageState> {
           return (
             <Fragment>
               <Row className="mb-5">
-                <Col>
-                  <Accordion className="border-0">
-                    <AccordionHeader
-                      className="border-0 p-2 text-decoration-none font-weight-normal"
-                      active={recipientOpen}
-                      onToggle={() => this.onToggleRecipientOpen()}
-                    >
-                      <span className="text-uppercase text-secondary">
-                        {type === "single" ? t("recipient") : t("recipients")}
-                      </span>
-                      {(list || selected) && (
-                        <Badge
-                          color=""
-                          className="font-weight-normal ml-3 bg-custom-pale-blue color-custom-denim-blue"
-                        >
-                          {(() => {
-                            if (type === "single") {
-                              return selected;
-                            }
-
-                            return (
-                              <span>
-                                {file && file.name
-                                  ? `${file.name} (${contacts.length})`
-                                  : contacts.length}
-                              </span>
-                            );
-                          })()}
-                        </Badge>
-                      )}
-                    </AccordionHeader>
-                    <AccordionBody className="p-0" active={recipientOpen}>
-                      {(() => {
-                        if (type === "single") {
-                          return (
-                            <Fragment>
-                              <div className="message--contacts-list mb-4">
-                                <Find
-                                  selector={{
-                                    type: "contact"
-                                  }}
-                                  sort={["_id"]}
-                                  render={({ docs }: any) => (
-                                    <ContactsList
-                                      docs={docs}
-                                      selected={selected}
-                                      onContactSelect={this.onContactSelect}
-                                    />
-                                  )}
-                                />
-                              </div>
-                            </Fragment>
-                          );
-                        }
-
-                        return (
-                          <Fragment>
-                            <Row>
-                              <Col>
-                                <Card>
-                                  <Input
-                                    className="flex-1 h-100 border-0 shadow-none"
-                                    type="textarea"
-                                    value={list}
-                                    onChange={this.onChangeList}
-                                  />
-                                </Card>
-                              </Col>
-                            </Row>
-                            {list && !batch && (
-                              <Row>
-                                <Col>
-                                  <Button
-                                    className="mt-3"
-                                    block={true}
-                                    color="primary"
-                                    onClick={this.onSaveContacts}
-                                    disabled={progress}
-                                  >
-                                    {progress ? <FaSpinner /> : t("save")}
-                                  </Button>
-                                </Col>
-                                <Col />
-                              </Row>
-                            )}
-                            {batch && (
-                              <div className="message--contacts-list mt-4">
-                                <Find
-                                  selector={{
-                                    type: "contact",
-                                    batchId: batch
-                                  }}
-                                  sort={["_id"]}
-                                  render={({ docs }: any) => (
-                                    <ContactsList
-                                      docs={docs}
-                                      selected={selected}
-                                    />
-                                  )}
-                                />
-                              </div>
-                            )}
-                          </Fragment>
-                        );
-                      })()}
-                    </AccordionBody>
-                  </Accordion>
-                </Col>
+                <Col>{this.renderAccordion()}</Col>
                 {(() => {
                   if (type !== "single") {
                     return (
@@ -497,35 +542,7 @@ class Message extends Component<MessageProps, MessageState> {
           onReset={this.onReset}
         />
 
-        {(() => {
-          const isValid: ReadonlyArray<boolean> = Array()
-            .concat(dueDate ? moment(dueDate).isValid() : [])
-            .concat(notice || amount ? [isNoticeValid, isAmountValid] : []);
-
-          if (type === "single") {
-            return (
-              <Button
-                className="mt-3 pl-5 pr-5"
-                color="primary"
-                disabled={isValid.concat(!!selected).includes(false)}
-                onClick={this.onMessageSubmit}
-              >
-                {t("send")}
-              </Button>
-            );
-          }
-
-          return (
-            <Button
-              className="mt-3 pl-5 pr-5"
-              color="primary"
-              disabled={isValid.concat(!!batch).includes(false) || sent}
-              onClick={this.onMessageSubmit}
-            >
-              {sent ? <FaSpinner /> : t("send_batch")}
-            </Button>
-          );
-        })()}
+        {this.renderSubmitButton()}
       </section>
     );
   }

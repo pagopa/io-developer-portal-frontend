@@ -10,7 +10,7 @@ export interface ContactDoc {
   status: any;
 }
 
-const getUserIcon = ({ sender_allowed, status }: ContactDoc) => {
+const getUserIcon = ({ sender_allowed }: ContactDoc) => {
   if (sender_allowed === true) {
     return "it-check";
   } else if (sender_allowed === false) {

@@ -28,7 +28,7 @@ class SubscriptionService extends Component<
   public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
     const service = await getFromBackend({
-      path: "services/" + serviceId
+      path: `services/${serviceId}`
     });
     this.setState({
       service
@@ -49,8 +49,8 @@ class SubscriptionService extends Component<
 
   public handleSubmit = async () => {
     const service = this.state.service;
-    const res = await putToBackend({
-      path: "services/" + service.service_id,
+    await putToBackend({
+      path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
         body: {
@@ -59,9 +59,10 @@ class SubscriptionService extends Component<
           department_name: service.department_name,
           service_name: service.service_name,
           max_allowed_payment_amount: parseInt(
-            service.max_allowed_payment_amount
+            service.max_allowed_payment_amount,
+            10
           ),
-          is_visible: new Boolean(service.is_visible)
+          is_visible: Boolean(service.is_visible)
         }
       }
     });

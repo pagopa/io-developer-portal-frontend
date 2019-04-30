@@ -34,7 +34,7 @@ class Login extends Component<WithNamespaces, never> {
 
         const isApiAdmin =
           apimUser.apimUser &&
-          new Set(apimUser.apimUser.groupNames).has("ApiAdmin");
+          new Set<string>(apimUser.apimUser.groupNames).has("ApiAdmin");
 
         localStorage.setItem("isApiAdmin", isApiAdmin.toString());
         window.location.replace("/");

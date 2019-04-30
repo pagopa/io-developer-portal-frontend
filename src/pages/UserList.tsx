@@ -4,8 +4,6 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Link } from "react-router-dom";
 
-const { localStorage } = window;
-
 import { getFromBackend } from "../utils/backend";
 
 import FaUser from "react-icons/lib/fa/user";
@@ -20,7 +18,6 @@ class UserList extends Component<WithNamespaces, UserListState> {
   };
 
   public componentDidMount = async () => {
-    const self = this;
     const users = await getFromBackend({
       path: "users"
     });

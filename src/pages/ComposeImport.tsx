@@ -39,7 +39,7 @@ type Props = {
 type ComposeProps = RouteComponentProps & WithNamespaces & Props;
 
 type ComposeState = {
-  file: File | undefined;
+  file?: File;
   fileData: ReadonlyArray<any>;
   headers: ReadonlyArray<any>;
   ignoreHeaders: boolean;
@@ -66,7 +66,9 @@ class Compose extends Component<ComposeProps, ComposeState> {
   public fileInput = React.createRef<HTMLInputElement>();
 
   public onTriggerUpload = () => {
-    this.fileInput.current && this.fileInput.current.click();
+    if (this.fileInput.current) {
+      this.fileInput.current.click();
+    }
   };
 
   public onFileUpdate = ({
@@ -97,7 +99,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
       error: error => {
         console.error(error);
       },
-      complete: (results, file) => {
+      complete: (results, inputFile) => {
         // data is an array of rows.
         // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
@@ -105,7 +107,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
         const { data } = results;
 
         const headers = ignoreHeaders ? data.shift() : data[0];
-        this.setState({ file, fileData: data, headers });
+        this.setState({ file: inputFile, fileData: data, headers });
       }
     });
   };
@@ -133,15 +135,14 @@ class Compose extends Component<ComposeProps, ComposeState> {
       (prevPromisesArray: ReadonlyArray<Promise<any>>, row) => {
         const message = {
           subject: row[SUBJECT],
-          markdown: row[MARKDOWN]
+          markdown: ignoreHeaders
+            ? interpolateMarkdown(row[MARKDOWN], row)
+            : row[MARKDOWN]
         };
-        if (ignoreHeaders) {
-          message.markdown = interpolateMarkdown(message.markdown, row);
-        }
         const content = createMessageContent({
           message,
           dueDate: !!row[DUEDATE] ? row[DUEDATE] : undefined,
-          amount: !!row[AMOUNT] ? new Number(row[AMOUNT]) : undefined,
+          amount: !!row[AMOUNT] ? Number(row[AMOUNT]) : undefined,
           notice: !!row[NOTICE] ? row[NOTICE] : undefined,
           dueDateFormat: t("format:date")
         });

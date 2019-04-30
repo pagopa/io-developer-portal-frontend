@@ -33,11 +33,13 @@ export function upsert(db: any, docId: string | undefined, newDoc: any) {
       // the user might change the _rev, so save it for posterity
       const docRev = doc._rev;
 
-      // users aren't allowed to modify these values,
-      // so reset them here
-      newDoc._id = docId;
-      newDoc._rev = docRev;
-      return tryAndPut(db, newDoc);
+      return tryAndPut(db, {
+        ...newDoc,
+        // users aren't allowed to modify these values,
+        // so reset them here
+        _id: docId,
+        _rev: docRev
+      });
     });
 }
 

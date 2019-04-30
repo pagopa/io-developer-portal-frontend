@@ -56,7 +56,7 @@ class Contacts extends Component<ContactsProps, ContactsState> {
   };
 
   public onContactSelect = (code: any) => {
-    this.setState((prevState, props) => {
+    this.setState(() => {
       return {
         selected: code
       };

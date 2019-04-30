@@ -113,7 +113,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     const { db, t } = this.props;
 
     // No need to await
-    const contact = profileGetAndPersist({
+    profileGetAndPersist({
       code,
       db
     });

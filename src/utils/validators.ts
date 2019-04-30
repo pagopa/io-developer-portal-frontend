@@ -6,15 +6,9 @@ const { CSV, CSV_HEADERS } = CONSTANTS;
 
 export const isMaskValid = (value: string, mask: ReadonlyArray<RegExp>) => {
   return (
-    conformToMask(value, [...mask], undefined).conformedValue.indexOf("_") === -1
+    conformToMask(value, [...mask], undefined).conformedValue.indexOf("_") ===
+    -1
   );
-};
-
-export const isLengthValid = (
-  value: string,
-  [min, max]: Readonly<[number, number]>
-) => {
-  return isValueRangeValid(value.length, [min, max]);
 };
 
 export const isValueRangeValid = (
@@ -22,6 +16,13 @@ export const isValueRangeValid = (
   [min, max]: Readonly<[number, number]>
 ) => {
   return value >= min && value <= max;
+};
+
+export const isLengthValid = (
+  value: string,
+  [min, max]: Readonly<[number, number]>
+) => {
+  return isValueRangeValid(value.length, [min, max]);
 };
 
 export const areHeadersValid = (value: ReadonlyArray<any>) => {

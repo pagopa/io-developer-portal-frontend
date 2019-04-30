@@ -72,6 +72,7 @@ const en = {
     key: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     name: "Name",
     surname: "Surname",
+    // tslint:disable-next-line:no-hardcoded-credentials
     change_password: "Change password",
     services: "Registered services",
     subscription: "Subscription",

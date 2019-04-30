@@ -6,7 +6,7 @@ import Trash from "react-icons/lib/fa/trash";
 
 type ServerPickerProps = {
   server: any;
-  value: any;
+  endpoint: any;
   checked: any;
   disabled?: any;
   onServerSelect: any;
@@ -18,7 +18,7 @@ class ServerPicker extends Component<ServerPickerProps, never> {
   public render() {
     const {
       server,
-      value,
+      endpoint,
       checked,
       disabled,
       onServerSelect,
@@ -41,7 +41,7 @@ class ServerPicker extends Component<ServerPickerProps, never> {
           <InputGroup size="sm">
             <Input
               type="text"
-              value={value}
+              value={endpoint}
               disabled={disabled}
               onChange={({
                 target: { value }
