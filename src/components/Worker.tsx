@@ -13,6 +13,7 @@ class Worker extends Component<WorkerProps, never> {
 
   public componentDidMount() {
     GetMessageWorker.addEventListener("message", ({ data }) => {
+      // tslint:disable-next-line:no-object-mutation
       this.working = !data.completed;
     });
 
@@ -24,6 +25,7 @@ class Worker extends Component<WorkerProps, never> {
   }
 
   public start = () => {
+    // tslint:disable-next-line:no-object-mutation
     this.working = true;
 
     const { dbName } = this.props;

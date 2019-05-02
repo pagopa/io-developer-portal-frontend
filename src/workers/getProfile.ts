@@ -17,7 +17,6 @@ self.addEventListener("message", async e => {
 
   const batch = new Batch();
   batch.concurrency(1);
-  batch.on("progress", () => {});
 
   results.forEach(async ([result]: any) => {
     batch.push(async (done: () => never) => {

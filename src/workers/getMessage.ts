@@ -14,7 +14,7 @@ self.addEventListener("message", async e => {
 
   const { dbName, url } = e.data;
 
-  const db: any = new PouchDB(dbName);
+  const db: any = new PouchDB<any>(dbName);
 
   const messages = await db.find({
     selector: {
@@ -30,7 +30,6 @@ self.addEventListener("message", async e => {
 
   const batch = new Batch();
   batch.concurrency(1);
-  batch.on("progress", () => {});
 
   messages.docs.forEach((entry: any) => {
     batch.push(async (done: () => never) => {

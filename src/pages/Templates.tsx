@@ -72,7 +72,9 @@ class Templates extends Component<TemplatesProps, TemplatesState> {
             markdown,
             doc: message
           });
-        })();
+        })().catch(error => {
+          console.error("db find error:", JSON.stringify(error, null, 4));
+        });
       }
     }
   }

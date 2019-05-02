@@ -116,6 +116,11 @@ class Compose extends Component<ComposeProps, ComposeState> {
     profileGetAndPersist({
       code,
       db
+    }).catch(error => {
+      console.error(
+        "profileGetAndPersist error:",
+        JSON.stringify(error, null, 4)
+      );
     });
 
     const message = {

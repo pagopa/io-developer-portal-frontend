@@ -77,7 +77,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     applicationConfig: {},
     newSubscription: {},
     isConfirmationOpen: false,
-    onConfirmOperation: () => {}
+    onConfirmOperation: () => undefined
   };
 
   public onAddSubscription = async () => {
@@ -161,7 +161,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
 
     const userSubscriptionsObj: { [key: string]: any } = Object.keys(
       userSubscriptions
-    ).reduce(
+    ).reduce<{ [key: string]: any }>(
       (p, key) =>
         isNaN(Number(key))
           ? p

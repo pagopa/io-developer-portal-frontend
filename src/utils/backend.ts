@@ -42,38 +42,6 @@ const getRetryTimeout = (message: string) => {
   }
 };
 
-const toBackend = async (
-  params: PostToBackendParams | PutToBackendParams,
-  method: "POST" | "PUT"
-) => {
-  const { url, path, token, options } = params;
-  const response = await fetch(`${url || getBackendUrl()}/${path}`, {
-    ...getOptions(token),
-    ...options,
-    method,
-    body: JSON.stringify(options.body)
-  });
-  const jsonRes = await response.json();
-  // The API returned an error with shape { message, statusCode }
-  if (jsonRes.statusCode === 429) {
-    // { statusCode: 429, message: "Rate limit is exceeded. Try again in X seconds." }
-    // Attempt to retry
-    return new Promise<any>(resolve => {
-      setTimeout(async () => {
-        // TODO: check if it should always be postToBackend even when method is PUT
-        const result = await postToBackend({
-          token,
-          url,
-          path,
-          options
-        });
-        resolve(result);
-      }, getRetryTimeout(jsonRes.message));
-    });
-  }
-  return jsonRes;
-};
-
 interface GetFromBackendParams {
   url?: any;
   path: any;
@@ -133,3 +101,35 @@ interface PutToBackendParams {
 
 export const putToBackend = (params: PutToBackendParams) =>
   toBackend(params, "PUT");
+
+async function toBackend(
+  params: PostToBackendParams | PutToBackendParams,
+  method: "POST" | "PUT"
+) {
+  const { url, path, token, options } = params;
+  const response = await fetch(`${url || getBackendUrl()}/${path}`, {
+    ...getOptions(token),
+    ...options,
+    method,
+    body: JSON.stringify(options.body)
+  });
+  const jsonRes = await response.json();
+  // The API returned an error with shape { message, statusCode }
+  if (jsonRes.statusCode === 429) {
+    // { statusCode: 429, message: "Rate limit is exceeded. Try again in X seconds." }
+    // Attempt to retry
+    return new Promise<any>(resolve => {
+      setTimeout(async () => {
+        // TODO: check if it should always be postToBackend even when method is PUT
+        const result = await postToBackend({
+          token,
+          url,
+          path,
+          options
+        });
+        resolve(result);
+      }, getRetryTimeout(jsonRes.message));
+    });
+  }
+  return jsonRes;
+}

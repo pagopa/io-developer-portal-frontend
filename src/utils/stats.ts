@@ -1,6 +1,18 @@
 import groupBy from "lodash/groupBy";
 
-export const getStatsFor = async (entry: any, db: any) => {
+type Statistics = {
+  PROCESSED: number;
+  FAILED: number;
+  ACCEPTED: number;
+  THROTTLED: number;
+  // Custom ones
+  NOTSENT: number;
+  ERRORED: number;
+  QUEUED: number;
+  TOTAL: number;
+};
+
+export const getStatsFor = async (entry: any, db: any): Promise<Statistics> => {
   // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L140
   // The processing status of a message.
   // "ACCEPTED": the message has been accepted and will be processed for delivery;
@@ -11,7 +23,7 @@ export const getStatsFor = async (entry: any, db: any) => {
   // "PROCESSED": the message was succesfully processed and is now stored in the user's inbox;
   // we'll try to send a notification for each of the selected channels
 
-  const statuses: { [key: string]: number } = {
+  const initialCount: Statistics = {
     PROCESSED: 0,
     FAILED: 0,
     ACCEPTED: 0,
@@ -23,30 +35,48 @@ export const getStatsFor = async (entry: any, db: any) => {
     TOTAL: 0
   };
 
-  if (entry.type === "message") {
-    const { status } = entry;
-    statuses[status] = 1;
-  } else if (entry.type === "batch") {
-    const messages = await db.find({
-      selector: {
-        type: "message",
-        batchId: entry._id
-      }
-    });
+  async function getStatsForType(): Promise<Statistics> {
+    switch (entry.type) {
+      case "message":
+        return {
+          ...initialCount,
+          [entry.status]: 1
+        };
+      case "batch":
+        const messages = await db.find({
+          selector: {
+            type: "message",
+            batchId: entry._id
+          }
+        });
 
-    const statusesGroups = groupBy(messages.docs, "status");
-    Object.keys(statusesGroups).map(key => {
-      statuses[key] = statusesGroups[key].length;
-    });
+        const statusesGroups = groupBy(messages.docs, "status");
+        return Object.keys(statusesGroups).reduce(
+          (previousPartial: Statistics, currentKey) => {
+            return {
+              ...previousPartial,
+              [currentKey]: statusesGroups[currentKey].length
+            };
+          },
+          initialCount
+        );
+      default:
+        return initialCount;
+    }
   }
 
-  statuses.QUEUED = statuses.ACCEPTED + statuses.THROTTLED;
-  statuses.ERRORED = statuses.FAILED + statuses.NOTSENT;
-  statuses.TOTAL = ["PROCESSED", "QUEUED", "ERRORED"].reduce((acc, key) => {
-    return acc + statuses[key];
-  }, 0);
+  const partialCount = await getStatsForType();
 
-  return statuses;
+  const QUEUED = partialCount.ACCEPTED + partialCount.THROTTLED;
+  const ERRORED = partialCount.FAILED + partialCount.NOTSENT;
+  const TOTAL = partialCount.PROCESSED + QUEUED + ERRORED;
+
+  return {
+    ...partialCount,
+    QUEUED,
+    ERRORED,
+    TOTAL
+  };
 };
 
 export default { getStatsFor };
