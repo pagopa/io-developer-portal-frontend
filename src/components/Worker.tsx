@@ -9,7 +9,11 @@ type Props = {
 };
 
 class Worker extends Component<Props, never> {
-  public working = false;
+  private working = false;
+
+  public isWorking(): boolean {
+    return this.working;
+  }
 
   public componentDidMount() {
     GetMessageWorker.addEventListener("message", ({ data }) => {
@@ -18,10 +22,10 @@ class Worker extends Component<Props, never> {
     });
 
     setInterval(() => {
-      if (!this.working) {
+      if (!this.isWorking()) {
         this.start();
       }
-    }, 5 * 1000);
+    }, 5000);
   }
 
   public start = () => {
