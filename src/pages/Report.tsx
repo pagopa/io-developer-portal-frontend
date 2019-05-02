@@ -85,7 +85,7 @@ class Report extends Component<ReportProps, ReportState> {
           type: "message",
           [entry_type === "batch" ? `batchId` : `_id`]: entry_id
         }}
-        render={({ messageDocs }: any) => {
+        render={({ docs: messageDocs }) => {
           if (!messageDocs.length) {
             return null;
           }
@@ -99,7 +99,7 @@ class Report extends Component<ReportProps, ReportState> {
                 type: "template",
                 _id: templateId
               }}
-              render={({ templateDocs }: any) => {
+              render={({ docs: templateDocs }) => {
                 if (!templateDocs.length) {
                   return null;
                 }

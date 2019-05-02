@@ -32,7 +32,7 @@ self.addEventListener("message", async e => {
   batch.concurrency(1);
 
   messages.docs.forEach((entry: any) => {
-    batch.push(async (done: () => never) => {
+    batch.push(async done => {
       const { id, fiscal_code } = entry.message;
       const path = `messages/${fiscal_code}/${id}`;
       const message = await get({ dbName, url, path });

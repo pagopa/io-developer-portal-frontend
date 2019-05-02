@@ -63,7 +63,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
     sent: this.initialState.sent
   };
 
-  public fileInput = React.createRef<HTMLInputElement>();
+  public fileInput = React.createRef<Input>();
 
   public onTriggerUpload = () => {
     if (this.fileInput.current) {

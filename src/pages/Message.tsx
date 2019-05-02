@@ -90,7 +90,7 @@ class Message extends Component<MessageProps, MessageState> {
     progress: this.initialState.progress
   };
 
-  public fileInput = React.createRef<HTMLInputElement>();
+  public fileInput = React.createRef<Input>();
 
   public componentDidMount() {
     GetProfileWorker.addEventListener("message", ({ data }) => {

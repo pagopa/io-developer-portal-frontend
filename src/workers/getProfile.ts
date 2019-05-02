@@ -19,7 +19,7 @@ self.addEventListener("message", async e => {
   batch.concurrency(1);
 
   results.forEach(async ([result]: any) => {
-    batch.push(async (done: () => never) => {
+    batch.push(async done => {
       try {
         await profileGetAndPersist({
           db,
