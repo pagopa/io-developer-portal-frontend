@@ -14,17 +14,17 @@ import { RouteComponentProps } from "react-router";
 import compose from "recompose/compose";
 
 const { localStorage } = window;
-type Props = {
+type OwnProps = {
   db: any;
 };
-type ServersProps = RouteComponentProps & WithNamespaces & Props;
+type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type ServersState = {
   selected: undefined;
   servers: any;
 };
 
-class Servers extends Component<ServersProps, ServersState> {
+class Servers extends Component<Props, ServersState> {
   public state: ServersState = {
     selected: undefined,
     servers: {}
@@ -159,7 +159,7 @@ class Servers extends Component<ServersProps, ServersState> {
   }
 }
 
-const enhance = compose<ServersProps, ServersProps>(
+const enhance = compose<Props, Props>(
   withDB,
   withNamespaces(["servers", "format"])
 );

@@ -41,11 +41,11 @@ import { GetProfileWorker } from "../workers/";
 import { RouteComponentProps } from "react-router";
 import "./Message.css";
 
-type Props = {
+type OwnProps = {
   db: any;
   dbName: any;
 };
-type MessageProps = RouteComponentProps & WithNamespaces & Props;
+type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type MessageState = {
   list: string;
@@ -61,7 +61,7 @@ type MessageState = {
   progress: boolean;
 };
 
-class Message extends Component<MessageProps, MessageState> {
+class Message extends Component<Props, MessageState> {
   public initialState: MessageState = {
     list: "",
     contacts: [],
@@ -548,7 +548,7 @@ class Message extends Component<MessageProps, MessageState> {
   }
 }
 
-const enhance = compose<MessageProps, MessageProps>(
+const enhance = compose<Props, Props>(
   withDB,
   withNamespaces("message")
 );

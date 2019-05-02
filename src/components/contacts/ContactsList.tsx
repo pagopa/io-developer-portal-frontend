@@ -20,14 +20,14 @@ const getUserIcon = ({ sender_allowed }: ContactDoc) => {
   return "it-error";
 };
 
-type Props = {
+type OwnProps = {
   docs: any;
   selected?: any;
   onContactSelect?: any;
 };
-type ContactsListProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class ContactsList extends Component<ContactsListProps, never> {
+class ContactsList extends Component<Props, never> {
   public render() {
     const { docs, selected, onContactSelect } = this.props;
     const { t } = this.props;

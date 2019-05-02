@@ -8,12 +8,12 @@ interface MessageWithNotification {
   notification: any;
 }
 
-type Props = {
+type OwnProps = {
   list: any;
 };
-type MessageListReportProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class MessageListReport extends Component<MessageListReportProps, never> {
+class MessageListReport extends Component<Props, never> {
   public render() {
     const { list, t } = this.props;
 

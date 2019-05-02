@@ -11,9 +11,9 @@ import Notification from "../components/notifications/Notification";
 import { RouteComponentProps } from "react-router";
 import "./Dashboard.css";
 
-type DashboardProps = RouteComponentProps & WithNamespaces;
+type Props = RouteComponentProps & WithNamespaces;
 
-class Dashboard extends Component<DashboardProps, never> {
+class Dashboard extends Component<Props, never> {
   private getCard(docs: any, cardTextKey: string) {
     const { t } = this.props;
     return (

@@ -8,16 +8,16 @@ import MaskedInput from "react-text-mask";
 import { LIMITS } from "../../utils/constants";
 const { CODE } = LIMITS;
 
-type Props = {
+type OwnProps = {
   code: any;
   codeMask: any;
   isCodeValid: any;
   onInputCode: any;
   onInputAdd?: any;
 };
-type ContactAddProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class ContactAdd extends Component<ContactAddProps, never> {
+class ContactAdd extends Component<Props, never> {
   public render() {
     const { code, codeMask, isCodeValid, onInputCode, onInputAdd } = this.props;
     const { t } = this.props;

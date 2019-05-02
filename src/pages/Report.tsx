@@ -22,22 +22,22 @@ import { RouteComponentProps } from "react-router";
 import MessageListReport from "../components/messages/MessageListReport";
 import MessagePreview from "../components/messages/MessagePreview";
 
-type Props = {
+type OwnProps = {
   db: any;
 };
-type ReportProps = RouteComponentProps<{
+type Props = RouteComponentProps<{
   entry_type: string;
   entry_id: string;
 }> &
   WithNamespaces &
-  Props;
+  OwnProps;
 
 type ReportState = {
   statuses: any;
   selected: string;
 };
 
-class Report extends Component<ReportProps, ReportState> {
+class Report extends Component<Props, ReportState> {
   public state: ReportState = {
     statuses: {},
     selected: ""
@@ -202,7 +202,7 @@ class Report extends Component<ReportProps, ReportState> {
   }
 }
 
-const enhance = compose<ReportProps, ReportProps>(
+const enhance = compose<Props, Props>(
   withDB,
   withNamespaces(["messages", "format"])
 );

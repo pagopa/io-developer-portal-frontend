@@ -20,10 +20,10 @@ import User from "react-icons/lib/fa/user";
 
 import "./TemplatesList.css";
 
-type Props = {
+type OwnProps = {
   docs: any;
 };
-type TemplatesListProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
 type TemplatesListState = {
   selected: string;
@@ -34,7 +34,7 @@ interface Template {
   subject: any;
 }
 
-class TemplatesList extends Component<TemplatesListProps, TemplatesListState> {
+class TemplatesList extends Component<Props, TemplatesListState> {
   public state: TemplatesListState = {
     selected: ""
   };

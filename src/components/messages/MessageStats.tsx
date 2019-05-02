@@ -16,14 +16,14 @@ type MessageStatsState = {
   statuses: any;
 };
 
-type Props = {
+type OwnProps = {
   db?: any;
   entry: any;
   templates: any;
 };
-type MessageStatsProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class MessageStats extends Component<MessageStatsProps, MessageStatsState> {
+class MessageStats extends Component<Props, MessageStatsState> {
   public state: MessageStatsState = {
     statuses: {}
   };
@@ -63,7 +63,7 @@ class MessageStats extends Component<MessageStatsProps, MessageStatsState> {
   }
 }
 
-const enhance = compose<MessageStatsProps, MessageStatsProps>(
+const enhance = compose<Props, Props>(
   withDB,
   withNamespaces("format")
 );

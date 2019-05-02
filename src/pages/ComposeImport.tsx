@@ -33,10 +33,10 @@ import FaExclamation from "react-icons/lib/fa/exclamation";
 import "./ComposeImport.css";
 import "./Pages.css";
 
-type Props = {
+type OwnProps = {
   db: any;
 };
-type ComposeProps = RouteComponentProps & WithNamespaces & Props;
+type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type ComposeState = {
   file?: File;
@@ -46,7 +46,7 @@ type ComposeState = {
   sent: boolean;
 };
 
-class Compose extends Component<ComposeProps, ComposeState> {
+class Compose extends Component<Props, ComposeState> {
   public initialState: ComposeState = {
     file: undefined,
     fileData: [],
@@ -314,7 +314,7 @@ class Compose extends Component<ComposeProps, ComposeState> {
   }
 }
 
-const enhance = compose<ComposeProps, ComposeProps>(
+const enhance = compose<Props, Props>(
   withDB,
   withRouter,
   withNamespaces(["compose_import", "format"])

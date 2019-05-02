@@ -2,11 +2,11 @@ import React, { Component } from "react";
 
 import ReactMarkdown from "react-markdown";
 
-type TemplatePreviewProps = {
+type Props = {
   markdown: any;
 };
 
-class TemplatePreview extends Component<TemplatePreviewProps, never> {
+class TemplatePreview extends Component<Props, never> {
   public render() {
     const { markdown } = this.props;
 

@@ -9,7 +9,7 @@ import { codeMask } from "../utils/masks";
 import { profileGetAndPersist } from "../utils/operations";
 import { isMaskValid } from "../utils/validators";
 
-type ContactsProps = {
+type Props = {
   db: any;
 };
 
@@ -18,7 +18,7 @@ type ContactsState = {
   code: string;
 };
 
-class Contacts extends Component<ContactsProps, ContactsState> {
+class Contacts extends Component<Props, ContactsState> {
   public initialState: ContactsState = {
     selected: "",
     code: ""

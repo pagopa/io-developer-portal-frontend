@@ -50,7 +50,7 @@ const SubscriptionService = ({ service, t }: any) => {
   ) : null;
 };
 
-type ProfileProps = RouteComponentProps<{ email: string }> & WithNamespaces;
+type Props = RouteComponentProps<{ email: string }> & WithNamespaces;
 
 type ProfileState = {
   applicationConfig: any;
@@ -69,7 +69,7 @@ type ProfileState = {
   onConfirmOperation: () => void;
 };
 
-class Profile extends Component<ProfileProps, ProfileState> {
+class Profile extends Component<Props, ProfileState> {
   public state: ProfileState = {
     userData: {},
     userSubscriptions: {},

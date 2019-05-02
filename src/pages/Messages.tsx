@@ -12,10 +12,10 @@ import keyBy from "lodash/keyBy";
 import orderBy from "lodash/orderBy";
 import compose from "recompose/compose";
 
-type Props = {
+type OwnProps = {
   db: any;
 };
-type MessagesProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
 type MessagesState = {
   templates: ReadonlyArray<any>;
@@ -24,7 +24,7 @@ type MessagesState = {
   stats: any;
 };
 
-class Messages extends Component<MessagesProps, MessagesState> {
+class Messages extends Component<Props, MessagesState> {
   public state: MessagesState = {
     templates: [],
     messages: [],
@@ -181,7 +181,7 @@ class Messages extends Component<MessagesProps, MessagesState> {
   }
 }
 
-const enhance = compose<MessagesProps, MessagesProps>(
+const enhance = compose<Props, Props>(
   withDB,
   withNamespaces("messages")
 );

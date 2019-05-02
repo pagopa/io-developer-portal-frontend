@@ -8,19 +8,16 @@ import { RouteComponentProps } from "react-router";
 import { StorageContext } from "../context/storage";
 import { getFromBackend, putToBackend } from "../utils/backend";
 
-type Props = {};
-type SubscriptionServiceProps = RouteComponentProps<{ service_id: string }> &
+type OwnProps = {};
+type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
-  Props;
+  OwnProps;
 
 type SubscriptionServiceState = {
   service: any;
 };
 
-class SubscriptionService extends Component<
-  SubscriptionServiceProps,
-  SubscriptionServiceState
-> {
+class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
     service: undefined
   };

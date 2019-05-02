@@ -10,20 +10,20 @@ import {
   ModalHeader
 } from "design-react-kit";
 
-type Props = {
+type OwnProps = {
   title?: any;
   body?: any;
   isOpen: any;
   onCancel: any;
   onConfirm: any;
 };
-type ConfirmationProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
 type ConfirmationState = {
   isConfirmed: boolean;
 };
 
-class Confirmation extends Component<ConfirmationProps, ConfirmationState> {
+class Confirmation extends Component<Props, ConfirmationState> {
   public state: ConfirmationState = {
     isConfirmed: false
   };

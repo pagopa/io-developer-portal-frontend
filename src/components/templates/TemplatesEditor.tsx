@@ -11,7 +11,7 @@ const { SUBJECT, MARKDOWN } = LIMITS;
 
 import "./TemplatesEditor.css";
 
-type Props = {
+type OwnProps = {
   subject: any;
   markdown: any;
   subjectLength: any;
@@ -21,9 +21,9 @@ type Props = {
   onChangeSubject: any;
   onChangeMarkdown: any;
 };
-type TemplatesEditorProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class TemplatesEditor extends Component<TemplatesEditorProps, never> {
+class TemplatesEditor extends Component<Props, never> {
   public render() {
     const {
       subject,

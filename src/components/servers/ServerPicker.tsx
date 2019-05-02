@@ -4,7 +4,7 @@ import { Col, Input, InputGroup, InputGroupAddon, Row } from "design-react-kit";
 
 import Trash from "react-icons/lib/fa/trash";
 
-type ServerPickerProps = {
+type Props = {
   server: any;
   endpoint: any;
   checked: any;
@@ -14,7 +14,7 @@ type ServerPickerProps = {
   onServerDelete?: any;
 };
 
-class ServerPicker extends Component<ServerPickerProps, never> {
+class ServerPicker extends Component<Props, never> {
   public render() {
     const {
       server,

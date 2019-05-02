@@ -22,7 +22,7 @@ const { NOTICE } = LIMITS;
 
 import "./MessageMetadataEditor.css";
 
-type Props = {
+type OwnProps = {
   dueDate: any;
   notice: any;
   amount: any;
@@ -33,12 +33,9 @@ type Props = {
   onChangeAmount: any;
   onReset: any;
 };
-type MessageMetadataEditorProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class MessageMetadataEditor extends Component<
-  MessageMetadataEditorProps,
-  never
-> {
+class MessageMetadataEditor extends Component<Props, never> {
   public render() {
     const {
       dueDate,

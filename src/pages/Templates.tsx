@@ -20,8 +20,7 @@ const { SUBJECT, MARKDOWN } = LIMITS;
 
 import "./Pages.css";
 
-type TemplatesProps = RouteComponentProps<{ template_id: string }> &
-  WithNamespaces;
+type Props = RouteComponentProps<{ template_id: string }> & WithNamespaces;
 
 type TemplatesState = { subject: string; markdown: string; doc: any } & {
   subject: any;
@@ -29,7 +28,7 @@ type TemplatesState = { subject: string; markdown: string; doc: any } & {
   doc: any;
 } & any;
 
-class Templates extends Component<TemplatesProps, TemplatesState> {
+class Templates extends Component<Props, TemplatesState> {
   public initialState: TemplatesState = {
     subject: "",
     markdown: "",
@@ -203,7 +202,7 @@ class Templates extends Component<TemplatesProps, TemplatesState> {
   }
 }
 
-const enhance = compose<TemplatesProps, TemplatesProps>(
+const enhance = compose<Props, Props>(
   withDB,
   withRouter,
   withNamespaces("template")

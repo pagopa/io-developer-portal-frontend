@@ -4,11 +4,11 @@ import { GetMessageWorker } from "../workers";
 
 import { getUrl } from "../utils/api";
 
-type WorkerProps = {
+type Props = {
   dbName: string;
 };
 
-class Worker extends Component<WorkerProps, never> {
+class Worker extends Component<Props, never> {
   public working = false;
 
   public componentDidMount() {

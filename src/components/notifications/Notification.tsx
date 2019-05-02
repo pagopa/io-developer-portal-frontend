@@ -8,13 +8,13 @@ type NotificationState = {
   info: any;
 };
 
-type Props = {
+type OwnProps = {
   info: any;
   autoClose?: any;
 };
-type NotificationProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class Notification extends Component<NotificationProps, NotificationState> {
+class Notification extends Component<Props, NotificationState> {
   public initialState: NotificationState = {
     info: {}
   };
