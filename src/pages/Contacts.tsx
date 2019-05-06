@@ -8,9 +8,10 @@ import { Find, withDB } from "react-pouchdb/browser";
 import { codeMask } from "../utils/masks";
 import { profileGetAndPersist } from "../utils/operations";
 import { isMaskValid } from "../utils/validators";
+import Database = PouchDB.Database;
 
 type Props = {
-  db: any;
+  db: Database;
 };
 
 type ContactsState = {
@@ -55,6 +56,7 @@ class Contacts extends Component<Props, ContactsState> {
     );
   };
 
+  // TODO: unused method, should be removed?
   public onContactSelect = (code: any) => {
     this.setState(() => {
       return {

@@ -17,7 +17,7 @@ import {
   Row
 } from "design-react-kit";
 
-import moment from "moment";
+import moment, { Moment } from "moment";
 import compose from "recompose/compose";
 
 import FaSpinner from "react-icons/lib/fa/spinner";
@@ -31,7 +31,8 @@ import { LIMITS } from "../utils/constants";
 import { noticeMask } from "../utils/masks";
 import {
   createMessageContent,
-  messagePostAndPersist
+  messagePostAndPersist,
+  MessagePostAndPersistResult
 } from "../utils/operations";
 import { isMaskValid, isValueRangeValid } from "../utils/validators";
 const { AMOUNT, CODE } = LIMITS;
@@ -40,20 +41,21 @@ import { GetProfileWorker } from "../workers/";
 
 import { RouteComponentProps } from "react-router";
 import "./Message.css";
+import Database = PouchDB.Database;
 
 type OwnProps = {
-  db: any;
-  dbName: any;
+  db: Database;
+  dbName: string;
 };
 type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type MessageState = {
   list: string;
-  contacts: ReadonlyArray<any>;
-  file: any;
+  contacts: ReadonlyArray<ReadonlyArray<string>>;
+  file?: File;
   batch: string;
   selected: string;
-  dueDate: any;
+  dueDate: Moment | null;
   amount: string;
   notice: string;
   recipientOpen: boolean;
@@ -65,10 +67,9 @@ class Message extends Component<Props, MessageState> {
   public initialState: MessageState = {
     list: "",
     contacts: [],
-    file: undefined,
     batch: "",
     selected: "",
-    dueDate: undefined,
+    dueDate: null,
     amount: "",
     notice: "",
     recipientOpen: false,
@@ -146,18 +147,19 @@ class Message extends Component<Props, MessageState> {
         // If `header` is false, rows are arrays;
         // otherwise they are objects of data keyed by the field name
 
-        const filtered: ReadonlyArray<any> = results.data.reduce(
+        const filtered: ReadonlyArray<string> = results.data.reduce(
           (
-            previousLinesValues: ReadonlyArray<any>,
-            currentLine: ReadonlyArray<any>
+            previousLinesValues: ReadonlyArray<string>,
+            currentLine: ReadonlyArray<string>
           ) => [
             ...previousLinesValues,
-            currentLine.reduce(
-              (previousValues: ReadonlyArray<any>, currentValue: any) =>
+            ...currentLine.reduce(
+              (previousValues: ReadonlyArray<string>, currentValue: string) =>
                 previousValues.concat(
                   // TODO Test it against validator (will be validated against API anyway)
                   currentValue.length === CODE.MAX ? currentValue : []
-                )
+                ),
+              []
             )
           ],
           []
@@ -276,7 +278,12 @@ class Message extends Component<Props, MessageState> {
               batchId: batch
             }
           })).docs.reduce(
-            (prevPromisesArray: ReadonlyArray<Promise<any>>, doc: any) => {
+            (
+              prevPromisesArray: ReadonlyArray<
+                Promise<MessagePostAndPersistResult>
+              >,
+              doc
+            ) => {
               return [
                 ...prevPromisesArray,
                 messagePostAndPersist({
@@ -295,7 +302,11 @@ class Message extends Component<Props, MessageState> {
     this.goHome({ result });
   };
 
-  public goHome = ({ result }: any) => {
+  public goHome = ({
+    result
+  }: {
+    result: ReadonlyArray<MessagePostAndPersistResult>;
+  }) => {
     const { history } = this.props;
     const location = {
       pathname: "/",
@@ -362,7 +373,7 @@ class Message extends Component<Props, MessageState> {
                         type: "contact"
                       }}
                       sort={["_id"]}
-                      render={({ docs }: any) => (
+                      render={({ docs }) => (
                         <ContactsList
                           docs={docs}
                           selected={selected}
@@ -413,7 +424,7 @@ class Message extends Component<Props, MessageState> {
                         batchId: batch
                       }}
                       sort={["_id"]}
-                      render={({ docs }: any) => (
+                      render={({ docs }) => (
                         <ContactsList docs={docs} selected={selected} />
                       )}
                     />
@@ -519,7 +530,7 @@ class Message extends Component<Props, MessageState> {
               _id: templateId
             }}
             sort={["_id"]}
-            render={({ docs }: any) => {
+            render={({ docs }) => {
               const message = docs[0];
 
               if (!message) {

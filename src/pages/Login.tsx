@@ -15,15 +15,15 @@ class Login extends Component<WithNamespaces, never> {
   public componentDidMount = async () => {
     try {
       const configuration = await getFromBackend({ path: "configuration" });
-      const user: any = await getUserTokenOrRedirect(configuration);
-
-      console.debug(
-        "Login::getUserTokenOrRedirect::userToken",
-        user.token,
-        user.user
-      );
+      const user = await getUserTokenOrRedirect(configuration);
 
       if (user) {
+        console.debug(
+          "Login::getUserTokenOrRedirect::userToken",
+          user.token,
+          user.user
+        );
+
         // bearer token to call backend api
         localStorage.setItem("userToken", user.token);
         // profile data (email, name, ...)

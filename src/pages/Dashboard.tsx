@@ -9,12 +9,18 @@ import { Card, CardBody, CardText, CardTitle } from "design-react-kit";
 import Notification from "../components/notifications/Notification";
 
 import { RouteComponentProps } from "react-router";
+
+import {
+  MessagePostAndPersistFail,
+  MessagePostAndPersistSuccess
+} from "../utils/operations";
+
 import "./Dashboard.css";
 
 type Props = RouteComponentProps & WithNamespaces;
 
 class Dashboard extends Component<Props, never> {
-  private getCard(docs: any, cardTextKey: string) {
+  private getCard<T = {}>(docs: ReadonlyArray<T>, cardTextKey: string) {
     const { t } = this.props;
     return (
       <Card className="flex-1 bg-primary text-white p-3 m-3">
@@ -32,27 +38,31 @@ class Dashboard extends Component<Props, never> {
       <section className="d-flex">
         <section className="position-fixed dashboard--notifications-container">
           {location.state &&
-            location.state.map((info: any) => {
-              return <Notification key={info._id} info={info} />;
-            })}
+            location.state.map(
+              (
+                info: MessagePostAndPersistSuccess | MessagePostAndPersistFail
+              ) => {
+                return <Notification key={info._id} info={info} />;
+              }
+            )}
         </section>
         <Find
           selector={{
             type: "template"
           }}
-          render={({ docs }: any) => this.getCard(docs, "templates")}
+          render={({ docs }) => this.getCard(docs, "templates")}
         />
         <Find
           selector={{
             type: "message"
           }}
-          render={({ docs }: any) => this.getCard(docs, "messages")}
+          render={({ docs }) => this.getCard(docs, "messages")}
         />
         <Find
           selector={{
             type: "contact"
           }}
-          render={({ docs }: any) => this.getCard(docs, "contacts")}
+          render={({ docs }) => this.getCard(docs, "contacts")}
         />
       </section>
     );

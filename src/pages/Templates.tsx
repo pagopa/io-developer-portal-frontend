@@ -19,14 +19,27 @@ import { isLengthValid } from "../utils/validators";
 const { SUBJECT, MARKDOWN } = LIMITS;
 
 import "./Pages.css";
+import Database = PouchDB.Database;
+import ExistingDocument = PouchDB.Core.ExistingDocument;
 
-type Props = RouteComponentProps<{ template_id: string }> & WithNamespaces;
+type OwnProps = {
+  db: Database<Template>;
+};
 
-type TemplatesState = { subject: string; markdown: string; doc: any } & {
-  subject: any;
-  markdown: any;
-  doc: any;
-} & any;
+type Props = RouteComponentProps<{ template_id: string }> &
+  WithNamespaces &
+  OwnProps;
+
+type TemplatesState = {
+  subject: string;
+  markdown: string;
+  doc?: ExistingDocument<Template>;
+};
+
+interface Template {
+  subject: string;
+  markdown: string;
+}
 
 class Templates extends Component<Props, TemplatesState> {
   public initialState: TemplatesState = {
@@ -41,7 +54,9 @@ class Templates extends Component<Props, TemplatesState> {
     doc: this.initialState.doc
   };
 
-  public componentWillReceiveProps(nextProps: any) {
+  public componentWillReceiveProps(
+    nextProps: RouteComponentProps<{ template_id: string }>
+  ) {
     const {
       match: {
         params: { template_id }
@@ -56,11 +71,11 @@ class Templates extends Component<Props, TemplatesState> {
           doc: this.initialState.doc
         });
       } else {
-        const { db }: any = this.props;
+        const { db } = this.props;
 
         (async () => {
           const messages = await db.find({
-            selector: { type: "template", _id: template_id }
+            selector: { type: "template", _id: { $eq: template_id } }
           });
 
           const message = messages.docs[0];
@@ -102,7 +117,7 @@ class Templates extends Component<Props, TemplatesState> {
       match: {
         params: { template_id }
       }
-    }: any = this.props;
+    } = this.props;
 
     if (template_id && template_id !== "new") {
       db.put({
@@ -124,7 +139,7 @@ class Templates extends Component<Props, TemplatesState> {
   };
 
   public goBack = () => {
-    const { history }: any = this.props;
+    const { history } = this.props;
     const location = {
       pathname: "/templates"
     };
@@ -136,8 +151,8 @@ class Templates extends Component<Props, TemplatesState> {
       match: {
         params: { template_id }
       }
-    }: any = this.props;
-    const { t }: any = this.props;
+    } = this.props;
+    const { t } = this.props;
 
     const isSubjectValid = isLengthValid(subject, [SUBJECT.MIN, SUBJECT.MAX]);
     const isMarkdownValid = isLengthValid(markdown, [
@@ -166,7 +181,7 @@ class Templates extends Component<Props, TemplatesState> {
                     type: "template"
                   }}
                   sort={["_id"]}
-                  render={({ docs }: any) => <TemplatesList docs={docs} />}
+                  render={({ docs }) => <TemplatesList docs={docs} />}
                 />
               </div>
             );

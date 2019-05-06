@@ -16,14 +16,15 @@ import sortBy from "lodash/sortBy";
 import moment from "moment";
 import compose from "recompose/compose";
 
-import { getStatsFor } from "../utils/stats";
+import { getStatsFor, Statistics } from "../utils/stats";
 
 import { RouteComponentProps } from "react-router";
 import MessageListReport from "../components/messages/MessageListReport";
 import MessagePreview from "../components/messages/MessagePreview";
+import Database = PouchDB.Database;
 
 type OwnProps = {
-  db: any;
+  db: Database;
 };
 type Props = RouteComponentProps<{
   entry_type: string;
@@ -33,13 +34,23 @@ type Props = RouteComponentProps<{
   OwnProps;
 
 type ReportState = {
-  statuses: any;
+  statuses: Statistics;
   selected: string;
 };
 
 class Report extends Component<Props, ReportState> {
   public state: ReportState = {
-    statuses: {},
+    statuses: {
+      PROCESSED: 0,
+      FAILED: 0,
+      ACCEPTED: 0,
+      THROTTLED: 0,
+      // Custom ones
+      NOTSENT: 0,
+      ERRORED: 0,
+      QUEUED: 0,
+      TOTAL: 0
+    },
     selected: ""
   };
 
@@ -51,7 +62,7 @@ class Report extends Component<Props, ReportState> {
       }
     } = this.props;
     const entry = await db.find({
-      selector: { type: entry_type, _id: entry_id }
+      selector: { type: entry_type, _id: { $eq: entry_id } }
     });
 
     const statuses = await getStatsFor(entry.docs[0], db);

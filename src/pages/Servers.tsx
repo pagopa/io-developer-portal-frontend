@@ -12,17 +12,27 @@ import { upsert } from "../utils/db";
 
 import { RouteComponentProps } from "react-router";
 import compose from "recompose/compose";
+import Database = PouchDB.Database;
+import ExistingDocument = PouchDB.Core.ExistingDocument;
 
 const { localStorage } = window;
 type OwnProps = {
-  db: any;
+  db: Database<Server>;
 };
 type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type ServersState = {
-  selected: undefined;
-  servers: any;
+  selected?: ExistingDocument<Server>;
+  servers: ServersObj;
 };
+
+interface Server {
+  endpoint: string;
+}
+
+interface ServersObj {
+  [serverId: string]: ExistingDocument<Server>;
+}
 
 class Servers extends Component<Props, ServersState> {
   public state: ServersState = {
@@ -43,7 +53,7 @@ class Servers extends Component<Props, ServersState> {
     });
 
     const newServers = servers.docs.reduce(
-      (previousServers: any, currentServer: any) => {
+      (previousServers: ServersObj, currentServer) => {
         return {
           ...previousServers,
           [currentServer._id]: currentServer
@@ -66,14 +76,17 @@ class Servers extends Component<Props, ServersState> {
     await this.syncStatewithDB();
   };
 
-  public onServerSelect = (server: any) => {
+  public onServerSelect = (server: ExistingDocument<Server>) => {
     localStorage.setItem("serviceEndpoint", server.endpoint);
     this.setState({
       selected: server
     });
   };
 
-  public onServerChange = async (server: any, value: string) => {
+  public onServerChange = async (
+    server: ExistingDocument<Server>,
+    value: string
+  ) => {
     const { db } = this.props;
     await upsert(db, server._id, {
       ...server,
@@ -98,7 +111,7 @@ class Servers extends Component<Props, ServersState> {
     );
   };
 
-  public onServerDelete = async (server: any) => {
+  public onServerDelete = async (server: ExistingDocument<Server>) => {
     const { db } = this.props;
     db.remove(server);
     await this.syncStatewithDB();

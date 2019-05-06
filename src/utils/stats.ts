@@ -1,6 +1,6 @@
 import groupBy from "lodash/groupBy";
 
-type Statistics = {
+export type Statistics = {
   PROCESSED: number;
   FAILED: number;
   ACCEPTED: number;

@@ -10,7 +10,7 @@ export function getUrl() {
   return serviceEndpoint ? serviceEndpoint : DEFAULT_URL;
 }
 
-const getOptions = (dbName: string) => {
+const getOptions = (dbName: string | undefined) => {
   return {
     headers: {
       "Content-Type": "application/json",
@@ -31,20 +31,20 @@ const getRetryTimeout = (message: string) => {
       throw new Error();
     }
     const digits = Number(stringMatch[0]);
-    return isFinite(digits) ? digits * 1000 : 1 * 1000;
+    return isFinite(digits) ? digits * 1000 : 1000;
   } catch (error) {
-    return 1 * 1000;
+    return 1000;
   }
 };
 
 interface GetParams {
-  dbName?: any;
-  url?: any;
-  path: any;
+  dbName?: string;
+  url?: string;
+  path: string;
   options?: any;
 }
 
-export function get(params: GetParams) {
+export function get<T>(params: GetParams): Promise<T> {
   const { dbName, url, path, options } = params;
   return fetch(`${url || getUrl()}/${path}`, {
     ...getOptions(dbName),
@@ -57,9 +57,9 @@ export function get(params: GetParams) {
       if (response.statusCode === 429) {
         // { statusCode: 429, message: "Rate limit is exceeded. Try again in X seconds." }
         // Attempt to retry
-        return new Promise<any>(resolve => {
+        return new Promise(resolve => {
           setTimeout(async () => {
-            const result = await get({
+            const result = await get<T>({
               dbName,
               url,
               path,
@@ -74,13 +74,13 @@ export function get(params: GetParams) {
 }
 
 interface PostParams {
-  dbName?: any;
-  url?: any;
-  path: any;
+  dbName?: string;
+  url?: string;
+  path: string;
   options: any;
 }
 
-export function post(params: PostParams) {
+export function post<T>(params: PostParams): Promise<T> {
   const { dbName, url, path, options } = params;
   return fetch(`${url || getUrl()}/${path}`, {
     ...getOptions(dbName),
@@ -94,9 +94,9 @@ export function post(params: PostParams) {
       if (response.statusCode === 429) {
         // { statusCode: 429, message: "Rate limit is exceeded. Try again in X seconds." }
         // Attempt to retry
-        return new Promise<any>(resolve => {
+        return new Promise(resolve => {
           setTimeout(async () => {
-            const result = await post({
+            const result = await post<T>({
               dbName,
               url,
               path,

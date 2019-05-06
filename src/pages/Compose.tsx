@@ -15,6 +15,8 @@ import { codeMask, noticeMask } from "../utils/masks";
 import {
   createMessageContent,
   messagePostAndPersist,
+  MessagePostAndPersistFail,
+  MessagePostAndPersistSuccess,
   profileGetAndPersist
 } from "../utils/operations";
 import {
@@ -24,15 +26,17 @@ import {
 } from "../utils/validators";
 const { SUBJECT, MARKDOWN, AMOUNT } = LIMITS;
 
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 import compose from "recompose/compose";
 import SelectedService from "../components/SelectedService";
 
 import "./Pages.css";
 
+import Database = PouchDB.Database;
+
 type OwnProps = {
-  db: any;
+  db: Database;
 };
 type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
@@ -40,7 +44,7 @@ type ComposeState = {
   code: string;
   subject: string;
   markdown: string;
-  dueDate: any;
+  dueDate: Moment | null;
   amount: string;
   notice: string;
 };
@@ -50,7 +54,7 @@ class Compose extends Component<Props, ComposeState> {
     code: "",
     subject: "",
     markdown: "",
-    dueDate: undefined,
+    dueDate: null,
     amount: "",
     notice: ""
   };
@@ -150,7 +154,11 @@ class Compose extends Component<Props, ComposeState> {
     this.goHome({ result });
   };
 
-  public goHome = ({ result }: any) => {
+  public goHome = ({
+    result
+  }: {
+    result: MessagePostAndPersistSuccess | MessagePostAndPersistFail;
+  }) => {
     const { history } = this.props;
     const location = {
       pathname: "/",

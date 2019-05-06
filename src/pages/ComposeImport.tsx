@@ -14,7 +14,9 @@ import { CONSTANTS } from "../utils/constants";
 import {
   createMessageContent,
   interpolateMarkdown,
-  messagePostAndPersist
+  messagePostAndPersist,
+  MessagePostAndPersistFail,
+  MessagePostAndPersistSuccess
 } from "../utils/operations";
 import { areHeadersValid } from "../utils/validators";
 
@@ -33,15 +35,17 @@ import FaExclamation from "react-icons/lib/fa/exclamation";
 import "./ComposeImport.css";
 import "./Pages.css";
 
+import Database = PouchDB.Database;
+
 type OwnProps = {
-  db: any;
+  db: Database;
 };
 type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type ComposeState = {
   file?: File;
-  fileData: ReadonlyArray<any>;
-  headers: ReadonlyArray<any>;
+  fileData: ReadonlyArray<ReadonlyArray<string>>;
+  headers: ReadonlyArray<string>;
   ignoreHeaders: boolean;
   sent: boolean;
 };
@@ -106,7 +110,9 @@ class Compose extends Component<Props, ComposeState> {
         const { ignoreHeaders } = this.state;
         const { data } = results;
 
-        const headers = ignoreHeaders ? data.shift() : data[0];
+        const headers: ReadonlyArray<string> = ignoreHeaders
+          ? data.shift()
+          : data[0];
         this.setState({ file: inputFile, fileData: data, headers });
       }
     });
@@ -131,8 +137,13 @@ class Compose extends Component<Props, ComposeState> {
       created_at: moment().toISOString()
     });
 
-    const promises: ReadonlyArray<Promise<any>> = fileData.reduce(
-      (prevPromisesArray: ReadonlyArray<Promise<any>>, row) => {
+    const promises = fileData.reduce(
+      (
+        prevPromisesArray: ReadonlyArray<
+          Promise<MessagePostAndPersistSuccess | MessagePostAndPersistFail>
+        >,
+        row
+      ) => {
         const message = {
           subject: row[SUBJECT],
           markdown: ignoreHeaders
@@ -166,7 +177,13 @@ class Compose extends Component<Props, ComposeState> {
     this.goHome({ result });
   };
 
-  public goHome = ({ result }: any) => {
+  public goHome = ({
+    result
+  }: {
+    result: ReadonlyArray<
+      MessagePostAndPersistSuccess | MessagePostAndPersistFail
+    >;
+  }) => {
     const { history } = this.props;
     const location = {
       pathname: "/",

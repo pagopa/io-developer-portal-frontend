@@ -8,6 +8,7 @@ import { get, post } from "./api";
 import { upsert } from "./db";
 
 import { CONSTANTS } from "./constants";
+import Database = PouchDB.Database;
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
 const templateSettings = { interpolate: /{{([\s\S]+?)}}/g };
@@ -28,16 +29,47 @@ interface ProfileGetAndPersistParams {
   batchId?: any;
 }
 
+export function isProblemJson<T>(res: T | ProblemJson): res is ProblemJson {
+  return (res as ProblemJson).status !== undefined;
+}
+
+interface CreatedMessageWithoutContentCollection {
+  items: ReadonlyArray<CreatedMessageWithoutContent>;
+}
+
+interface PaginationResponse {
+  page_size: number;
+  next: string;
+}
+
+interface PaginatedCreatedMessageWithoutContentCollection
+  extends CreatedMessageWithoutContentCollection,
+    PaginationResponse {}
+
+interface CreatedMessageWithoutContent {
+  id: string;
+  fiscal_code: string;
+  time_to_live?: number;
+  created_at: Timestamp;
+  sender_service_id: string;
+}
+
 export async function profileGetAndPersist(params: ProfileGetAndPersistParams) {
   const { db, dbName, url, code, batchId } = params;
-  const profile = await get({ dbName, url, path: `profiles/${code}` });
+  const profile = await get<
+    PaginatedCreatedMessageWithoutContentCollection | ProblemJson
+  >({
+    dbName,
+    url,
+    path: `profiles/${code}`
+  });
 
   const newDoc = Object.assign(
     {
       type: "contact",
       batchId
     },
-    profile.status // The API returns errors with shape { detail, status, title }
+    isProblemJson(profile) // The API returns errors with shape { detail, status, title }
       ? { sender_allowed: null, status: profile.status } // Create an errored profile
       : profile
   );
@@ -45,14 +77,104 @@ export async function profileGetAndPersist(params: ProfileGetAndPersistParams) {
   return upsert(db, code, newDoc);
 }
 
+interface MessagePostAndPersistParams {
+  db: Database;
+  code: string;
+  content: MessageContent;
+  templateId: any;
+  batchId?: any;
+}
+
+type Timestamp = string;
+
+interface MessageContent {
+  subject: string;
+  markdown: string;
+  payment_data?: PaymentData;
+  due_date?: Timestamp;
+}
+
+interface PaymentData {
+  amount: number;
+  notice_number: string;
+  invalid_after_due_date?: boolean;
+}
+
+export interface ProblemJson {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance: string;
+}
+
+interface SubmitMessageForUserResponse {
+  id: string;
+}
+
+export interface MessageResponseWithContent {
+  message: CreatedMessageWithContent;
+  notification?: MessageResponseNotificationStatus;
+  status?: MessageStatusValue;
+}
+
+interface MessageResponseNotificationStatus {
+  email: NotificationChannelStatusValue;
+}
+
+enum MessageStatusValue {
+  ACCEPTED = "ACCEPTED",
+  THROTTLED = "THROTTLED",
+  FAILED = "FAILED",
+  PROCESSED = "PROCESSED"
+}
+
+enum NotificationChannelStatusValue {
+  SENT = "SENT",
+  THROTTLED = "THROTTLED",
+  EXPIRED = "EXPIRED",
+  FAILED = "FAILED"
+}
+
+interface CreatedMessageWithContent {
+  id: string;
+  fiscal_code: string;
+  time_to_live?: number;
+  created_at: Timestamp;
+  content: MessageContent;
+  sender_service_id: string;
+}
+
+interface DetailsOnError {
+  message: {
+    created_at: Timestamp;
+    fiscal_code: string;
+  } & ProblemJson;
+}
+
+export interface MessagePostAndPersistFail extends DetailsOnError {
+  _id: string;
+}
+
+export interface MessagePostAndPersistSuccess
+  extends MessageResponseWithContent {
+  _id: string;
+}
+
+export type MessagePostAndPersistResult =
+  | MessagePostAndPersistSuccess
+  | MessagePostAndPersistFail;
+
 export async function messagePostAndPersist({
   db,
   code,
   content,
   templateId,
   batchId = ""
-}: any) {
-  const sent = await post({
+}: MessagePostAndPersistParams): Promise<
+  MessagePostAndPersistSuccess | MessagePostAndPersistFail
+> {
+  const sent = await post<SubmitMessageForUserResponse | ProblemJson>({
     path: `messages/${code}`,
     options: {
       body: {
@@ -63,8 +185,8 @@ export async function messagePostAndPersist({
   });
 
   // The API returns errors with shape { detail, status, title }
-  if (sent.status) {
-    const detailsOnError = {
+  if (isProblemJson(sent)) {
+    const detailsOnError: DetailsOnError = {
       message: {
         created_at: new Date().toISOString(),
         fiscal_code: code,
@@ -87,7 +209,7 @@ export async function messagePostAndPersist({
     };
   }
 
-  const details = await get({
+  const details = await get<MessageResponseWithContent>({
     path: `messages/${code}/${sent.id}`
   });
 

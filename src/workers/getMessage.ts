@@ -6,6 +6,7 @@ import Batch from "batch";
 
 import { get } from "../utils/api";
 import { upsert } from "../utils/db";
+import { MessageResponseWithContent, ProblemJson } from "../utils/operations";
 
 self.addEventListener("message", async e => {
   if (!e) {
@@ -35,9 +36,14 @@ self.addEventListener("message", async e => {
     batch.push(async done => {
       const { id, fiscal_code } = entry.message;
       const path = `messages/${fiscal_code}/${id}`;
-      const message = await get({ dbName, url, path });
+      const message = await get<MessageResponseWithContent | ProblemJson>({
+        dbName,
+        url,
+        path
+      });
 
-      if (message.statusCode) {
+      if (message.hasOwnProperty("statusCode")) {
+        // TODO: is it correct? Shouldn't it be `status`?
         // API returned an error
         console.error(id);
       } else {

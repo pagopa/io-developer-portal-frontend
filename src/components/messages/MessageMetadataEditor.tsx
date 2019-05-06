@@ -11,6 +11,7 @@ import {
   Row
 } from "design-react-kit";
 
+import { Moment } from "moment";
 import DatePicker from "react-datepicker";
 import MaskedInput from "react-text-mask";
 
@@ -23,7 +24,7 @@ const { NOTICE } = LIMITS;
 import "./MessageMetadataEditor.css";
 
 type OwnProps = {
-  dueDate: any;
+  dueDate: Moment | null;
   notice: any;
   amount: any;
   isNoticeValid: any;
