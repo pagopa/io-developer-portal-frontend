@@ -50,7 +50,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
-        body: {
+        body: JSON.stringify({
           organization_fiscal_code: service.organization_fiscal_code,
           organization_name: service.organization_name,
           department_name: service.department_name,
@@ -60,7 +60,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
             10
           ),
           is_visible: Boolean(service.is_visible)
-        }
+        })
       }
     });
   };

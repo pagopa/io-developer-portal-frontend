@@ -6,7 +6,7 @@ export const DEFAULT_BACKEND_URL =
 export const getBackendUrl = () =>
   window.localStorage.getItem("backendEndpoint") || DEFAULT_BACKEND_URL;
 
-const getOptions = (token: string) => {
+const getOptions = (token?: string) => {
   const defaultToken = localStorage.getItem("userToken");
   return {
     headers: Object.assign(
@@ -36,20 +36,20 @@ const getRetryTimeout = (message: string) => {
     }
     const digits = Number(stringMatch[0]);
 
-    return isFinite(digits) ? digits * 1000 : 1 * 1000;
+    return isFinite(digits) ? digits * 1000 : 1000;
   } catch (error) {
-    return 1 * 1000;
+    return 1000;
   }
 };
 
 interface GetFromBackendParams {
-  url?: any;
-  path: any;
-  token?: any;
-  options?: any;
+  url?: string;
+  path: string;
+  token?: string;
+  options?: RequestInit;
 }
 
-export const getFromBackend = async (params: GetFromBackendParams) => {
+export const getFromBackend = async <T>(params: GetFromBackendParams) => {
   const { url, path, token, options } = params;
   const response = await fetch(`${url || getBackendUrl()}/${path}`, {
     ...getOptions(token),
@@ -67,9 +67,9 @@ export const getFromBackend = async (params: GetFromBackendParams) => {
   if (jsonRes.statusCode === 429) {
     // { statusCode: 429, message: "Rate limit is exceeded. Try again in X seconds." }
     // Attempt to retry
-    return new Promise<any>(resolve => {
+    return new Promise<T>(resolve => {
       setTimeout(async () => {
-        const result = await getFromBackend({
+        const result = await getFromBackend<T>({
           token,
           url,
           path,
@@ -79,30 +79,30 @@ export const getFromBackend = async (params: GetFromBackendParams) => {
       }, getRetryTimeout(jsonRes.message));
     });
   }
-  return jsonRes;
+  return jsonRes as T;
 };
 
 interface PostToBackendParams {
-  url?: any;
-  path: any;
-  token?: any;
-  options: any;
+  url?: string;
+  path: string;
+  token?: string;
+  options: RequestInit;
 }
 
-export const postToBackend = (params: PostToBackendParams) =>
-  toBackend(params, "POST");
+export const postToBackend = <T>(params: PostToBackendParams) =>
+  toBackend<T>(params, "POST");
 
 interface PutToBackendParams {
-  url?: any;
-  path: any;
-  token?: any;
-  options: any;
+  url?: string;
+  path: string;
+  token?: string;
+  options: RequestInit;
 }
 
-export const putToBackend = (params: PutToBackendParams) =>
-  toBackend(params, "PUT");
+export const putToBackend = <T>(params: PutToBackendParams) =>
+  toBackend<T>(params, "PUT");
 
-async function toBackend(
+async function toBackend<T>(
   params: PostToBackendParams | PutToBackendParams,
   method: "POST" | "PUT"
 ) {
@@ -110,18 +110,17 @@ async function toBackend(
   const response = await fetch(`${url || getBackendUrl()}/${path}`, {
     ...getOptions(token),
     ...options,
-    method,
-    body: JSON.stringify(options.body)
+    method
   });
   const jsonRes = await response.json();
   // The API returned an error with shape { message, statusCode }
   if (jsonRes.statusCode === 429) {
     // { statusCode: 429, message: "Rate limit is exceeded. Try again in X seconds." }
     // Attempt to retry
-    return new Promise<any>(resolve => {
+    return new Promise<T>(resolve => {
       setTimeout(async () => {
         // TODO: check if it should always be postToBackend even when method is PUT
-        const result = await postToBackend({
+        const result = await postToBackend<T>({
           token,
           url,
           path,
@@ -131,5 +130,5 @@ async function toBackend(
       }, getRetryTimeout(jsonRes.message));
     });
   }
-  return jsonRes;
+  return jsonRes as T;
 }

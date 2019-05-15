@@ -29,7 +29,7 @@ class Login extends Component<WithNamespaces, never> {
         // profile data (email, name, ...)
         localStorage.setItem("userData", JSON.stringify(user.user.idToken));
 
-        const apimUser = await getFromBackend({ path: "user" });
+        const apimUser = await getFromBackend<any>({ path: "user" });
         console.debug("Login::apimUser", apimUser);
 
         const isApiAdmin =

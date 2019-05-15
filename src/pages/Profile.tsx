@@ -83,21 +83,23 @@ class Profile extends Component<Props, ProfileState> {
   public onAddSubscription = async () => {
     const email = getMail(this.props.match.params.email);
 
-    const userSubscription = await postToBackend({
+    const userSubscription = await postToBackend<any>({
       path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : ""),
       options: {
-        body: Object.assign(
-          {},
-          {
-            organization_fiscal_code: this.state.newSubscription
-              .organization_fiscal_code,
-            organization_name: this.state.newSubscription.organization_name,
-            department_name: this.state.newSubscription.department_name,
-            service_name: this.state.newSubscription.service_name
-          },
-          this.state.newSubscription.new_user
-            ? { new_user: this.state.newSubscription.new_user }
-            : {}
+        body: JSON.stringify(
+          Object.assign(
+            {},
+            {
+              organization_fiscal_code: this.state.newSubscription
+                .organization_fiscal_code,
+              organization_name: this.state.newSubscription.organization_name,
+              department_name: this.state.newSubscription.department_name,
+              service_name: this.state.newSubscription.service_name
+            },
+            this.state.newSubscription.new_user
+              ? { new_user: this.state.newSubscription.new_user }
+              : {}
+          )
         )
       }
     });
@@ -109,7 +111,7 @@ class Profile extends Component<Props, ProfileState> {
       }
     });
 
-    const service = await getFromBackend({
+    const service = await getFromBackend<any>({
       path: `services/${userSubscription.name}`
     });
 
@@ -155,7 +157,7 @@ class Profile extends Component<Props, ProfileState> {
     }
 
     // load all user's subscriptions
-    const userSubscriptions = await getFromBackend({
+    const userSubscriptions = await getFromBackend<any>({
       path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : "")
     });
 
@@ -179,7 +181,7 @@ class Profile extends Component<Props, ProfileState> {
     // load all services related to the user's subscriptions
     Object.keys(userSubscriptionsObj).forEach(async subscriptionKey => {
       const subscription = userSubscriptionsObj[subscriptionKey];
-      const service = await getFromBackend({
+      const service = await getFromBackend<any>({
         path: `services/${subscription.name}`
       });
       this.setState({
@@ -205,7 +207,7 @@ class Profile extends Component<Props, ProfileState> {
     this.setState({
       isConfirmationOpen: true,
       onConfirmOperation: async () => {
-        const userSubscription = await putToBackend({
+        const userSubscription = await putToBackend<any>({
           path: "subscriptions/" + subscriptionId + "/" + keyType + "_key",
           options: { body: undefined }
         });

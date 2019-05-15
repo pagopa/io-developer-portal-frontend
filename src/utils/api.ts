@@ -14,7 +14,8 @@ const getOptions = (dbName: string | undefined) => {
   return {
     headers: {
       "Content-Type": "application/json",
-      "Ocp-Apim-Subscription-Key": dbName || localStorage.getItem("serviceKey")
+      "Ocp-Apim-Subscription-Key":
+        dbName || localStorage.getItem("serviceKey") || ""
     }
   };
 };
@@ -41,7 +42,7 @@ interface GetParams {
   dbName?: string;
   url?: string;
   path: string;
-  options?: any;
+  options?: RequestInit;
 }
 
 export function get<T>(params: GetParams): Promise<T> {
@@ -77,7 +78,7 @@ interface PostParams {
   dbName?: string;
   url?: string;
   path: string;
-  options: any;
+  options: RequestInit;
 }
 
 export function post<T>(params: PostParams): Promise<T> {
@@ -85,8 +86,7 @@ export function post<T>(params: PostParams): Promise<T> {
   return fetch(`${url || getUrl()}/${path}`, {
     ...getOptions(dbName),
     ...options,
-    method: "POST",
-    body: JSON.stringify(options.body)
+    method: "POST"
   })
     .then(response => response.json())
     .then(response => {

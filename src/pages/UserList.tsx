@@ -18,7 +18,7 @@ class UserList extends Component<WithNamespaces, UserListState> {
   };
 
   public componentDidMount = async () => {
-    const users = await getFromBackend({
+    const users = await getFromBackend<any>({
       path: "users"
     });
     this.setState({ users });

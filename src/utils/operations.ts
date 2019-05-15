@@ -177,10 +177,10 @@ export async function messagePostAndPersist({
   const sent = await post<SubmitMessageForUserResponse | ProblemJson>({
     path: `messages/${code}`,
     options: {
-      body: {
+      body: JSON.stringify({
         time_to_live: 3600,
         content
-      }
+      })
     }
   });
 
