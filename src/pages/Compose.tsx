@@ -15,8 +15,7 @@ import { codeMask, noticeMask } from "../utils/masks";
 import {
   createMessageContent,
   messagePostAndPersist,
-  MessagePostAndPersistFail,
-  MessagePostAndPersistSuccess,
+  MessagePostAndPersistResult,
   profileGetAndPersist
 } from "../utils/operations";
 import {
@@ -154,11 +153,7 @@ class Compose extends Component<Props, ComposeState> {
     this.goHome({ result });
   };
 
-  public goHome = ({
-    result
-  }: {
-    result: MessagePostAndPersistSuccess | MessagePostAndPersistFail;
-  }) => {
+  public goHome = ({ result }: { result: MessagePostAndPersistResult }) => {
     const { history } = this.props;
     const location = {
       pathname: "/",
@@ -178,7 +173,10 @@ class Compose extends Component<Props, ComposeState> {
       MARKDOWN.MAX
     ]);
     const isNoticeValid = isMaskValid(notice, noticeMask);
-    const isAmountValid = isValueRangeValid(amount, [AMOUNT.MIN, AMOUNT.MAX]);
+    const isAmountValid = isValueRangeValid(Number(amount), [
+      AMOUNT.MIN,
+      AMOUNT.MAX
+    ]);
 
     return (
       <section className="pages--container">

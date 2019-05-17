@@ -2,12 +2,21 @@ import map from "lodash/map";
 import template from "lodash/template";
 import toPairs from "lodash/toPairs";
 import zipObject from "lodash/zipObject";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 import { get, post } from "./api";
+import { CONSTANTS } from "./constants";
 import { upsert } from "./db";
 
-import { CONSTANTS } from "./constants";
+import { MessageBodyMarkdown } from "../../generated/definitions/api/MessageBodyMarkdown";
+import { MessageContent } from "../../generated/definitions/api/MessageContent";
+import { MessageResponseWithContent } from "../../generated/definitions/api/MessageResponseWithContent";
+import { MessageSubject } from "../../generated/definitions/api/MessageSubject";
+import { PaginatedCreatedMessageWithoutContentCollection } from "../../generated/definitions/api/PaginatedCreatedMessageWithoutContentCollection";
+import { PaymentData } from "../../generated/definitions/api/PaymentData";
+import { ProblemJson } from "../../generated/definitions/api/ProblemJson";
+import { Timestamp } from "../../generated/definitions/api/Timestamp";
+
 import Database = PouchDB.Database;
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
@@ -22,36 +31,19 @@ const currencyFormatter = new Intl.NumberFormat("it-IT", {
 });
 
 interface ProfileGetAndPersistParams {
-  db: any;
-  dbName?: any;
-  url?: any;
-  code: any;
-  batchId?: any;
+  db: Database;
+  dbName?: string;
+  url?: string;
+  code: string;
+  batchId?: string;
 }
 
-export function isProblemJson<T>(res: T | ProblemJson): res is ProblemJson {
-  return (res as ProblemJson).status !== undefined;
-}
-
-interface CreatedMessageWithoutContentCollection {
-  items: ReadonlyArray<CreatedMessageWithoutContent>;
-}
-
-interface PaginationResponse {
-  page_size: number;
-  next: string;
-}
-
-interface PaginatedCreatedMessageWithoutContentCollection
-  extends CreatedMessageWithoutContentCollection,
-    PaginationResponse {}
-
-interface CreatedMessageWithoutContent {
-  id: string;
-  fiscal_code: string;
-  time_to_live?: number;
-  created_at: Timestamp;
-  sender_service_id: string;
+export function isError<T>(
+  res: T | ProblemJson | undefined
+): res is ProblemJson | undefined {
+  return (
+    typeof res === "undefined" || (res as ProblemJson).status !== undefined
+  );
 }
 
 export async function profileGetAndPersist(params: ProfileGetAndPersistParams) {
@@ -69,7 +61,7 @@ export async function profileGetAndPersist(params: ProfileGetAndPersistParams) {
       type: "contact",
       batchId
     },
-    isProblemJson(profile) // The API returns errors with shape { detail, status, title }
+    isError(profile) // The API returns errors with shape { detail, status, title }
       ? { sender_allowed: null, status: profile.status } // Create an errored profile
       : profile
   );
@@ -81,45 +73,8 @@ interface MessagePostAndPersistParams {
   db: Database;
   code: string;
   content: MessageContent;
-  templateId: any;
-  batchId?: any;
-}
-
-type Timestamp = string;
-
-interface MessageContent {
-  subject: string;
-  markdown: string;
-  payment_data?: PaymentData;
-  due_date?: Timestamp;
-}
-
-interface PaymentData {
-  amount: number;
-  notice_number: string;
-  invalid_after_due_date?: boolean;
-}
-
-export interface ProblemJson {
-  type: string;
-  title: string;
-  status: number;
-  detail: string;
-  instance: string;
-}
-
-interface SubmitMessageForUserResponse {
-  id: string;
-}
-
-export interface MessageResponseWithContent {
-  message: CreatedMessageWithContent;
-  notification?: MessageResponseNotificationStatus;
-  status?: MessageStatusValue;
-}
-
-interface MessageResponseNotificationStatus {
-  email: NotificationChannelStatusValue;
+  templateId: string;
+  batchId?: string;
 }
 
 enum MessageStatusValue {
@@ -136,28 +91,18 @@ enum NotificationChannelStatusValue {
   FAILED = "FAILED"
 }
 
-interface CreatedMessageWithContent {
-  id: string;
-  fiscal_code: string;
-  time_to_live?: number;
-  created_at: Timestamp;
-  content: MessageContent;
-  sender_service_id: string;
-}
-
 interface DetailsOnError {
   message: {
-    created_at: Timestamp;
+    created_at: string;
     fiscal_code: string;
   } & ProblemJson;
 }
 
-export interface MessagePostAndPersistFail extends DetailsOnError {
+interface MessagePostAndPersistFail extends DetailsOnError {
   _id: string;
 }
 
-export interface MessagePostAndPersistSuccess
-  extends MessageResponseWithContent {
+interface MessagePostAndPersistSuccess extends MessageResponseWithContent {
   _id: string;
 }
 
@@ -171,10 +116,8 @@ export async function messagePostAndPersist({
   content,
   templateId,
   batchId = ""
-}: MessagePostAndPersistParams): Promise<
-  MessagePostAndPersistSuccess | MessagePostAndPersistFail
-> {
-  const sent = await post<SubmitMessageForUserResponse | ProblemJson>({
+}: MessagePostAndPersistParams): Promise<MessagePostAndPersistResult> {
+  const sent = await post<{ id: string } | ProblemJson | undefined>({
     path: `messages/${code}`,
     options: {
       body: JSON.stringify({
@@ -184,8 +127,8 @@ export async function messagePostAndPersist({
     }
   });
 
-  // The API returns errors with shape { detail, status, title }
-  if (isProblemJson(sent)) {
+  // The API returns errors with shape { detail, status, title } or undefined
+  if (isError(sent)) {
     const detailsOnError: DetailsOnError = {
       message: {
         created_at: new Date().toISOString(),
@@ -226,31 +169,53 @@ export async function messagePostAndPersist({
   };
 }
 
+interface CreateMessageContentParams {
+  message: { subject: string; markdown: string };
+  dueDate: Moment | string | null;
+  amount?: string;
+  notice?: string;
+  dueDateFormat: string;
+}
+
 export function createMessageContent({
   message,
   dueDate,
   amount,
   notice,
   dueDateFormat
-}: any) {
-  const content = {
-    subject: message.subject,
-    markdown: message.markdown,
-    due_date: dueDate && moment(dueDate, dueDateFormat).toISOString()
+}: CreateMessageContentParams): MessageContent {
+  const subjectDecoding = MessageSubject.decode(message.subject);
+  const markdownDecoding = MessageBodyMarkdown.decode(message.markdown);
+  if (subjectDecoding.isLeft() || markdownDecoding.isLeft()) {
+    // TODO: handle error
+    throw new Error("Wrong parameters format");
+  }
+  const dueDateDecoding = Timestamp.decode(
+    dueDate && moment(dueDate, dueDateFormat).toISOString()
+  );
+  const dueDateValue = dueDateDecoding.isRight()
+    ? dueDateDecoding.value
+    : undefined;
+  const content: MessageContent = {
+    subject: subjectDecoding.value,
+    markdown: markdownDecoding.value,
+    due_date: dueDateValue
   };
 
-  return amount && notice
+  const paymentDataDecoding = PaymentData.decode({
+    amount: amount && amount.valueOf(),
+    notice_number: notice
+  });
+
+  return paymentDataDecoding.isRight()
     ? {
         ...content,
-        payment_data: {
-          amount: amount.valueOf(),
-          notice_number: notice
-        }
+        payment_data: paymentDataDecoding.value
       }
     : content;
 }
 
-export function getMessageValues(row: any) {
+export function getMessageValues(row: ReadonlyArray<string>) {
   if (!row) {
     return { amount: "" };
   }
@@ -304,7 +269,10 @@ const interpolateAmount = (amountString: string) => {
   return "";
 };
 
-export function interpolateMarkdown(markdown: any, row: any) {
+export function interpolateMarkdown(
+  markdown: string,
+  row: ReadonlyArray<string>
+) {
   const compiled = template(markdown, templateSettings);
   const messageValues = getMessageValues(row);
 

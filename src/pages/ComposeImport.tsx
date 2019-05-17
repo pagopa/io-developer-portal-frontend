@@ -15,8 +15,7 @@ import {
   createMessageContent,
   interpolateMarkdown,
   messagePostAndPersist,
-  MessagePostAndPersistFail,
-  MessagePostAndPersistSuccess
+  MessagePostAndPersistResult
 } from "../utils/operations";
 import { areHeadersValid } from "../utils/validators";
 
@@ -139,9 +138,7 @@ class Compose extends Component<Props, ComposeState> {
 
     const promises = fileData.reduce(
       (
-        prevPromisesArray: ReadonlyArray<
-          Promise<MessagePostAndPersistSuccess | MessagePostAndPersistFail>
-        >,
+        prevPromisesArray: ReadonlyArray<Promise<MessagePostAndPersistResult>>,
         row
       ) => {
         const message = {
@@ -152,8 +149,8 @@ class Compose extends Component<Props, ComposeState> {
         };
         const content = createMessageContent({
           message,
-          dueDate: !!row[DUEDATE] ? row[DUEDATE] : undefined,
-          amount: !!row[AMOUNT] ? Number(row[AMOUNT]) : undefined,
+          dueDate: !!row[DUEDATE] ? row[DUEDATE] : null,
+          amount: !!row[AMOUNT] ? row[AMOUNT] : undefined,
           notice: !!row[NOTICE] ? row[NOTICE] : undefined,
           dueDateFormat: t("format:date")
         });
@@ -180,9 +177,7 @@ class Compose extends Component<Props, ComposeState> {
   public goHome = ({
     result
   }: {
-    result: ReadonlyArray<
-      MessagePostAndPersistSuccess | MessagePostAndPersistFail
-    >;
+    result: ReadonlyArray<MessagePostAndPersistResult>;
   }) => {
     const { history } = this.props;
     const location = {

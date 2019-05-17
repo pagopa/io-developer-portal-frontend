@@ -6,8 +6,9 @@
  * Needs a promise polyfill for old browsers.
  */
 import { UserAgentApplication } from "msal";
+import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 
-export async function getUserTokenOrRedirect(configuration: any) {
+export async function getUserTokenOrRedirect(configuration: MsalConfig) {
   const userAgentApplication = new UserAgentApplication(
     configuration.clientID,
     configuration.authority,
@@ -28,13 +29,13 @@ export async function getUserTokenOrRedirect(configuration: any) {
 
   if (!user) {
     console.debug("getUserTokenOrRedirect::loginRedirect");
-    return userAgentApplication.loginRedirect(configuration.b2cScopes);
+    return userAgentApplication.loginRedirect([...configuration.b2cScopes]);
   }
 
   try {
-    const token = await userAgentApplication.acquireTokenSilent(
-      configuration.b2cScopes
-    );
+    const token = await userAgentApplication.acquireTokenSilent([
+      ...configuration.b2cScopes
+    ]);
     console.debug("getUserTokenOrRedirect::token", token);
 
     if (!token) {
@@ -46,6 +47,6 @@ export async function getUserTokenOrRedirect(configuration: any) {
     };
   } catch (e) {
     console.debug("getUserTokenOrRedirect::error", e);
-    return userAgentApplication.loginRedirect(configuration.b2cScopes);
+    return userAgentApplication.loginRedirect([...configuration.b2cScopes]);
   }
 }

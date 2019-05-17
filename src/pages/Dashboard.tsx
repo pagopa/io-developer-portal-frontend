@@ -10,10 +10,7 @@ import Notification from "../components/notifications/Notification";
 
 import { RouteComponentProps } from "react-router";
 
-import {
-  MessagePostAndPersistFail,
-  MessagePostAndPersistSuccess
-} from "../utils/operations";
+import { MessagePostAndPersistResult } from "../utils/operations";
 
 import "./Dashboard.css";
 
@@ -38,13 +35,9 @@ class Dashboard extends Component<Props, never> {
       <section className="d-flex">
         <section className="position-fixed dashboard--notifications-container">
           {location.state &&
-            location.state.map(
-              (
-                info: MessagePostAndPersistSuccess | MessagePostAndPersistFail
-              ) => {
-                return <Notification key={info._id} info={info} />;
-              }
-            )}
+            location.state.map((info: MessagePostAndPersistResult) => {
+              return <Notification key={info._id} info={info} />;
+            })}
         </section>
         <Find
           selector={{

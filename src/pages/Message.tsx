@@ -251,7 +251,7 @@ class Message extends Component<Props, MessageState> {
     const messages = await db.find({
       selector: { type: "template", _id: templateId }
     });
-    const message = messages.docs[0];
+    const message: any = messages.docs[0];
 
     const content = createMessageContent({
       message,
@@ -447,7 +447,10 @@ class Message extends Component<Props, MessageState> {
     } = this.props;
     const { t } = this.props;
     const isNoticeValid = isMaskValid(notice, noticeMask);
-    const isAmountValid = isValueRangeValid(amount, [AMOUNT.MIN, AMOUNT.MAX]);
+    const isAmountValid = isValueRangeValid(Number(amount), [
+      AMOUNT.MIN,
+      AMOUNT.MAX
+    ]);
     const isValid: ReadonlyArray<boolean> = Array()
       .concat(dueDate ? moment(dueDate).isValid() : [])
       .concat(notice || amount ? [isNoticeValid, isAmountValid] : []);
@@ -487,7 +490,10 @@ class Message extends Component<Props, MessageState> {
     const { t } = this.props;
 
     const isNoticeValid = isMaskValid(notice, noticeMask);
-    const isAmountValid = isValueRangeValid(amount, [AMOUNT.MIN, AMOUNT.MAX]);
+    const isAmountValid = isValueRangeValid(Number(amount), [
+      AMOUNT.MIN,
+      AMOUNT.MAX
+    ]);
 
     return (
       <section>

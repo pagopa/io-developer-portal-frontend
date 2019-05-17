@@ -12,7 +12,7 @@ export const isMaskValid = (value: string, mask: ReadonlyArray<RegExp>) => {
 };
 
 export const isValueRangeValid = (
-  value: any,
+  value: number,
   // tslint:disable-next-line:readonly-array
   [min, max]: Readonly<[number, number]>
 ) => {
@@ -27,7 +27,7 @@ export const isLengthValid = (
   return isValueRangeValid(value.length, [min, max]);
 };
 
-export const areHeadersValid = (value: ReadonlyArray<any>) => {
+export const areHeadersValid = (value: ReadonlyArray<string>) => {
   if (!value.length) {
     return false;
   }

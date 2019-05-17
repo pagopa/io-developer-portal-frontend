@@ -1,44 +1,54 @@
-const tryAndPut = (db: any, doc: any) => {
+import Database = PouchDB.Database;
+
+function hasRev<T>(obj: {} | T): obj is T {
+  return obj.hasOwnProperty("_rev");
+}
+
+const tryAndPut = <T>(
+  db: Database,
+  doc: PouchDB.Core.PutDocument<T>
+): Promise<{
+  updated: true;
+  rev: PouchDB.Core.RevisionId;
+  id?: string;
+}> => {
   return db.put(doc).then(
-    (res: any) => {
+    res => {
       return {
         updated: true,
         rev: res.rev,
         id: doc._id
       };
     },
-    (err: any) => {
+    (err: PouchDB.Core.Error) => {
       if (err.status !== 409) {
         throw err;
       }
-      return upsert(db, doc._id, doc);
+      return upsert<T>(db, doc._id, doc);
     }
   );
 };
 
-export function upsert(db: any, docId: string | undefined, newDoc: any) {
+export function upsert<T>(db: Database, docId: string | undefined, newDoc: T) {
   if (typeof docId !== "string") {
     throw new Error("doc id is required");
   }
 
   return db
-    .get(docId)
-    .catch((err: any) => {
+    .get<T>(docId)
+    .catch((err: PouchDB.Core.Error) => {
       if (err.status !== 404) {
         throw err;
       }
       return {};
     })
-    .then((doc: any) => {
-      // the user might change the _rev, so save it for posterity
-      const docRev = doc._rev;
-
-      return tryAndPut(db, {
+    .then(doc => {
+      return tryAndPut<T>(db, {
         ...newDoc,
         // users aren't allowed to modify these values,
         // so reset them here
         _id: docId,
-        _rev: docRev
+        _rev: hasRev(doc) ? doc._rev : undefined // the user might change the _rev, so save it for posterity
       });
     });
 }

@@ -14,7 +14,9 @@ import "./Login.css";
 class Login extends Component<WithNamespaces, never> {
   public componentDidMount = async () => {
     try {
-      const configuration = await getFromBackend({ path: "configuration" });
+      const configuration = await getFromBackend<any>({
+        path: "configuration"
+      });
       const user = await getUserTokenOrRedirect(configuration);
 
       if (user) {

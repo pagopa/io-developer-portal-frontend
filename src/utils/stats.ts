@@ -1,4 +1,5 @@
 import groupBy from "lodash/groupBy";
+import Database = PouchDB.Database;
 
 export type Statistics = {
   PROCESSED: number;
@@ -12,7 +13,24 @@ export type Statistics = {
   TOTAL: number;
 };
 
-export const getStatsFor = async (entry: any, db: any): Promise<Statistics> => {
+export interface Entry {
+  _id: string;
+  type: "message" | "batch";
+  status: Status;
+}
+
+enum Status {
+  PROCESSED = "PROCESSED",
+  FAILED = "FAILED",
+  ACCEPTED = "ACCEPTED",
+  THROTTLED = "THROTTLED",
+  NOTSENT = "NOTESENT"
+}
+
+export const getStatsFor = async (
+  entry: Entry,
+  db: Database<Entry>
+): Promise<Statistics> => {
   // https://github.com/teamdigitale/digital-citizenship-functions/blob/master/api/definitions.yaml#L140
   // The processing status of a message.
   // "ACCEPTED": the message has been accepted and will be processed for delivery;

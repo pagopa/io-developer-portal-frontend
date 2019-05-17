@@ -6,7 +6,9 @@ import Batch from "batch";
 
 import { get } from "../utils/api";
 import { upsert } from "../utils/db";
-import { MessageResponseWithContent, ProblemJson } from "../utils/operations";
+
+import { MessageResponseWithContent } from "../../generated/definitions/api/MessageResponseWithContent";
+import { ProblemJson } from "../../generated/definitions/api/ProblemJson";
 
 self.addEventListener("message", async e => {
   if (!e) {

@@ -16,7 +16,7 @@ import sortBy from "lodash/sortBy";
 import moment from "moment";
 import compose from "recompose/compose";
 
-import { getStatsFor, Statistics } from "../utils/stats";
+import { Entry, getStatsFor, Statistics } from "../utils/stats";
 
 import { RouteComponentProps } from "react-router";
 import MessageListReport from "../components/messages/MessageListReport";
@@ -24,7 +24,7 @@ import MessagePreview from "../components/messages/MessagePreview";
 import Database = PouchDB.Database;
 
 type OwnProps = {
-  db: Database;
+  db: Database<Entry>;
 };
 type Props = RouteComponentProps<{
   entry_type: string;
