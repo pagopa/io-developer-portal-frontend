@@ -17,10 +17,10 @@ interface DataType {
 
 export type ContactDocument = {
   type: "contact";
-  batchId: string;
+  batchId?: string;
 } & (
-  | { sender_allowed: null; status: number }
-  | { profile: PaginatedCreatedMessageWithoutContentCollection });
+  | { sender_allowed: null; status?: number }
+  | PaginatedCreatedMessageWithoutContentCollection);
 
 self.addEventListener("message", async e => {
   if (!e) {
