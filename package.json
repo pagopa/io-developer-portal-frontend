@@ -15,7 +15,7 @@
     "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'",
     "lint": "tslint -p . -c tslint.json -t verbose",
     "generate:api-definitions": "rimraf generated/definitions/api && mkdir -p generated/definitions/api && gen-api-models --api-spec https://raw.githubusercontent.com/teamdigitale/digital-citizenship-functions/master/api/admin_api.yaml --out-dir generated/definitions/api --no-strict",
-    "generate:backend-definitions": "rimraf generated/definitions/backend && mkdir -p generated/definitions/backend && gen-api-models --api-spec http://localhost:5000/onboarding.yaml --out-dir generated/definitions/backend --no-strict",
+    "generate:backend-definitions": "rimraf generated/definitions/backend && mkdir -p generated/definitions/backend && gen-api-models --api-spec https://raw.githubusercontent.com/teamdigitale/digital-citizenship-onboarding/165081284-convert-to-typescript/definitions.yaml --out-dir generated/definitions/backend --no-strict",
     "generate:definitions": "yarn generate:api-definitions && yarn generate:backend-definitions"
   },
   "dependencies": {
