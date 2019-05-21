@@ -57,7 +57,7 @@ class Contacts extends Component<Props, ContactsState> {
   };
 
   // TODO: unused method, should be removed?
-  public onContactSelect = (code: any) => {
+  public onContactSelect = (code: string) => {
     this.setState(() => {
       return {
         selected: code

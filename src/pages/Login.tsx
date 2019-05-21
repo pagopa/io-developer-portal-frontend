@@ -9,12 +9,15 @@ const { localStorage } = window;
 import { getFromBackend } from "../utils/backend";
 import { getUserTokenOrRedirect } from "../utils/msal";
 
+import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
+import { UserData } from "../../generated/definitions/backend/UserData";
+
 import "./Login.css";
 
 class Login extends Component<WithNamespaces, never> {
   public componentDidMount = async () => {
     try {
-      const configuration = await getFromBackend<any>({
+      const configuration = await getFromBackend<MsalConfig>({
         path: "configuration"
       });
       const user = await getUserTokenOrRedirect(configuration);
@@ -31,12 +34,13 @@ class Login extends Component<WithNamespaces, never> {
         // profile data (email, name, ...)
         localStorage.setItem("userData", JSON.stringify(user.user.idToken));
 
-        const apimUser = await getFromBackend<any>({ path: "user" });
+        const apimUser = await getFromBackend<UserData>({ path: "user" });
         console.debug("Login::apimUser", apimUser);
 
         const isApiAdmin =
-          apimUser.apimUser &&
-          new Set<string>(apimUser.apimUser.groupNames).has("ApiAdmin");
+          (apimUser.apimUser &&
+            new Set<string>(apimUser.apimUser.groupNames).has("ApiAdmin")) ===
+          true;
 
         localStorage.setItem("isApiAdmin", isApiAdmin.toString());
         window.location.replace("/");

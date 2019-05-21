@@ -77,20 +77,6 @@ interface MessagePostAndPersistParams {
   batchId?: string;
 }
 
-enum MessageStatusValue {
-  ACCEPTED = "ACCEPTED",
-  THROTTLED = "THROTTLED",
-  FAILED = "FAILED",
-  PROCESSED = "PROCESSED"
-}
-
-enum NotificationChannelStatusValue {
-  SENT = "SENT",
-  THROTTLED = "THROTTLED",
-  EXPIRED = "EXPIRED",
-  FAILED = "FAILED"
-}
-
 interface DetailsOnError {
   message: {
     created_at: string;
@@ -110,14 +96,14 @@ export type MessagePostAndPersistResult =
   | MessagePostAndPersistSuccess
   | MessagePostAndPersistFail;
 
-export type ErroredPersistingMessage = DetailsOnError & {
+export type ErroredMessageDocument = DetailsOnError & {
   type: "message";
   templateId: string;
   batchId: string;
   status: "NOTSENT";
 };
 
-export type PersistingMessage = MessageResponseWithContent & {
+export type MessageDocument = MessageResponseWithContent & {
   type: "message";
   templateId: string;
   batchId: string;
@@ -151,7 +137,7 @@ export async function messagePostAndPersist({
     };
 
     // Create an errored message
-    const operation = await db.post<ErroredPersistingMessage>({
+    const operation = await db.post<ErroredMessageDocument>({
       ...detailsOnError,
       type: "message",
       templateId,
@@ -169,7 +155,7 @@ export async function messagePostAndPersist({
     path: `messages/${code}/${sent.id}`
   });
 
-  await db.put<PersistingMessage>({
+  await db.put<MessageDocument>({
     ...details,
     _id: sent.id,
     type: "message",

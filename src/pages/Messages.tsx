@@ -6,22 +6,26 @@ import { withDB } from "react-pouchdb/browser";
 import { Alert } from "design-react-kit";
 
 import MessageStats from "../components/messages/MessageStats";
+import { MessageDocument } from "../utils/operations";
+import { BatchDocument, TemplateDocument } from "./Message";
 
 import { emit } from "cluster";
 import keyBy from "lodash/keyBy";
 import orderBy from "lodash/orderBy";
 import compose from "recompose/compose";
+import Database = PouchDB.Database;
+import ExistingDocument = PouchDB.Core.ExistingDocument;
 
 type OwnProps = {
-  db: any;
+  db: Database<TemplateDocument | BatchDocument | MessageDocument>;
 };
 type Props = WithNamespaces & OwnProps;
 
 type MessagesState = {
-  templates: ReadonlyArray<any>;
-  messages: ReadonlyArray<any>;
-  batches: ReadonlyArray<any>;
-  stats: any;
+  templates: ReadonlyArray<ExistingDocument<TemplateDocument>>;
+  messages: ReadonlyArray<ExistingDocument<MessageDocument>>;
+  batches: ReadonlyArray<ExistingDocument<BatchDocument>>;
+  stats: { [key: string]: number };
 };
 
 class Messages extends Component<Props, MessagesState> {
@@ -39,12 +43,12 @@ class Messages extends Component<Props, MessagesState> {
   public queryDB = async () => {
     const { db } = this.props;
 
-    const templates = await db.find({
+    const templates = await (db as Database<TemplateDocument>).find({
       selector: {
         type: "template"
       }
     });
-    const messages = await db.find({
+    const messages = await (db as Database<MessageDocument>).find({
       selector: {
         type: "message",
         batchId: {
@@ -52,14 +56,14 @@ class Messages extends Component<Props, MessagesState> {
         }
       }
     });
-    const batches = await db.find({
+    const batches = await (db as Database<BatchDocument>).find({
       selector: {
         type: "batch"
       }
     });
     const counts = await db.query(
       {
-        map: (doc: any) => {
+        map: doc => {
           if (doc.type === "message") {
             emit(doc.batchId, 1);
           }
@@ -70,7 +74,7 @@ class Messages extends Component<Props, MessagesState> {
     );
 
     const stats = counts.rows.reduce(
-      (previousStats: any, currentCount: { key: any; value: any }) => {
+      (previousStats: { [key: string]: number }, currentCount) => {
         return {
           ...previousStats,
           [currentCount.key || "none"]: currentCount.value
@@ -111,7 +115,7 @@ class Messages extends Component<Props, MessagesState> {
     });
 
     const orderedMessages = orderBy(
-      messages.concat(batchesMessages),
+      [...messages, ...batchesMessages],
       ["message.created_at"],
       ["desc"]
     );

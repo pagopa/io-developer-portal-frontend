@@ -15,7 +15,7 @@ interface DataType {
   results: ReadonlyArray<ReadonlyArray<string>>;
 }
 
-type ContactDocument = {
+export type ContactDocument = {
   type: "contact";
   batchId: string;
 } & (

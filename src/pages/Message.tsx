@@ -38,16 +38,35 @@ import { isMaskValid, isValueRangeValid } from "../utils/validators";
 const { AMOUNT, CODE } = LIMITS;
 
 import { GetProfileWorker } from "../workers/";
+import { ContactDocument } from "../workers/getProfile";
 
 import { RouteComponentProps } from "react-router";
 import "./Message.css";
 import Database = PouchDB.Database;
 
+export interface TemplateDocument {
+  type: "template";
+  subject: string;
+  markdown: string;
+}
+
+export interface BatchDocument {
+  type: "batch";
+  templateId: string;
+  created_at: string;
+}
+
 type OwnProps = {
-  db: Database;
+  db: Database<TemplateDocument | BatchDocument | ContactDocument>;
   dbName: string;
 };
-type Props = RouteComponentProps & WithNamespaces & OwnProps;
+type Props = RouteComponentProps<
+  {},
+  {},
+  { templateId: string; type: "list" | "single" }
+> &
+  WithNamespaces &
+  OwnProps;
 
 type MessageState = {
   list: string;
@@ -248,10 +267,10 @@ class Message extends Component<Props, MessageState> {
       }
     } = this.props;
 
-    const messages = await db.find({
-      selector: { type: "template", _id: templateId }
+    const messages = await (db as Database<TemplateDocument>).find({
+      selector: { type: "template", _id: { $eq: templateId } }
     });
-    const message: any = messages.docs[0];
+    const message = messages.docs[0];
 
     const content = createMessageContent({
       message,
@@ -272,7 +291,7 @@ class Message extends Component<Props, MessageState> {
           })
         ]
       : await Promise.all(
-          (await db.find({
+          (await (db as Database<ContactDocument>).find({
             selector: {
               type: "contact",
               batchId: batch
@@ -533,7 +552,7 @@ class Message extends Component<Props, MessageState> {
           <Find
             selector={{
               type: "template",
-              _id: templateId
+              _id: { $eq: templateId }
             }}
             sort={["_id"]}
             render={({ docs }) => {

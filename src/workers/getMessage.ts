@@ -9,7 +9,7 @@ import { upsert } from "../utils/db";
 
 import { MessageResponseWithContent } from "../../generated/definitions/api/MessageResponseWithContent";
 import { ProblemJson } from "../../generated/definitions/api/ProblemJson";
-import { PersistingMessage } from "../utils/operations";
+import { MessageDocument } from "../utils/operations";
 
 interface DataType {
   dbName: string;
@@ -23,7 +23,7 @@ self.addEventListener("message", async e => {
 
   const { dbName, url }: DataType = e.data;
 
-  const db = new PouchDB<PersistingMessage>(dbName);
+  const db = new PouchDB<MessageDocument>(dbName);
 
   const messages = await db.find({
     selector: {
