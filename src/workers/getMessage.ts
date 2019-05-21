@@ -9,15 +9,21 @@ import { upsert } from "../utils/db";
 
 import { MessageResponseWithContent } from "../../generated/definitions/api/MessageResponseWithContent";
 import { ProblemJson } from "../../generated/definitions/api/ProblemJson";
+import { PersistingMessage } from "../utils/operations";
+
+interface DataType {
+  dbName: string;
+  url: string;
+}
 
 self.addEventListener("message", async e => {
   if (!e) {
     return;
   }
 
-  const { dbName, url } = e.data;
+  const { dbName, url }: DataType = e.data;
 
-  const db: any = new PouchDB<any>(dbName);
+  const db = new PouchDB<PersistingMessage>(dbName);
 
   const messages = await db.find({
     selector: {
@@ -34,7 +40,7 @@ self.addEventListener("message", async e => {
   const batch = new Batch();
   batch.concurrency(1);
 
-  messages.docs.forEach((entry: any) => {
+  messages.docs.forEach(entry => {
     batch.push(async done => {
       const { id, fiscal_code } = entry.message;
       const path = `messages/${fiscal_code}/${id}`;
@@ -61,6 +67,7 @@ self.addEventListener("message", async e => {
   });
 
   // Actually startes the batch
+  // tslint:disable-next-line:no-any
   batch.end((err: any) => {
     if (!err) {
       postMessage(

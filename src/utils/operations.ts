@@ -110,6 +110,19 @@ export type MessagePostAndPersistResult =
   | MessagePostAndPersistSuccess
   | MessagePostAndPersistFail;
 
+export type ErroredPersistingMessage = DetailsOnError & {
+  type: "message";
+  templateId: string;
+  batchId: string;
+  status: "NOTSENT";
+};
+
+export type PersistingMessage = MessageResponseWithContent & {
+  type: "message";
+  templateId: string;
+  batchId: string;
+};
+
 export async function messagePostAndPersist({
   db,
   code,
@@ -138,7 +151,7 @@ export async function messagePostAndPersist({
     };
 
     // Create an errored message
-    const operation = await db.post({
+    const operation = await db.post<ErroredPersistingMessage>({
       ...detailsOnError,
       type: "message",
       templateId,
@@ -156,7 +169,7 @@ export async function messagePostAndPersist({
     path: `messages/${code}/${sent.id}`
   });
 
-  await db.put({
+  await db.put<PersistingMessage>({
     ...details,
     _id: sent.id,
     type: "message",
