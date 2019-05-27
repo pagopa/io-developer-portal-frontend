@@ -22,6 +22,8 @@ import "./Pages.css";
 import Database = PouchDB.Database;
 import ExistingDocument = PouchDB.Core.ExistingDocument;
 
+import { TemplateDocument } from "./Message";
+
 type OwnProps = {
   db: Database<Template>;
 };
@@ -176,7 +178,7 @@ class Templates extends Component<Props, TemplatesState> {
                   </Link>
                 </div>
 
-                <Find
+                <Find<TemplateDocument>
                   selector={{
                     type: "template"
                   }}

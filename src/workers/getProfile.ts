@@ -6,7 +6,7 @@ import Batch from "batch";
 
 import { profileGetAndPersist } from "../utils/operations";
 
-import { PaginatedCreatedMessageWithoutContentCollection } from "../../generated/definitions/api/PaginatedCreatedMessageWithoutContentCollection";
+import { Profile } from "../../generated/definitions/api/Profile";
 
 interface DataType {
   dbName: string;
@@ -20,7 +20,7 @@ export type ContactDocument = {
   batchId?: string;
 } & (
   | { sender_allowed: null; status?: number }
-  | PaginatedCreatedMessageWithoutContentCollection);
+  | { sender_allowed: null | boolean } & Profile);
 
 self.addEventListener("message", async e => {
   if (!e) {

@@ -8,13 +8,15 @@ import { RouteComponentProps } from "react-router";
 import { StorageContext } from "../context/storage";
 import { getFromBackend, putToBackend } from "../utils/backend";
 
+import { Service } from "../../generated/definitions/backend/Service";
+
 type OwnProps = {};
 type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
 type SubscriptionServiceState = {
-  service: any;
+  service?: Service;
 };
 
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
@@ -24,7 +26,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
   public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
-    const service = await getFromBackend({
+    const service = await getFromBackend<Service>({
       path: `services/${serviceId}`
     });
     this.setState({
@@ -36,16 +38,24 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    this.setState({
-      service: {
-        ...this.state.service,
-        [name]: value
-      }
+    const serviceDecoding = Service.decode({
+      ...this.state.service,
+      [name]: value
     });
+    if (serviceDecoding.isRight()) {
+      this.setState({
+        service: serviceDecoding.value
+      });
+    }
   };
 
   public handleSubmit = async () => {
-    const service = this.state.service;
+    const serviceDecoding = Service.decode(this.state.service);
+    if (serviceDecoding.isLeft()) {
+      // TODO: handle error
+      throw new Error("Wrong parameters format");
+    }
+    const service = serviceDecoding.value;
     await putToBackend({
       path: `services/${service.service_id}`,
       options: {
@@ -55,11 +65,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           organization_name: service.organization_name,
           department_name: service.department_name,
           service_name: service.service_name,
-          max_allowed_payment_amount: parseInt(
-            service.max_allowed_payment_amount,
-            10
-          ),
-          is_visible: Boolean(service.is_visible)
+          max_allowed_payment_amount: service.max_allowed_payment_amount,
+          is_visible: service.is_visible
         })
       }
     });
@@ -121,7 +128,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <input
                     name="max_allowed_payment_amount"
                     type="text"
-                    defaultValue={service.max_allowed_payment_amount}
+                    defaultValue={
+                      service.max_allowed_payment_amount
+                        ? service.max_allowed_payment_amount.toString()
+                        : undefined
+                    }
                     onChange={this.handleInputChange}
                     className="mb-4"
                   />

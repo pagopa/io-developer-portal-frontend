@@ -3,14 +3,10 @@ import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert, ListGroup, ListGroupItem } from "design-react-kit";
+import { ExistingDocument } from "react-pouchdb/browser";
+import { ContactDocument } from "../../workers/getProfile";
 
-export interface ContactDoc {
-  _id: string;
-  sender_allowed: boolean;
-  status: any;
-}
-
-const getUserIcon = ({ sender_allowed }: ContactDoc) => {
+const getUserIcon = ({ sender_allowed }: ContactDocument) => {
   if (sender_allowed === true) {
     return "it-check";
   } else if (sender_allowed === false) {
@@ -21,7 +17,7 @@ const getUserIcon = ({ sender_allowed }: ContactDoc) => {
 };
 
 type OwnProps = {
-  docs: any;
+  docs: ReadonlyArray<ExistingDocument<ContactDocument>>;
   selected?: any;
   onContactSelect?: any;
 };
@@ -42,7 +38,7 @@ class ContactsList extends Component<Props, never> {
           if (!docs.length) {
             return <Alert color="warning">{t("no_contacts")}</Alert>;
           }
-          return docs.map((contact: ContactDoc) => {
+          return docs.map(contact => {
             return (
               <ListGroupItem
                 key={contact._id}

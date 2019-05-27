@@ -387,7 +387,7 @@ class Message extends Component<Props, MessageState> {
               return (
                 <Fragment>
                   <div className="message--contacts-list mb-4">
-                    <Find
+                    <Find<ContactDocument>
                       selector={{
                         type: "contact"
                       }}
@@ -437,7 +437,7 @@ class Message extends Component<Props, MessageState> {
                 )}
                 {batch && (
                   <div className="message--contacts-list mt-4">
-                    <Find
+                    <Find<ContactDocument>
                       selector={{
                         type: "contact",
                         batchId: batch
@@ -549,7 +549,7 @@ class Message extends Component<Props, MessageState> {
         })()}
 
         <div className="message--preview mb-4">
-          <Find
+          <Find<TemplateDocument>
             selector={{
               type: "template",
               _id: { $eq: templateId }

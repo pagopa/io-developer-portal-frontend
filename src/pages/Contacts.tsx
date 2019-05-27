@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Component } from "react";
 
 import ContactAdd from "../components/contacts/ContactAdd";
-import ContactsList, { ContactDoc } from "../components/contacts/ContactsList";
+import ContactsList from "../components/contacts/ContactsList";
 
 import { Find, withDB } from "react-pouchdb/browser";
 
@@ -9,6 +9,7 @@ import { codeMask } from "../utils/masks";
 import { profileGetAndPersist } from "../utils/operations";
 import { isMaskValid } from "../utils/validators";
 import Database = PouchDB.Database;
+import { ContactDocument } from "../workers/getProfile";
 
 type Props = {
   db: Database;
@@ -79,14 +80,12 @@ class Contacts extends Component<Props, ContactsState> {
           onInputAdd={this.onInputAdd}
         />
 
-        <Find
+        <Find<ContactDocument>
           selector={{
             type: "contact"
           }}
           sort={["_id"]}
-          render={({ docs }: { docs: ReadonlyArray<ContactDoc> }) => (
-            <ContactsList docs={docs} />
-          )}
+          render={({ docs }) => <ContactsList docs={docs} />}
         />
       </section>
     );

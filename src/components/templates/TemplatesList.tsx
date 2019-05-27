@@ -12,6 +12,7 @@ import {
   UncontrolledTooltip
 } from "design-react-kit";
 
+import { TemplateDocument } from "../../pages/Message";
 import MessagePreview from "../messages/MessagePreview";
 
 import Edit from "react-icons/lib/fa/edit";
@@ -19,20 +20,16 @@ import Group from "react-icons/lib/fa/group";
 import User from "react-icons/lib/fa/user";
 
 import "./TemplatesList.css";
+import ExistingDocument = PouchDB.Core.ExistingDocument;
 
 type OwnProps = {
-  docs: any;
+  docs: ReadonlyArray<ExistingDocument<TemplateDocument>>;
 };
 type Props = WithNamespaces & OwnProps;
 
 type TemplatesListState = {
   selected: string;
 };
-
-interface Template {
-  _id: string;
-  subject: any;
-}
 
 class TemplatesList extends Component<Props, TemplatesListState> {
   public state: TemplatesListState = {
@@ -59,7 +56,7 @@ class TemplatesList extends Component<Props, TemplatesListState> {
     return (
       <Accordion>
         {(() => {
-          return docs.map((template: Template) => {
+          return docs.map(template => {
             return (
               <Fragment key={template._id}>
                 <AccordionHeader

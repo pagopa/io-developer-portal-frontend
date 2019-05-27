@@ -7,9 +7,10 @@ import { Link } from "react-router-dom";
 import { getFromBackend } from "../utils/backend";
 
 import FaUser from "react-icons/lib/fa/user";
+import { UserDataList } from "../../generated/definitions/backend/UserDataList";
 
 type UserListState = {
-  users: { items: ReadonlyArray<any>; length: number };
+  users: UserDataList;
 };
 
 class UserList extends Component<WithNamespaces, UserListState> {
@@ -18,7 +19,7 @@ class UserList extends Component<WithNamespaces, UserListState> {
   };
 
   public componentDidMount = async () => {
-    const users = await getFromBackend<any>({
+    const users: UserDataList = await getFromBackend<UserDataList>({
       path: "users"
     });
     this.setState({ users });
@@ -60,12 +61,18 @@ class UserList extends Component<WithNamespaces, UserListState> {
             users.items.map(u => (
               <tr key={u.email}>
                 <td>
-                  <Link
-                    className="large list-item"
-                    to={{ pathname: `/profile/${btoa(u.email)}` }}
-                  >
-                    <FaUser />
-                  </Link>
+                  {() => {
+                    if (u.email) {
+                      return (
+                        <Link
+                          className="large list-item"
+                          to={{ pathname: `/profile/${btoa(u.email)}` }}
+                        >
+                          <FaUser />
+                        </Link>
+                      );
+                    }
+                  }}
                 </td>
                 <td>{u.firstName}</td>
                 <td>{u.lastName}</td>

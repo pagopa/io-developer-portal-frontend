@@ -23,6 +23,9 @@ import MessageListReport from "../components/messages/MessageListReport";
 import MessagePreview from "../components/messages/MessagePreview";
 import Database = PouchDB.Database;
 
+import { MessageDocument } from "../utils/operations";
+import { TemplateDocument } from "./Message";
+
 type OwnProps = {
   db: Database<Entry>;
 };
@@ -91,7 +94,7 @@ class Report extends Component<Props, ReportState> {
     const { t } = this.props;
 
     return (
-      <Find
+      <Find<MessageDocument>
         selector={{
           type: "message",
           [entry_type === "batch" ? `batchId` : `_id`]: entry_id
@@ -105,10 +108,10 @@ class Report extends Component<Props, ReportState> {
 
           const { message, templateId } = messages[0];
           return (
-            <Find
+            <Find<TemplateDocument>
               selector={{
                 type: "template",
-                _id: templateId
+                _id: { $eq: templateId }
               }}
               render={({ docs: templateDocs }) => {
                 if (!templateDocs.length) {

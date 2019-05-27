@@ -10,9 +10,14 @@ import Notification from "../components/notifications/Notification";
 
 import { RouteComponentProps } from "react-router";
 
-import { MessagePostAndPersistResult } from "../utils/operations";
-
 import "./Dashboard.css";
+
+import {
+  MessageDocument,
+  MessagePostAndPersistResult
+} from "../utils/operations";
+import { ContactDocument } from "../workers/getProfile";
+import { TemplateDocument } from "./Message";
 
 type Props = RouteComponentProps & WithNamespaces;
 
@@ -39,19 +44,19 @@ class Dashboard extends Component<Props, never> {
               return <Notification key={info._id} info={info} />;
             })}
         </section>
-        <Find
+        <Find<TemplateDocument>
           selector={{
             type: "template"
           }}
           render={({ docs }) => this.getCard(docs, "templates")}
         />
-        <Find
+        <Find<MessageDocument>
           selector={{
             type: "message"
           }}
           render={({ docs }) => this.getCard(docs, "messages")}
         />
-        <Find
+        <Find<ContactDocument>
           selector={{
             type: "contact"
           }}

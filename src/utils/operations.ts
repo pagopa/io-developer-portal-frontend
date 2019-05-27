@@ -12,12 +12,13 @@ import { MessageBodyMarkdown } from "../../generated/definitions/api/MessageBody
 import { MessageContent } from "../../generated/definitions/api/MessageContent";
 import { MessageResponseWithContent } from "../../generated/definitions/api/MessageResponseWithContent";
 import { MessageSubject } from "../../generated/definitions/api/MessageSubject";
-import { PaginatedCreatedMessageWithoutContentCollection } from "../../generated/definitions/api/PaginatedCreatedMessageWithoutContentCollection";
 import { PaymentData } from "../../generated/definitions/api/PaymentData";
 import { ProblemJson } from "../../generated/definitions/api/ProblemJson";
+import { Profile } from "../../generated/definitions/api/Profile";
 import { Timestamp } from "../../generated/definitions/api/Timestamp";
 
 import Database = PouchDB.Database;
+import { ContactDocument } from "../workers/getProfile";
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
 const templateSettings = { interpolate: /{{([\s\S]+?)}}/g };
@@ -38,33 +39,38 @@ interface ProfileGetAndPersistParams {
   batchId?: string;
 }
 
-export function isError<T>(
+export function isProblemJson<T>(
   res: T | ProblemJson | undefined
-): res is ProblemJson | undefined {
+): res is ProblemJson {
   return (
-    typeof res === "undefined" || (res as ProblemJson).status !== undefined
+    typeof res !== "undefined" && (res as ProblemJson).status !== undefined
   );
 }
 
 export async function profileGetAndPersist(params: ProfileGetAndPersistParams) {
   const { db, dbName, url, code, batchId } = params;
-  const profile = await get<
-    PaginatedCreatedMessageWithoutContentCollection | ProblemJson
-  >({
+  const profile = await get<Profile | ProblemJson | undefined>({
     dbName,
     url,
     path: `profiles/${code}`
   });
 
-  const newDoc = Object.assign(
-    {
-      type: "contact",
-      batchId
-    },
-    isError(profile) // The API returns errors with shape { detail, status, title }
-      ? { sender_allowed: null, status: profile.status } // Create an errored profile
-      : profile
-  );
+  const profileInContactDocument = isProblemJson(profile)
+    ? {
+        // Create an errored profile
+        sender_allowed: null,
+        status: profile.status
+      }
+    : {
+        sender_allowed: null,
+        ...profile
+      };
+
+  const newDoc: ContactDocument = {
+    type: "contact",
+    batchId,
+    ...profileInContactDocument
+  };
 
   return upsert(db, code, newDoc);
 }
@@ -127,7 +133,7 @@ export async function messagePostAndPersist({
   });
 
   // The API returns errors with shape { detail, status, title } or undefined
-  if (isError(sent)) {
+  if (typeof sent === "undefined" || isProblemJson(sent)) {
     const detailsOnError: DetailsOnError = {
       message: {
         created_at: new Date().toISOString(),

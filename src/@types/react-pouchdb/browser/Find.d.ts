@@ -1,5 +1,6 @@
 // tslint:disable:readonly-array
 // tslint:disable:max-union-size
+// tslint:disable:no-any
 
 declare module "react-pouchdb/browser" {
   import { Component, ReactElement } from "react";
@@ -86,8 +87,8 @@ declare module "react-pouchdb/browser" {
   interface RevisionIdMeta {
     _rev: string;
   }
-  type FindOwnProps<T = {}> = {
-    db?: string | Database;
+  type FindOwnProps<T> = {
+    db?: string | Database<T>;
     selector: Selector;
     sort?: ReadonlyArray<string | { [propName: string]: "asc" | "desc" }>;
     limit?: number;
@@ -96,9 +97,9 @@ declare module "react-pouchdb/browser" {
       db,
       docs
     }: {
-      db: string | Database;
+      db: string | Database<T>;
       docs: ReadonlyArray<ExistingDocument<T>>;
     }) => ReactElement | null;
   };
-  export class Find<T = any> extends Component<FindOwnProps<T>> {}
+  export class Find<T = {}> extends Component<FindOwnProps<T>> {}
 }
