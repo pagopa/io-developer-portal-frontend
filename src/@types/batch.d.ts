@@ -1,3 +1,4 @@
+// tslint:disable:no-any
 declare module "batch" {
   type ProgressEvent = {
     index: number;

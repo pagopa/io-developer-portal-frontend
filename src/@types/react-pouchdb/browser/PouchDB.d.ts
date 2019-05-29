@@ -1,3 +1,4 @@
+// tslint:disable:no-any
 import { Component } from "react";
 
 declare module "react-pouchdb/browser" {
@@ -7,5 +8,5 @@ declare module "react-pouchdb/browser" {
     [key: string]: any;
   };
 
-  export class PouchDB<P, S> extends Component<PouchDBOwnProps> {}
+  export class PouchDB<P, S> extends Component<P & PouchDBOwnProps, S> {}
 }
