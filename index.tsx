@@ -7,6 +7,7 @@ import {
   BrowserRouter as Router,
   Redirect,
   Route,
+  RouteProps,
   Switch
 } from "react-router-dom";
 
@@ -56,7 +57,17 @@ const Layout = ({ children }: { children: ReactNode }) => (
   </section>
 );
 
-const PrivateRoute = ({ component: Component, dbName = "", ...rest }: any) => (
+type PrivateRouteParams = {
+  // tslint:disable-next-line:no-any
+  component: any;
+  dbName?: string;
+} & RouteProps;
+
+const PrivateRoute = ({
+  component: Component,
+  dbName = "",
+  ...rest
+}: PrivateRouteParams) => (
   <Route
     {...rest}
     render={props =>
