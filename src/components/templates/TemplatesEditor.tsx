@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -12,14 +12,16 @@ const { SUBJECT, MARKDOWN } = LIMITS;
 import "./TemplatesEditor.css";
 
 type OwnProps = {
-  subject: any;
-  markdown: any;
-  subjectLength: any;
-  markdownLength: any;
-  isSubjectValid: any;
-  isMarkdownValid: any;
-  onChangeSubject: any;
-  onChangeMarkdown: any;
+  subject: string;
+  markdown: string;
+  // tslint:disable-next-line:readonly-array
+  subjectLength: Readonly<[number, number]>;
+  // tslint:disable-next-line:readonly-array
+  markdownLength: Readonly<[number, number]>;
+  isSubjectValid: boolean;
+  isMarkdownValid: boolean;
+  onChangeSubject: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChangeMarkdown: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 type Props = WithNamespaces & OwnProps;
 

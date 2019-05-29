@@ -18,8 +18,8 @@ const getUserIcon = ({ sender_allowed }: ContactDocument) => {
 
 type OwnProps = {
   docs: ReadonlyArray<ExistingDocument<ContactDocument>>;
-  selected?: any;
-  onContactSelect?: any;
+  selected?: string;
+  onContactSelect?: (selected: string) => void;
 };
 type Props = WithNamespaces & OwnProps;
 

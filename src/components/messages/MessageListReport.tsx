@@ -1,15 +1,11 @@
 import React, { Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
-
-interface MessageWithNotification {
-  _id: string;
-  message: any;
-  notification: any;
-}
+import ExistingDocument = PouchDB.Core.ExistingDocument;
+import { MessageDocument } from "../../utils/operations";
 
 type OwnProps = {
-  list: any;
+  list: ReadonlyArray<ExistingDocument<MessageDocument>>;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -37,7 +33,7 @@ class MessageListReport extends Component<Props, never> {
           </tr>
         </thead>
         <tbody>
-          {list.map((entry: MessageWithNotification) => {
+          {list.map(entry => {
             /*
               The status of a notification (one for each channel).
               "SENT": the notification was succesfully sent to the channel (ie. email or push notification)
@@ -55,7 +51,7 @@ class MessageListReport extends Component<Props, never> {
               <tr key={_id}>
                 <td>{message.fiscal_code}</td>
                 <td>{channel}</td>
-                <td>{notification && notification[channel]}</td>
+                <td>{notification && notification.email}</td>
               </tr>
             );
           })}

@@ -90,7 +90,7 @@ interface DetailsOnError {
   } & ProblemJson;
 }
 
-interface MessagePostAndPersistFail extends DetailsOnError {
+export interface MessagePostAndPersistFail extends DetailsOnError {
   _id: string;
 }
 

@@ -16,11 +16,12 @@ import sortBy from "lodash/sortBy";
 import moment from "moment";
 import compose from "recompose/compose";
 
-import { Entry, getStatsFor, Statistics } from "../utils/stats";
+import { getStatsFor, Statistics } from "../utils/stats";
 
 import { RouteComponentProps } from "react-router";
 import MessageListReport from "../components/messages/MessageListReport";
 import MessagePreview from "../components/messages/MessagePreview";
+import { Entry } from "../components/messages/MessageStats";
 import Database = PouchDB.Database;
 
 import { MessageDocument } from "../utils/operations";

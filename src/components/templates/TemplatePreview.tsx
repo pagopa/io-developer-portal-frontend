@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import ReactMarkdown from "react-markdown";
 
 type Props = {
-  markdown: any;
+  markdown: string;
 };
 
 class TemplatePreview extends Component<Props, never> {

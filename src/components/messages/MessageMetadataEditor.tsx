@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -25,14 +25,14 @@ import "./MessageMetadataEditor.css";
 
 type OwnProps = {
   dueDate: Moment | null;
-  notice: any;
-  amount: any;
-  isNoticeValid: any;
-  isAmountValid: any;
-  onChangeDueDate: any;
-  onChangeNotice: any;
-  onChangeAmount: any;
-  onReset: any;
+  notice: string;
+  amount: string;
+  isNoticeValid: boolean;
+  isAmountValid: boolean;
+  onChangeDueDate: (date: Moment) => void;
+  onChangeNotice: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChangeAmount: (event: ChangeEvent<HTMLInputElement>) => void;
+  onReset: (inputGroup: "dueDate" | "notice" | "amount") => void;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -121,7 +121,7 @@ class MessageMetadataEditor extends Component<Props, never> {
           <InputGroup className="position-relative">
             <InputGroupAddon addonType="prepend">
               <InputGroupText>{t("format:currency")}</InputGroupText>
-              <InputGroupText>{amount && amount / 100}</InputGroupText>
+              <InputGroupText>{amount && Number(amount) / 100}</InputGroupText>
             </InputGroupAddon>
             <MaskedInput
               type="text"

@@ -11,11 +11,11 @@ import {
 } from "design-react-kit";
 
 type OwnProps = {
-  title?: any;
-  body?: any;
-  isOpen: any;
-  onCancel: any;
-  onConfirm: any;
+  title?: string;
+  body?: string;
+  isOpen: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -28,7 +28,7 @@ class Confirmation extends Component<Props, ConfirmationState> {
     isConfirmed: false
   };
 
-  public componentDidUpdate(prevProps: any) {
+  public componentDidUpdate(prevProps: Props) {
     if (this.props.isOpen !== prevProps.isOpen) {
       this.setState({ isConfirmed: false });
     }

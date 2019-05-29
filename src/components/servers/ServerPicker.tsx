@@ -3,15 +3,20 @@ import React, { ChangeEvent, Component } from "react";
 import { Col, Input, InputGroup, InputGroupAddon, Row } from "design-react-kit";
 
 import Trash from "react-icons/lib/fa/trash";
+import ExistingDocument = PouchDB.Core.ExistingDocument;
+import { Server } from "../../pages/Servers";
 
 type Props = {
-  server: any;
-  endpoint: any;
-  checked: any;
-  disabled?: any;
-  onServerSelect: any;
-  onServerChange: any;
-  onServerDelete?: any;
+  server: Server | ExistingDocument<Server>;
+  endpoint: string;
+  checked: boolean;
+  disabled?: boolean;
+  onServerSelect: (server: Server | ExistingDocument<Server>) => void;
+  onServerChange: (
+    server: Server | ExistingDocument<Server>,
+    value: string
+  ) => void;
+  onServerDelete?: (server: Server | ExistingDocument<Server>) => void;
 };
 
 class ServerPicker extends Component<Props, never> {

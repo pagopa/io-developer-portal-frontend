@@ -107,8 +107,18 @@ class Compose extends Component<Props, ComposeState> {
     this.setState({ amount: value && Number(value).toString() }); // TODO: verify if this is correct
   };
 
-  public onReset = () => {
-    this.setState(this.initialState);
+  public onReset = (inputGroup: "dueDate" | "notice" | "amount") => {
+    switch (inputGroup) {
+      case "dueDate":
+        this.setState({ dueDate: this.initialState.dueDate });
+        break;
+      case "notice":
+        this.setState({ notice: this.initialState.notice });
+        break;
+      case "amount":
+        this.setState({ amount: this.initialState.amount });
+        break;
+    }
   };
 
   public onMessageSubmit = async () => {

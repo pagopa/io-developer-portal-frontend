@@ -16,8 +16,20 @@ import compose from "recompose/compose";
 import Database = PouchDB.Database;
 import ExistingDocument = PouchDB.Core.ExistingDocument;
 
+type Document = TemplateDocument | BatchDocument | MessageDocument;
+
+export type ExtendedBatchDocument = BatchDocument & {
+  message: {
+    created_at: string;
+  };
+};
+
+function isMessageDocument(document: Document): document is MessageDocument {
+  return document.type === "message";
+}
+
 type OwnProps = {
-  db: Database<TemplateDocument | BatchDocument | MessageDocument>;
+  db: Database<Document>;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -64,7 +76,7 @@ class Messages extends Component<Props, MessagesState> {
     const counts = await db.query(
       {
         map: doc => {
-          if (doc.type === "message") {
+          if (isMessageDocument(doc)) {
             emit(doc.batchId, 1);
           }
         },
@@ -93,14 +105,13 @@ class Messages extends Component<Props, MessagesState> {
 
   public render() {
     const { templates, messages, batches, stats } = this.state;
-    const { t, tReady, i18n } = this.props;
+    const { t, tReady, i18n, db } = this.props;
 
-    const batchesMessages = batches
+    const batchesMessages: ReadonlyArray<
+      ExistingDocument<ExtendedBatchDocument>
+    > = batches
       .filter(batch => {
-        if (!stats[batch._id]) {
-          return false;
-        }
-        return true;
+        return stats[batch._id];
       })
       .map(batch =>
         Object.assign({}, batch, {
@@ -168,6 +179,7 @@ class Messages extends Component<Props, MessagesState> {
               return orderedMessages.map(entry => {
                 return (
                   <MessageStats
+                    db={db as Database<MessageDocument>}
                     t={t}
                     tReady={tReady}
                     i18n={i18n}

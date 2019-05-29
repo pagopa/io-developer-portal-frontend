@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -9,11 +9,11 @@ import { LIMITS } from "../../utils/constants";
 const { CODE } = LIMITS;
 
 type OwnProps = {
-  code: any;
-  codeMask: any;
-  isCodeValid: any;
-  onInputCode: any;
-  onInputAdd?: any;
+  code: string;
+  codeMask: ReadonlyArray<RegExp>;
+  isCodeValid: boolean;
+  onInputCode: (event: ChangeEvent<HTMLInputElement>) => void;
+  onInputAdd?: () => void;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -34,7 +34,7 @@ class ContactAdd extends Component<Props, never> {
           maxLength={CODE.MAX}
           value={code}
           guide={false}
-          mask={codeMask}
+          mask={[...codeMask]}
           onChange={onInputCode}
         />
 

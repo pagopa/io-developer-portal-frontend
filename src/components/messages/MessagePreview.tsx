@@ -6,11 +6,12 @@ import { Card, Col, Row } from "design-react-kit";
 
 import TemplatePreview from "../templates/TemplatePreview";
 
+import { TemplateDocument } from "../../pages/Message";
 import { LIMITS } from "../../utils/constants";
 const { SUBJECT, MARKDOWN } = LIMITS;
 
 type Props = {
-  message: any;
+  message: TemplateDocument;
 };
 type MessagePreviewProps = WithNamespaces & Props;
 

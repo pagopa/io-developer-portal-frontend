@@ -19,7 +19,12 @@ import {
 import { ContactDocument } from "../workers/getProfile";
 import { TemplateDocument } from "./Message";
 
-type Props = RouteComponentProps & WithNamespaces;
+type Props = RouteComponentProps<
+  {},
+  {},
+  ReadonlyArray<MessagePostAndPersistResult>
+> &
+  WithNamespaces;
 
 class Dashboard extends Component<Props, never> {
   private getCard<T = {}>(docs: ReadonlyArray<T>, cardTextKey: string) {
@@ -40,7 +45,8 @@ class Dashboard extends Component<Props, never> {
       <section className="d-flex">
         <section className="position-fixed dashboard--notifications-container">
           {location.state &&
-            location.state.map((info: MessagePostAndPersistResult) => {
+            Array.isArray(location.state) &&
+            location.state.map(info => {
               return <Notification key={info._id} info={info} />;
             })}
         </section>

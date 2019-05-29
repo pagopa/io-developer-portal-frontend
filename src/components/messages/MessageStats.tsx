@@ -7,25 +7,44 @@ import { Link } from "react-router-dom";
 
 import FaChevronRight from "react-icons/lib/fa/chevron-right";
 
-import { getStatsFor } from "../../utils/stats";
+import { TemplateDocument } from "../../pages/Message";
+import { ExtendedBatchDocument } from "../../pages/Messages";
+import { MessageDocument } from "../../utils/operations";
+import { getStatsFor, Statistics } from "../../utils/stats";
 
 import moment from "moment";
 import compose from "recompose/compose";
+import Database = PouchDB.Database;
+import ExistingDocument = PouchDB.Core.ExistingDocument;
 
 type MessageStatsState = {
-  statuses: any;
+  statuses: Statistics;
 };
 
+export type Entry =
+  | ExistingDocument<MessageDocument>
+  | ExistingDocument<ExtendedBatchDocument>;
+
 type OwnProps = {
-  db?: any;
-  entry: any;
-  templates: any;
+  db: Database<Entry>;
+  entry: Entry;
+  templates: { [templateId: string]: ExistingDocument<TemplateDocument> };
 };
 type Props = WithNamespaces & OwnProps;
 
 class MessageStats extends Component<Props, MessageStatsState> {
   public state: MessageStatsState = {
-    statuses: {}
+    statuses: {
+      PROCESSED: 0,
+      FAILED: 0,
+      ACCEPTED: 0,
+      THROTTLED: 0,
+      // Custom ones
+      NOTSENT: 0,
+      ERRORED: 0,
+      QUEUED: 0,
+      TOTAL: 0
+    }
   };
 
   public componentDidMount = async () => {

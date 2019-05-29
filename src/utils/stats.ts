@@ -1,5 +1,6 @@
 import groupBy from "lodash/groupBy";
 import Database = PouchDB.Database;
+import { Entry } from "../components/messages/MessageStats";
 
 export type Statistics = {
   PROCESSED: number;
@@ -12,20 +13,6 @@ export type Statistics = {
   QUEUED: number;
   TOTAL: number;
 };
-
-export interface Entry {
-  _id: string;
-  type: "message" | "batch";
-  status: Status;
-}
-
-enum Status {
-  PROCESSED = "PROCESSED",
-  FAILED = "FAILED",
-  ACCEPTED = "ACCEPTED",
-  THROTTLED = "THROTTLED",
-  NOTSENT = "NOTESENT"
-}
 
 export const getStatsFor = async (
   entry: Entry,
@@ -56,10 +43,12 @@ export const getStatsFor = async (
   async function getStatsForType(): Promise<Statistics> {
     switch (entry.type) {
       case "message":
-        return {
-          ...initialCount,
-          [entry.status]: 1
-        };
+        return entry.status
+          ? {
+              ...initialCount,
+              [entry.status]: 1
+            }
+          : initialCount;
       case "batch":
         const messages = await db.find({
           selector: {

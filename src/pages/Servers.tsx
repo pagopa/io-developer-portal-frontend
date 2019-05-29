@@ -22,12 +22,18 @@ type OwnProps = {
 type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type ServersState = {
-  selected?: ExistingDocument<Server>;
+  selected?: Server;
   servers: ServersObj;
 };
 
-interface Server {
+export interface Server {
   endpoint: string;
+}
+
+function isExistingDocument<T>(
+  doc: T | ExistingDocument<T>
+): doc is ExistingDocument<T> {
+  return Boolean((doc as ExistingDocument<T>)._id);
 }
 
 interface ServersObj {
@@ -76,7 +82,7 @@ class Servers extends Component<Props, ServersState> {
     await this.syncStatewithDB();
   };
 
-  public onServerSelect = (server: ExistingDocument<Server>) => {
+  public onServerSelect = (server: Server | ExistingDocument<Server>) => {
     localStorage.setItem("serviceEndpoint", server.endpoint);
     this.setState({
       selected: server
@@ -84,9 +90,12 @@ class Servers extends Component<Props, ServersState> {
   };
 
   public onServerChange = async (
-    server: ExistingDocument<Server>,
+    server: Server | ExistingDocument<Server>,
     value: string
   ) => {
+    if (!isExistingDocument(server)) {
+      return;
+    }
     const { db } = this.props;
     await upsert(db, server._id, {
       ...server,
@@ -111,7 +120,10 @@ class Servers extends Component<Props, ServersState> {
     );
   };
 
-  public onServerDelete = async (server: ExistingDocument<Server>) => {
+  public onServerDelete = async (server: Server | ExistingDocument<Server>) => {
+    if (!isExistingDocument(server)) {
+      return;
+    }
     const { db } = this.props;
     db.remove(server);
     await this.syncStatewithDB();
