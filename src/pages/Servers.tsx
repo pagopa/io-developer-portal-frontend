@@ -82,6 +82,7 @@ class Servers extends Component<Props, ServersState> {
 
   public onServerSelect = (server: Server | ExistingDocument<Server>) => {
     localStorage.setItem("serviceEndpoint", server.endpoint);
+    this.setState({}); // Without this line the component is not rendered correctly
   };
 
   public onServerChange = async (
