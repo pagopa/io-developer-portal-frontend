@@ -10,12 +10,12 @@ import { TemplateDocument } from "../../pages/Message";
 import { LIMITS } from "../../utils/constants";
 const { SUBJECT, MARKDOWN } = LIMITS;
 
-type Props = {
+type OwnProps = {
   message: TemplateDocument;
 };
-type MessagePreviewProps = WithNamespaces & Props;
+type Props = WithNamespaces & OwnProps;
 
-class MessagePreview extends Component<MessagePreviewProps, never> {
+class MessagePreview extends Component<Props, never> {
   public render() {
     const { message, t } = this.props;
 
