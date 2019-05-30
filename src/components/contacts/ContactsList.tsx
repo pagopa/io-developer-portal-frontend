@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert, ListGroup, ListGroupItem } from "design-react-kit";
-import { ExistingDocument } from "react-pouchdb/browser";
+import ExistingDocument = PouchDB.Core.ExistingDocument;
 import { ContactDocument } from "../../workers/getProfile";
 
 const getUserIcon = ({ sender_allowed }: ContactDocument) => {
