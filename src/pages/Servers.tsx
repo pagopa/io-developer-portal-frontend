@@ -22,7 +22,6 @@ type OwnProps = {
 type Props = RouteComponentProps & WithNamespaces & OwnProps;
 
 type ServersState = {
-  selected?: Server;
   servers: ServersObj;
 };
 
@@ -42,7 +41,6 @@ interface ServersObj {
 
 class Servers extends Component<Props, ServersState> {
   public state: ServersState = {
-    selected: undefined,
     servers: {}
   };
 
@@ -84,9 +82,6 @@ class Servers extends Component<Props, ServersState> {
 
   public onServerSelect = (server: Server | ExistingDocument<Server>) => {
     localStorage.setItem("serviceEndpoint", server.endpoint);
-    this.setState({
-      selected: server
-    });
   };
 
   public onServerChange = async (

@@ -16,18 +16,15 @@ type Props = {
 };
 
 type ContactsState = {
-  selected: string;
   code: string;
 };
 
 class Contacts extends Component<Props, ContactsState> {
   public initialState: ContactsState = {
-    selected: "",
     code: ""
   };
 
   public state: ContactsState = {
-    selected: this.initialState.selected,
     code: this.initialState.code
   };
 
@@ -55,15 +52,6 @@ class Contacts extends Component<Props, ContactsState> {
         await profileGetAndPersist({ db, code });
       }
     );
-  };
-
-  // TODO: unused method, should be removed?
-  public onContactSelect = (code: string) => {
-    this.setState(() => {
-      return {
-        selected: code
-      };
-    });
   };
 
   public render() {

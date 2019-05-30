@@ -141,21 +141,22 @@ class Profile extends Component<Props, ProfileState> {
     });
 
     if (isString(userSubscription.name)) {
-      this.setState({
+      const key = userSubscription.name;
+      this.setState(prevState => ({
         userSubscriptions: {
-          ...this.state.userSubscriptions,
-          [userSubscription.name]: userSubscription
+          ...prevState.userSubscriptions,
+          [key]: userSubscription
         }
-      });
+      }));
     }
 
     const service: Service = await getFromBackend<Service>({
       path: `services/${userSubscription.name}`
     });
 
-    this.setState({
-      services: { ...this.state.services, [service.service_id]: service }
-    });
+    this.setState(prevState => ({
+      services: { ...prevState.services, [service.service_id]: service }
+    }));
   };
 
   public async componentDidMount() {
@@ -229,19 +230,19 @@ class Profile extends Component<Props, ProfileState> {
       const service: Service = await getFromBackend<Service>({
         path: `services/${subscription.name}`
       });
-      this.setState({
-        services: { ...this.state.services, [service.service_id]: service }
-      });
+      this.setState(prevState => ({
+        services: { ...prevState.services, [service.service_id]: service }
+      }));
     });
   }
 
   public onToggleKey(keyIdx: string) {
-    this.setState({
+    this.setState(prevState => ({
       keyDisplay: {
-        ...this.state.keyDisplay,
-        [keyIdx]: !this.state.keyDisplay[keyIdx]
+        ...prevState.keyDisplay,
+        [keyIdx]: !prevState.keyDisplay[keyIdx]
       }
-    });
+    }));
   }
 
   public onSetKey = (serviceKey: string, service: Service) => () => {
@@ -263,15 +264,15 @@ class Profile extends Component<Props, ProfileState> {
           path: "subscriptions/" + subscriptionId + "/" + keyType + "_key",
           options: { body: undefined }
         });
-        this.setState({
+        this.setState(prevState => ({
           isConfirmationOpen: false,
           userSubscriptions: isString(userSubscription.name)
             ? {
-                ...this.state.userSubscriptions,
+                ...prevState.userSubscriptions,
                 [userSubscription.name]: userSubscription
               }
-            : this.state.userSubscriptions
-        });
+            : prevState.userSubscriptions
+        }));
       }
     });
   };
@@ -281,12 +282,12 @@ class Profile extends Component<Props, ProfileState> {
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
 
-    this.setState({
+    this.setState(prevState => ({
       newSubscription: {
-        ...this.state.newSubscription,
+        ...prevState.newSubscription,
         [name]: value
       }
-    });
+    }));
   };
 
   public renderNewUserDiv() {
