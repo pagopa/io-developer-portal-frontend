@@ -16,7 +16,9 @@ interface DataType {
   url: string;
 }
 
-self.addEventListener("message", async e => {
+const worker: Worker = (self as unknown) as Worker;
+
+worker.addEventListener("message", async e => {
   if (!e) {
     return;
   }
@@ -70,13 +72,10 @@ self.addEventListener("message", async e => {
   // tslint:disable-next-line:no-any
   batch.end((err: any) => {
     if (!err) {
-      postMessage(
-        {
-          ...e.data,
-          completed: true
-        },
-        "*"
-      ); // TODO: set the proper targetOrigin
+      worker.postMessage({
+        ...e.data,
+        completed: true
+      });
     }
   });
 });
