@@ -43,6 +43,14 @@ jobs:
           name: Lint
           command: yarn lint   
 
+  danger:
+     <<: *defaults
+     steps:
+       - checkout
+       - restore_cache: *restore_cache
+       - run: *yarn_install
+       - run: '[ -z "$DANGER_GITHUB_API_TOKEN" ] || yarn danger ci'
+
   build:
     <<: *defaults
 
@@ -99,6 +107,7 @@ workflows:
     jobs:
       - build
       - lint
+      - danger
 
   deploy:
     jobs:
