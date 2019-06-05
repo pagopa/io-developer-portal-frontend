@@ -64,6 +64,8 @@
     "@types/request": "^2.48.1",
     "@types/webfontloader": "^1.6.28",
     "cors": "^2.8.4",
+    "danger": "^7.1.4",
+    "danger-plugin-digitalcitizenship": "^0.3.1",
     "express": "^4.16.3",
     "gh-pages": "^2.0.1",
     "italia-tslint-rules": "^1.1.0",
