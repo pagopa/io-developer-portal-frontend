@@ -61,18 +61,14 @@ class UserList extends Component<WithNamespaces, UserListState> {
             users.items.map(u => (
               <tr key={u.email}>
                 <td>
-                  {() => {
-                    if (u.email) {
-                      return (
-                        <Link
-                          className="large list-item"
-                          to={{ pathname: `/profile/${btoa(u.email)}` }}
-                        >
-                          <FaUser />
-                        </Link>
-                      );
-                    }
-                  }}
+                  {u.email && (
+                    <Link
+                      className="large list-item"
+                      to={{ pathname: `/profile/${btoa(u.email)}` }}
+                    >
+                      <FaUser />
+                    </Link>
+                  )}
                 </td>
                 <td>{u.firstName}</td>
                 <td>{u.lastName}</td>

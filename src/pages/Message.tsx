@@ -1,5 +1,6 @@
 import React, { ChangeEvent, Component, Fragment } from "react";
 
+import { findDOMNode } from "react-dom";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Find, withDB } from "react-pouchdb/browser";
 
@@ -145,8 +146,9 @@ class Message extends Component<Props, MessageState> {
   };
 
   public onTriggerUpload = () => {
-    if (this.fileInput.current) {
-      this.fileInput.current.click();
+    const element = findDOMNode(this.fileInput.current);
+    if (element) {
+      (element as HTMLInputElement).click();
     }
   };
 

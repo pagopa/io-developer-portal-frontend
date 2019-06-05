@@ -1,5 +1,6 @@
 import React, { ChangeEvent, Component } from "react";
 
+import { findDOMNode } from "react-dom";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RouteComponentProps, withRouter } from "react-router";
 
@@ -69,8 +70,9 @@ class Compose extends Component<Props, ComposeState> {
   public fileInput = React.createRef<Input>();
 
   public onTriggerUpload = () => {
-    if (this.fileInput.current) {
-      this.fileInput.current.click();
+    const element = findDOMNode(this.fileInput.current);
+    if (element) {
+      (element as HTMLInputElement).click();
     }
   };
 
