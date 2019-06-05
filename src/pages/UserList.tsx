@@ -61,7 +61,7 @@ class UserList extends Component<WithNamespaces, UserListState> {
             users.items.map(u => (
               <tr key={u.email}>
                 <td>
-                  {() => {
+                  {(() => {
                     if (u.email) {
                       return (
                         <Link
@@ -72,7 +72,7 @@ class UserList extends Component<WithNamespaces, UserListState> {
                         </Link>
                       );
                     }
-                  }}
+                  })()}
                 </td>
                 <td>{u.firstName}</td>
                 <td>{u.lastName}</td>
