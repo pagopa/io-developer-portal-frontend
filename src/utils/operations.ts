@@ -208,7 +208,7 @@ export function createMessageContent({
   };
 
   const paymentDataDecoding = PaymentData.decode({
-    amount: amount && amount.valueOf(),
+    amount: amount && Number(amount),
     notice_number: notice
   });
 
