@@ -26,6 +26,7 @@ const en = {
     time: "Time",
     notice: "Notice number",
     amount: "Amount",
+    invalid_after_due_date: "Disable the payment after its due date",
     reset: "Reset"
   },
   contacts: {

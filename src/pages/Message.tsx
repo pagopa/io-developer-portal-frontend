@@ -78,6 +78,7 @@ type MessageState = {
   dueDate: Moment | null;
   amount: string;
   notice: string;
+  invalidAfterDueDate: boolean;
   recipientOpen: boolean;
   sent: boolean;
   progress: boolean;
@@ -92,6 +93,7 @@ class Message extends Component<Props, MessageState> {
     dueDate: null,
     amount: "",
     notice: "",
+    invalidAfterDueDate: false,
     recipientOpen: false,
     sent: false,
     progress: false
@@ -106,6 +108,7 @@ class Message extends Component<Props, MessageState> {
     dueDate: this.initialState.dueDate,
     amount: this.initialState.amount,
     notice: this.initialState.notice,
+    invalidAfterDueDate: this.initialState.invalidAfterDueDate,
     recipientOpen: this.initialState.recipientOpen,
     sent: this.initialState.sent,
     progress: this.initialState.progress
@@ -213,6 +216,14 @@ class Message extends Component<Props, MessageState> {
     this.setState({ amount: value && Number(value).toString() });
   };
 
+  public onChangeInvalidAfterDueDate = ({
+    target: { checked }
+  }: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      invalidAfterDueDate: checked
+    });
+  };
+
   public onReset = (inputGroup: "dueDate" | "notice" | "amount") => {
     switch (inputGroup) {
       case "dueDate":
@@ -270,7 +281,14 @@ class Message extends Component<Props, MessageState> {
       sent: true
     });
 
-    const { batch, selected, dueDate, notice, amount } = this.state;
+    const {
+      batch,
+      selected,
+      dueDate,
+      notice,
+      amount,
+      invalidAfterDueDate
+    } = this.state;
     const {
       db,
       t,
@@ -289,7 +307,8 @@ class Message extends Component<Props, MessageState> {
       dueDate,
       amount,
       notice,
-      dueDateFormat: t("format:date")
+      dueDateFormat: t("format:date"),
+      invalidAfterDueDate
     });
 
     const result = !batch
@@ -512,7 +531,7 @@ class Message extends Component<Props, MessageState> {
   };
 
   public render() {
-    const { dueDate, notice, amount } = this.state;
+    const { dueDate, notice, amount, invalidAfterDueDate } = this.state;
     const {
       location: {
         state: { type, templateId }
@@ -582,11 +601,13 @@ class Message extends Component<Props, MessageState> {
           dueDate={dueDate}
           notice={notice}
           amount={amount.toString()}
+          invalidAfterDueDate={invalidAfterDueDate}
           isNoticeValid={isNoticeValid}
           isAmountValid={isAmountValid}
           onChangeDueDate={this.onChangeDueDate}
           onChangeNotice={this.onChangeNotice}
           onChangeAmount={this.onChangeAmount}
+          onChangeInvalidAfterDueDate={this.onChangeInvalidAfterDueDate}
           onReset={this.onReset}
         />
 
