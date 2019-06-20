@@ -26,6 +26,7 @@ const it = {
     time: "Orario",
     notice: "N° Avviso",
     amount: "Importo",
+    invalid_after_due_date: "Disabilita il pagamento dopo la scadenza",
     reset: "Reset"
   },
   contacts: {

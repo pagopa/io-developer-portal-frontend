@@ -180,6 +180,7 @@ interface CreateMessageContentParams {
   amount?: string;
   notice?: string;
   dueDateFormat: string;
+  invalidAfterDueDate?: boolean;
 }
 
 export function createMessageContent({
@@ -187,7 +188,8 @@ export function createMessageContent({
   dueDate,
   amount,
   notice,
-  dueDateFormat
+  dueDateFormat,
+  invalidAfterDueDate
 }: CreateMessageContentParams): MessageContent {
   const subjectDecoding = MessageSubject.decode(message.subject);
   const markdownDecoding = MessageBodyMarkdown.decode(message.markdown);
@@ -209,7 +211,8 @@ export function createMessageContent({
 
   const paymentDataDecoding = PaymentData.decode({
     amount: amount && Number(amount),
-    notice_number: notice
+    notice_number: notice,
+    invalid_after_due_date: invalidAfterDueDate
   });
 
   return paymentDataDecoding.isRight()

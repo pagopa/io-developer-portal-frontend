@@ -27,11 +27,13 @@ type OwnProps = {
   dueDate: Moment | null;
   notice: string;
   amount: string;
+  invalidAfterDueDate: boolean;
   isNoticeValid: boolean;
   isAmountValid: boolean;
   onChangeDueDate: (date: Moment) => void;
   onChangeNotice: (event: ChangeEvent<HTMLInputElement>) => void;
   onChangeAmount: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChangeInvalidAfterDueDate: (event: ChangeEvent<HTMLInputElement>) => void;
   onReset: (inputGroup: "dueDate" | "notice" | "amount") => void;
 };
 type Props = WithNamespaces & OwnProps;
@@ -42,11 +44,13 @@ class MessageMetadataEditor extends Component<Props, never> {
       dueDate,
       notice,
       amount,
+      invalidAfterDueDate,
       isNoticeValid,
       isAmountValid,
       onChangeDueDate,
       onChangeNotice,
       onChangeAmount,
+      onChangeInvalidAfterDueDate,
       onReset
     } = this.props;
     const { t } = this.props;
@@ -149,6 +153,18 @@ class MessageMetadataEditor extends Component<Props, never> {
                 <span aria-hidden="true">&times;</span>
               </button>
             )}
+          </InputGroup>
+        </Col>
+        <Col>
+          <InputGroup className="pb-2 pt-2">
+            <input
+              name="invalid_after_due_date"
+              type="checkbox"
+              checked={invalidAfterDueDate}
+              onChange={onChangeInvalidAfterDueDate}
+              className="mt-1 mr-2"
+            />
+            <Label className="m-0">{t("invalid_after_due_date")}</Label>
           </InputGroup>
         </Col>
       </Row>

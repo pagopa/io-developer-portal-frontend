@@ -46,6 +46,7 @@ type ComposeState = {
   dueDate: Moment | null;
   amount: string;
   notice: string;
+  invalidAfterDueDate: boolean;
 };
 
 class Compose extends Component<Props, ComposeState> {
@@ -55,7 +56,8 @@ class Compose extends Component<Props, ComposeState> {
     markdown: "",
     dueDate: null,
     amount: "",
-    notice: ""
+    notice: "",
+    invalidAfterDueDate: false
   };
 
   public state: ComposeState = {
@@ -64,7 +66,8 @@ class Compose extends Component<Props, ComposeState> {
     markdown: this.initialState.markdown,
     dueDate: this.initialState.dueDate,
     amount: this.initialState.amount,
-    notice: this.initialState.notice
+    notice: this.initialState.notice,
+    invalidAfterDueDate: this.initialState.invalidAfterDueDate
   };
 
   public onInputCode = ({
@@ -107,6 +110,14 @@ class Compose extends Component<Props, ComposeState> {
     this.setState({ amount: value && Number(value).toString() }); // TODO: verify if this is correct
   };
 
+  public onChangeInvalidAfterDueDate = ({
+    target: { checked }
+  }: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      invalidAfterDueDate: checked
+    });
+  };
+
   public onReset = (inputGroup: "dueDate" | "notice" | "amount") => {
     switch (inputGroup) {
       case "dueDate":
@@ -122,7 +133,15 @@ class Compose extends Component<Props, ComposeState> {
   };
 
   public onMessageSubmit = async () => {
-    const { code, subject, markdown, dueDate, notice, amount } = this.state;
+    const {
+      code,
+      subject,
+      markdown,
+      dueDate,
+      notice,
+      amount,
+      invalidAfterDueDate
+    } = this.state;
     const { db, t } = this.props;
 
     // No need to await
@@ -150,7 +169,8 @@ class Compose extends Component<Props, ComposeState> {
       dueDate,
       amount,
       notice,
-      dueDateFormat: t("format:date")
+      dueDateFormat: t("format:date"),
+      invalidAfterDueDate
     });
 
     const result = await messagePostAndPersist({
@@ -173,7 +193,15 @@ class Compose extends Component<Props, ComposeState> {
   };
 
   public render() {
-    const { code, subject, markdown, dueDate, notice, amount } = this.state;
+    const {
+      code,
+      subject,
+      markdown,
+      dueDate,
+      notice,
+      amount,
+      invalidAfterDueDate
+    } = this.state;
     const { t } = this.props;
 
     const isCodeValid = isMaskValid(code, codeMask);
@@ -214,12 +242,14 @@ class Compose extends Component<Props, ComposeState> {
         <MessageMetadataEditor
           dueDate={dueDate}
           notice={notice}
+          invalidAfterDueDate={invalidAfterDueDate}
           amount={amount.toString()}
           isNoticeValid={isNoticeValid}
           isAmountValid={isAmountValid}
           onChangeDueDate={this.onChangeDueDate}
           onChangeNotice={this.onChangeNotice}
           onChangeAmount={this.onChangeAmount}
+          onChangeInvalidAfterDueDate={this.onChangeInvalidAfterDueDate}
           onReset={this.onReset}
         />
 
