@@ -40,7 +40,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const name = target.name;
     const serviceDecoding = Service.decode({
       ...this.state.service,
-      [name]: value
+      [name]: name === "max_allowed_payment_amount" ? Number(value) : value
     });
     if (serviceDecoding.isRight()) {
       this.setState({
