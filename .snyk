@@ -30,3 +30,5 @@ patch:
         patched: '2019-07-09T14:33:22.903Z'
     - snyk > snyk-php-plugin > @snyk/composer-lockfile-parser > lodash:
         patched: '2019-07-09T14:33:22.903Z'
+    - snyk > snyk-nuget-plugin > dotnet-deps-parser > lodash:
+        patched: '2019-09-09T07:26:43.282Z'
