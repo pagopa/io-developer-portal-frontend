@@ -6993,14 +6993,14 @@ react-text-mask@^5.4.3:
   dependencies:
     prop-types "^15.5.6"
 
-react@^16.5.2:
-  version "16.5.2"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.5.2.tgz#19f6b444ed139baa45609eee6dc3d318b3895d42"
+react@^16.9.0:
+  version "16.9.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.9.0.tgz#40ba2f9af13bc1a38d75dbf2f4359a5185c4f7aa"
+  integrity sha512-+7LQnFBwkiw+BobzOF6N//BdoNw0ouwmSJTEm9cglOOmsg/TMiFHZLe2sEoN5M7LgJTj9oHH0gxklfnQe66S1w==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
-    schedule "^0.5.0"
 
 readable-stream@1.0.33:
   version "1.0.33"
@@ -7372,12 +7372,6 @@ sax@>=0.6.0, sax@^1.2.4, sax@~1.2.1, sax@~1.2.4:
 schedule@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.3.0.tgz#1be2ab2fc2e768536269ce7326efb478d6c045e8"
-  dependencies:
-    object-assign "^4.1.1"
-
-schedule@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.5.0.tgz#c128fffa0b402488b08b55ae74bb9df55cc29cc8"
   dependencies:
     object-assign "^4.1.1"
 
@@ -7777,10 +7771,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.192.4:
-  version "1.226.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.226.0.tgz#ca456ccee59c788c1ae97a0ded13f9b4d1cd91a2"
-  integrity sha512-AzzHr8kZKTfK20aC7M4t9NYw2uq+oZg6v8sPZ2lbvrrPwh2fGPaHZeFebRJbSZm1eCgFef4wHGO5Uu4lp9yEWg==
+snyk@^1.226.0:
+  version "1.226.1"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.226.1.tgz#e86417a2ecc8b3671c7a28914866fc1654203862"
+  integrity sha512-DrWJmJX8MBmWjiAJgDXfsoFdTozrXn8yIsU9Y+6O3c+CRtMcZfP0GfvyqW8LmTlHAQR4zpvWeBBJy+9J4ISxdA==
   dependencies:
     "@snyk/dep-graph" "1.12.0"
     "@snyk/gemfile" "1.2.0"
