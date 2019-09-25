@@ -1,10 +1,7 @@
-export const DEFAULT_BACKEND_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://apim-portal-prod.azurewebsites.net"
-    : "https://apim-portal-dev.azurewebsites.net";
+export const IO_DEVELOPER_PORTAL_BACKEND = window._env_.IO_DEVELOPER_PORTAL_BACKEND;
 
 export const getBackendUrl = () =>
-  window.localStorage.getItem("backendEndpoint") || DEFAULT_BACKEND_URL;
+  window.localStorage.getItem("backendEndpoint") || IO_DEVELOPER_PORTAL_BACKEND;
 
 const getOptions = (token?: string) => {
   const defaultToken = localStorage.getItem("userToken");

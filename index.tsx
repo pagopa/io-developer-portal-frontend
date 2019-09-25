@@ -92,7 +92,7 @@ const Root = () => {
 
   return (
     <PouchDB name={dbName}>
-      <Router basename={process.env.PUBLIC_PATH}>
+      <Router basename={window._env_.PUBLIC_PATH}>
         <I18nextProvider i18n={i18n}>
           <Header />
           <Worker dbName={dbName} />

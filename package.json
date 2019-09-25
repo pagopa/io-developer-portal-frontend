@@ -10,7 +10,7 @@
     "dev:proxy": "node api-proxy.js",
     "type-check": "tsc --noEmit",
     "prebuild": "yarn generate:definitions && yarn type-check",
-    "build": "rimraf dist && parcel build index.html --public-url /",
+    "build": "rimraf dist && parcel build index.html --public-url / --no-minify ./env-config.js",
     "postbuild": "shx cp CNAME 404.html web.config dist/",
     "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'",
     "lint": "tslint -p . -c tslint.json -t verbose",
