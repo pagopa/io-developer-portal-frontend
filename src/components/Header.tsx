@@ -36,7 +36,7 @@ class Header extends Component<RouteComponentProps, never> {
                 <Nav navbar={true} className="justify-content-between">
                   <section>
                     <NavItem>
-                      <NavLink href={process.env.PUBLIC_URL || "/"}>
+                      <NavLink href={window._env_.IO_DEVELOPER_PORTAL_BASE_URL || "/"}>
                         <i className="it-app mr-3" />
                         {storage.service ? (
                           <span>
