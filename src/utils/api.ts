@@ -1,4 +1,9 @@
-export const IO_DEVELOPER_PORTAL_APIM_BASE_URL = window._env_.IO_DEVELOPER_PORTAL_APIM_BASE_URL
+import { ICustomWindow } from "../customTypes/CustomWindow";
+
+const customWindow = window as ICustomWindow;
+
+export const IO_DEVELOPER_PORTAL_APIM_BASE_URL =
+  customWindow._env_.IO_DEVELOPER_PORTAL_APIM_BASE_URL;
 
 export function getUrl() {
   const { localStorage } = window;

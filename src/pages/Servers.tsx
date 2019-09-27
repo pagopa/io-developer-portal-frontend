@@ -7,7 +7,7 @@ import { Button, Col, ListGroup, ListGroupItem, Row } from "design-react-kit";
 
 import ServerPicker from "../components/servers/ServerPicker";
 
-import { DEFAULT_URL } from "../utils/api";
+import { IO_DEVELOPER_PORTAL_APIM_BASE_URL as DEFAULT_URL } from "../utils/api";
 import { upsert } from "../utils/db";
 
 import { RouteComponentProps } from "react-router";
