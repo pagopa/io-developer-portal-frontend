@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
+import { ICustomWindow } from "./src/customTypes/CustomWindow";
 const request = require("request");
 const cors = require("cors");
 
-const APIM_BASE_URL = window._env_.IO_DEVELOPER_PORTAL_APIM_BASE_URL;
+const customWindow = window as ICustomWindow;
+const APIM_BASE_URL = customWindow._env_.IO_DEVELOPER_PORTAL_APIM_BASE_URL;
 
 const app = express();
 app.use(cors());
@@ -20,4 +22,4 @@ app.use("/", (req: Request, res: Response) => {
     .pipe(res);
 });
 
-app.listen(window._env_.IO_DEVELOPER_PORTAL_PORT || 3000);
+app.listen(customWindow._env_.IO_DEVELOPER_PORTAL_PORT || 3000);

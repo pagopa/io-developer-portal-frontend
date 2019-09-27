@@ -10,6 +10,9 @@ import Server from "react-icons/lib/fa/server";
 import SignOut from "react-icons/lib/fa/sign-out";
 
 import { StorageContext } from "../context/storage";
+import { ICustomWindow } from "../customTypes/CustomWindow";
+
+const customWindow = window as ICustomWindow;
 
 class Header extends Component<RouteComponentProps, never> {
   public onSignOut = () => {
@@ -36,7 +39,11 @@ class Header extends Component<RouteComponentProps, never> {
                 <Nav navbar={true} className="justify-content-between">
                   <section>
                     <NavItem>
-                      <NavLink href={window._env_.IO_DEVELOPER_PORTAL_BASE_URL || "/"}>
+                      <NavLink
+                        href={
+                          customWindow._env_.IO_DEVELOPER_PORTAL_BASE_URL || "/"
+                        }
+                      >
                         <i className="it-app mr-3" />
                         {storage.service ? (
                           <span>
