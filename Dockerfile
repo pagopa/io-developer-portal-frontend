@@ -1,4 +1,4 @@
-FROM circleci/node:8.16.1 as builder
+FROM circleci/node:10.14.1 as builder
 
 WORKDIR /usr/src/app
 
