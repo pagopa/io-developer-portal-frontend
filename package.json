@@ -44,7 +44,7 @@
     "react-text-mask": "^5.4.3",
     "recompose": "^0.27.1",
     "webfontloader": "^1.6.28",
-    "snyk": "1.230.4"
+    "snyk": "^1.230.7"
   },
   "devDependencies": {
     "@types/cors": "^2.8.4",
