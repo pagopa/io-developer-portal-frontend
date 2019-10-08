@@ -37,9 +37,7 @@ class Worker extends Component<Props, never> {
     GetMessageWorker.postMessage({
       action: "getMessage",
       dbName,
-      url: getUrl(),
-      // tslint:disable-next-line: no-any
-      config: (window as any)._env_
+      url: getUrl()
     });
   };
 
