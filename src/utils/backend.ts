@@ -1,8 +1,8 @@
-import { ICustomWindow } from "../customTypes/CustomWindow";
+import { getConfig } from "./config";
 
-const customWindow = window as ICustomWindow;
-export const IO_DEVELOPER_PORTAL_BACKEND =
-  customWindow._env_.IO_DEVELOPER_PORTAL_BACKEND;
+export const IO_DEVELOPER_PORTAL_BACKEND = getConfig(
+  "IO_DEVELOPER_PORTAL_BACKEND"
+);
 
 export const getBackendUrl = () =>
   window.localStorage.getItem("backendEndpoint") || IO_DEVELOPER_PORTAL_BACKEND;

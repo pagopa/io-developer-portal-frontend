@@ -43,7 +43,7 @@ import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./index.css";
-import { ICustomWindow } from "./src/customTypes/CustomWindow";
+import { getConfig } from "./src/utils/config";
 
 const Layout = ({ children }: { children: ReactNode }) => (
   <section className="row">
@@ -57,8 +57,6 @@ const Layout = ({ children }: { children: ReactNode }) => (
     </div>
   </section>
 );
-
-const customWindow = window as ICustomWindow;
 
 type PrivateRouteParams = {
   // tslint:disable-next-line:no-any
@@ -95,7 +93,7 @@ const Root = () => {
 
   return (
     <PouchDB name={dbName}>
-      <Router basename={customWindow._env_.PUBLIC_PATH}>
+      <Router basename={getConfig("IO_DEVELOPER_PORTAL_PUBLIC_PATH")}>
         <I18nextProvider i18n={i18n}>
           <Header />
           <Worker dbName={dbName} />

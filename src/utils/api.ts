@@ -1,15 +1,12 @@
-import { ICustomWindow } from "../customTypes/CustomWindow";
-
-const customWindow = window as ICustomWindow;
-
-export const IO_DEVELOPER_PORTAL_APIM_BASE_URL =
-  customWindow._env_.IO_DEVELOPER_PORTAL_APIM_BASE_URL;
+import { getConfig } from "./config";
 
 export function getUrl() {
   const { localStorage } = window;
   const serviceEndpoint = localStorage.getItem("serviceEndpoint");
 
-  return serviceEndpoint ? serviceEndpoint : IO_DEVELOPER_PORTAL_APIM_BASE_URL;
+  return serviceEndpoint
+    ? serviceEndpoint
+    : getConfig("IO_DEVELOPER_PORTAL_APIM_BASE_URL");
 }
 
 const getOptions = (dbName: string | undefined) => {
@@ -112,4 +109,4 @@ export function post<T>(params: PostParams): Promise<T> {
     });
 }
 
-export default { IO_DEVELOPER_PORTAL_APIM_BASE_URL, getUrl, get, post };
+export default { getUrl, get, post };
