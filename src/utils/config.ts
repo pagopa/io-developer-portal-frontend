@@ -7,7 +7,14 @@ export interface IConfig {
   IO_DEVELOPER_PORTIO_DEVELOPER_PORTAL_BASE_URLAL_APIM_BASE_URL: string;
 }
 
-export function getConfig(param: keyof IConfig) {
+export function getConfig(param: keyof IConfig): string {
+  if (!("_env_" in window)) {
+    throw new Error("Missing configuration");
+  }
   // tslint:disable-next-line: no-any
-  return (globalThis as any)._env_[param];
+  if (!(window as any)._env_[param]) {
+    throw new Error("Missing required environment variable: " + param);
+  }
+  // tslint:disable-next-line: no-any
+  return (window as any)._env_[param];
 }
