@@ -22,7 +22,7 @@
     "generate:definitions": "npm-run-all api-definitions:* backend-definitions:*",
     "prebuild": "npm-run-all distclean generate:definitions type-check",
     "parcel:build": "parcel build index.html --public-url / --no-minify ./env-config.js",
-    "parcel:serve": "parcel serve -p 8088 index.html --public-url /",
+    "parcel:serve": "export $(grep -v '^#' .env.io-developer-portal.development | xargs) && chmod +x env.sh && source env.sh && parcel serve -p 8080 index.html --public-url / --no-minify ./env-config.js",
     "build": "npm-run-all parcel:build",
     "snyk-protect": "snyk protect",
     "prepublish": "npm run snyk-protect"
