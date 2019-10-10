@@ -24,7 +24,10 @@ The application can be directly tested on the developer machine, using *yarn*:
 # Install dependencies
 yarn install
 
-# Export env variables from .env.io-developer-portal.development and run the application on a local dev server
+# Export env variables from .env.io-developer-portal.development
+export $(grep -v '^#' .env.io-developer-portal.development | xargs) && chmod +x env.sh && source env.sh
+
+# Run the application on a local dev server
 yarn parcel:serve
 ```
 
@@ -50,7 +53,7 @@ To bring down the test environment:
 docker-compose down
 ```
 
-Sometimes, it may be needed to re-built the frontend image, which is instead cached by Docker, once built the first time. To overcome this bahavior, run:
+Sometimes, it may be needed to re-built the frontend image, which is instead cached by Docker, once built the first time. To overcome this behavior, run:
 
 ```shell
 docker-compose up --build
