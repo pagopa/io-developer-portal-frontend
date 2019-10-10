@@ -21,7 +21,7 @@
     "backend-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/teamdigitale/digital-citizenship-onboarding/v0.2.0/definitions.yaml --out-dir generated/definitions/backend --no-strict",
     "generate:definitions": "npm-run-all api-definitions:* backend-definitions:*",
     "prebuild": "npm-run-all distclean generate:definitions type-check",
-    "parcel:build": "parcel build index.html --public-url /",
+    "parcel:build": "parcel build index.html --public-url / --no-minify ./env-config.js",
     "parcel:serve": "parcel serve -p 8088 index.html --public-url /",
     "build": "npm-run-all parcel:build",
     "snyk-protect": "snyk protect",
