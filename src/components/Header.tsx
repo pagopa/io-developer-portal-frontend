@@ -10,6 +10,7 @@ import Server from "react-icons/lib/fa/server";
 import SignOut from "react-icons/lib/fa/sign-out";
 
 import { StorageContext } from "../context/storage";
+import { getConfig } from "../utils/config";
 
 class Header extends Component<RouteComponentProps, never> {
   public onSignOut = () => {
@@ -36,7 +37,9 @@ class Header extends Component<RouteComponentProps, never> {
                 <Nav navbar={true} className="justify-content-between">
                   <section>
                     <NavItem>
-                      <NavLink href={process.env.PUBLIC_URL || "/"}>
+                      <NavLink
+                        href={getConfig("IO_DEVELOPER_PORTAL_BASE_URL") || "/"}
+                      >
                         <i className="it-app mr-3" />
                         {storage.service ? (
                           <span>

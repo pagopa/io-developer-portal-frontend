@@ -1,13 +1,12 @@
-export const DEFAULT_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://api.cd.italia.it/api/v1"
-    : "http://localhost:3000";
+import { getConfig } from "./config";
 
 export function getUrl() {
   const { localStorage } = window;
   const serviceEndpoint = localStorage.getItem("serviceEndpoint");
 
-  return serviceEndpoint ? serviceEndpoint : DEFAULT_URL;
+  return serviceEndpoint
+    ? serviceEndpoint
+    : getConfig("IO_DEVELOPER_PORTAL_APIM_BASE_URL");
 }
 
 const getOptions = (dbName: string | undefined) => {
@@ -110,4 +109,4 @@ export function post<T>(params: PostParams): Promise<T> {
     });
 }
 
-export default { DEFAULT_URL, getUrl, get, post };
+export default { getUrl, get, post };

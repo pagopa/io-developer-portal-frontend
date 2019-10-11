@@ -1,0 +1,18 @@
+---
+
+version: '3.2'
+services:
+
+  # IO developer portal frontend
+  io-developer-portal:
+    container_name: io-developer-portal
+    image: teamdigitale/io-messages-web
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env.io-developer-portal.development
+    ports:
+      - "8080:80"
+    stdin_open: true
+    tty: true

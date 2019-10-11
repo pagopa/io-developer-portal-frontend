@@ -43,6 +43,7 @@ import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./index.css";
+import { getConfig } from "./src/utils/config";
 
 const Layout = ({ children }: { children: ReactNode }) => (
   <section className="row">
@@ -92,7 +93,7 @@ const Root = () => {
 
   return (
     <PouchDB name={dbName}>
-      <Router basename={process.env.PUBLIC_PATH}>
+      <Router basename={getConfig("IO_DEVELOPER_PORTAL_PUBLIC_PATH")}>
         <I18nextProvider i18n={i18n}>
           <Header />
           <Worker dbName={dbName} />

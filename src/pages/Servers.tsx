@@ -7,13 +7,13 @@ import { Button, Col, ListGroup, ListGroupItem, Row } from "design-react-kit";
 
 import ServerPicker from "../components/servers/ServerPicker";
 
-import { DEFAULT_URL } from "../utils/api";
 import { upsert } from "../utils/db";
 
 import { RouteComponentProps } from "react-router";
 import compose from "recompose/compose";
 import Database = PouchDB.Database;
 import ExistingDocument = PouchDB.Core.ExistingDocument;
+import { getConfig } from "../utils/config";
 
 const { localStorage } = window;
 type OwnProps = {
@@ -121,7 +121,7 @@ class Servers extends Component<Props, ServersState> {
       return;
     }
     const { db } = this.props;
-    db.remove(server);
+    await db.remove(server);
     await this.syncStatewithDB();
   };
 
@@ -130,6 +130,8 @@ class Servers extends Component<Props, ServersState> {
     const { t } = this.props;
 
     const serviceEndpoint = localStorage.getItem("serviceEndpoint");
+
+    const defaultUrl = getConfig("IO_DEVELOPER_PORTAL_APIM_BASE_URL");
 
     return (
       <ListGroup>
@@ -150,12 +152,10 @@ class Servers extends Component<Props, ServersState> {
           <ServerPicker
             key={`default`}
             server={{
-              endpoint: DEFAULT_URL
+              endpoint: defaultUrl
             }}
-            endpoint={`${DEFAULT_URL} (${t("default")})`}
-            checked={
-              serviceEndpoint === null || serviceEndpoint === DEFAULT_URL
-            }
+            endpoint={`${defaultUrl} (${t("default")})`}
+            checked={serviceEndpoint === null || serviceEndpoint === defaultUrl}
             onServerSelect={this.onServerSelect}
             onServerChange={this.onServerChange}
             disabled={true}
