@@ -73,7 +73,7 @@
     "@types/recompose": "^0.27.1",
     "@types/request": "^2.48.1",
     "@types/webfontloader": "^1.6.28",
-    "cors": "^2.8.4",
+    "cors": "^2.8.5",
     "danger": "^7.1.4",
     "danger-plugin-digitalcitizenship": "^0.3.1",
     "express": "^4.16.3",
