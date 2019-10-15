@@ -76,7 +76,7 @@
     "cors": "^2.8.4",
     "danger": "^7.1.4",
     "danger-plugin-digitalcitizenship": "^0.3.1",
-    "express": "^4.16.3",
+    "express": "^4.17.1",
     "gh-pages": "^2.0.1",
     "italia-tslint-rules": "^1.1.0",
     "italia-utils": "^4.0.0",
