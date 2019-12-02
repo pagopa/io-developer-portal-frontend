@@ -63,6 +63,28 @@ docker-compose up --build
 
 At this point in time the application is served in two environments: Kubernetes (AKS), in form of Docker image, and on GitHub pages.
 
+### Configuration
+
+The table below describes all the Environment variables needed by the application.
+
+| Variable name | Description | type |
+|----------------|-------------|------|
+|IO\_DEVELOPER\_PORTAL\_PORT| The port the service will listen on |int|
+|IO\_DEVELOPER\_PORTAL\_BACKEND| Full url of the backend application |string|
+|IO\_DEVELOPER\_PORTAL\_APIM\_BASE_URL| Full url and path for the APIM|string|
+|IO\_DEVELOPER\_PORTAL\_BASE\_URL| Base URL for the application|string|
+|IO\_DEVELOPER\_PORTAL\_PUBLIC\_PATH| Public base url for the application|string|
+
+### Environment variables run-time injection
+
+The frontend container needs to adapt to different environments, reading at run-time environment variables values. For example, the application needs to know the address of the backend application. This is a non trivial task, since Javascript code runs on the client machine of the user executing the application, which prevents the application from directly reading the environment variables from the container.
+
+To overcome this limitation, an *env.sh* bash script inside the main folder is executed every time the frontend application container starts, then is subsequently deleted. The script reads the environment variables and produces an *env-config.js* file that is then automatically copied together with the rest of the files to be served by the webserver. The *index.html* file (in the *main* folder of this repository) links already to *env-config.js*, which is read every time the user opens the application in a browser.
+
+>**IMPORTANT**: The *env.sh* script reads and automatically injects in `env-config.js` all environment variables prefixed with *IO_DEVELOPER_PORTAL*, for example *IO_DEVELOPER_PORTAL_PORT*.
+
+To read the variable values inside the frontend application, use `window._env_.IO_DEVELOPER_PORTAL_YOUR_VAR`.
+
 ### Deploy on AKS
 
 The AKS deployment is driven by a specific helm-chart. More informations are available in the [IO infrastructure post config repository](https://github.com/teamdigitale/io-infrastructure-post-config).
