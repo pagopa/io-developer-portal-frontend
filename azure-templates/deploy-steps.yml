@@ -22,7 +22,7 @@ parameters:
 steps:
   - template: ./make-build-steps.yml
     parameters:
-      make: predeploy_build
+      make: build
   
   # Upload files in /dist to the given container blob in the specified storage account 
   - ${{ if eq(parameters.deployType, 'deployToAzureBlob') }}:
