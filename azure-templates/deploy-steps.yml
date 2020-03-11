@@ -1,0 +1,36 @@
+# Azure DevOps template used to perform all the deploy steps including build. 
+
+parameters:
+  - name: 'deployType'
+    type: string
+    default: deployToAzureBlob
+    values:
+      - deployToAzureBlob
+  
+  - name: 'azureSubscription'
+    type: string
+    default: ''
+  
+  - name: 'storageAccountName'
+    type: string
+    default: ''
+  
+  - name: 'containerName'
+    type: string
+    default: ''
+
+steps:
+  - template: ./make-build-steps.yml
+    parameters:
+      make: predeploy_build
+  
+  # Upload files in /dist to the given container blob in the specified storage account 
+  - ${{ if eq(parameters.deployType, 'deployToAzureBlob') }}:
+    - task: AzureFileCopy@4
+      inputs:
+        sourcePath: '$(System.DefaultWorkingDirectory)/dist'
+        azureSubscription: '${{ parameters.azureSubscription }}'
+        destination: 'AzureBlob'
+        storage: '${{ parameters.storageAccountName }}'
+        containerName: '${{ parameters.containerName }}'
+      displayName: Deploy to container blob
