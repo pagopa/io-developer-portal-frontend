@@ -67,9 +67,9 @@ stages:
             
       # A2) Analyze source code to find errors with lint (use Linux VM)
       - job: lint
-          pool:
-            vmImage: 'ubuntu-latest'
-          steps:
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
           - template: azure-templates/make-build-steps.yml
             parameters:
               make: install_dependencies
