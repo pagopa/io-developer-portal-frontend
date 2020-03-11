@@ -132,7 +132,6 @@ stages:
       - Build
     jobs:
       - job: deploy_to_container
-        condition: and(succeeded(), eq(variables['STAGING_DEPLOY_MODE'], 'deploy_standard'))
         steps:
           - template: azure-templates/deploy-steps.yml
             parameters:
@@ -174,7 +173,6 @@ stages:
       - Build
     jobs:
       - job: deploy_to_container
-        condition: and(succeeded(), eq(variables['PRODUCTION_DEPLOY_MODE'], 'deploy_standard'))
         steps:
           - template: azure-templates/deploy-steps.yml
             parameters:
