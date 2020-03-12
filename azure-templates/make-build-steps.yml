@@ -1,0 +1,50 @@
+# Azure DevOps pipeline template used to checkout, install node dependencies and build the code. 
+#
+
+parameters:
+  - name: 'make'
+    type: string
+    default: install_dependencies
+    values:
+      - install_dependencies
+      - build
+
+steps:
+  - checkout: self
+    displayName: 'Checkout'
+        
+  - task: Cache@2
+    inputs:
+      key: 'yarn | "$(Agent.OS)" | yarn.lock'
+      restoreKeys: |
+        yarn | "$(Agent.OS)"
+        yarn
+      path: $(YARN_CACHE_FOLDER)
+    displayName: Cache yarn packages
+  
+  - task: UseNode@1
+    inputs:
+      version: $(NODE_VERSION)
+    displayName: 'Set up Node.js'
+        
+  - script: |
+      yarn install --frozen-lockfile
+    displayName: 'Install yarn dependencies'
+  
+    # Add variables to env-config.js using script env.sh and make the build
+  - ${{ if eq(parameters.make, 'build') }}:
+    - bash: |
+        echo 'IO_DEVELOPER_PORTAL_PORT: $IO_DEVELOPER_PORTAL_PORT'
+        echo 'IO_DEVELOPER_PORTAL_BACKEND: $IO_DEVELOPER_PORTAL_BACKEND'
+        echo 'IO_DEVELOPER_PORTAL_APIM_BASE_URL: $IO_DEVELOPER_PORTAL_APIM_BASE_URL'
+        echo 'IO_DEVELOPER_PORTAL_BASE_URL: $IO_DEVELOPER_PORTAL_BASE_URL'
+        echo 'IO_DEVELOPER_PORTAL_PUBLIC_PATH: $IO_DEVELOPER_PORTAL_PUBLIC_PATH'
+        chmod +x env.sh && source env.sh
+        yarn build
+      env:
+        IO_DEVELOPER_PORTAL_PORT: $(IO_DEVELOPER_PORTAL_PORT)
+        IO_DEVELOPER_PORTAL_BACKEND: $(IO_DEVELOPER_PORTAL_BACKEND)
+        IO_DEVELOPER_PORTAL_APIM_BASE_URL: $(IO_DEVELOPER_PORTAL_APIM_BASE_URL)
+        IO_DEVELOPER_PORTAL_BASE_URL: $(IO_DEVELOPER_PORTAL_BASE_URL)
+        IO_DEVELOPER_PORTAL_PUBLIC_PATH: $(IO_DEVELOPER_PORTAL_PUBLIC_PATH)
+      displayName: 'Build files'
