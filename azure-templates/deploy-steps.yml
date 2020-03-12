@@ -28,7 +28,7 @@ steps:
   - ${{ if eq(parameters.deployType, 'deployToAzureBlob') }}:
     - task: AzureFileCopy@4
       inputs:
-        sourcePath: '$(System.DefaultWorkingDirectory)/dist'
+        sourcePath: '$(System.DefaultWorkingDirectory)/dist/*'
         azureSubscription: '${{ parameters.azureSubscription }}'
         destination: 'AzureBlob'
         storage: '${{ parameters.storageAccountName }}'
