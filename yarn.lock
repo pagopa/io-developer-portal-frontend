@@ -5206,11 +5206,12 @@ ms@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
 
-msal@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/msal/-/msal-0.2.3.tgz#fab009a1864afb71b9685a6ff855b0c851cc1dfd"
+msal@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/msal/-/msal-1.2.1.tgz#08133e37ab0b9741866c89a3fadc55aadb980723"
+  integrity sha512-Zo28eyRtT/Un+zcpMfPtTPD+eo/OqzsRER0k5dyk8Mje/K1oLlaEOAgZHlJs59Y2xyuVg8OrcKqSn/1MeNjZYw==
   dependencies:
-    tslib "1.7.1"
+    tslib "^1.9.3"
 
 mute-stream@0.0.7:
   version "0.0.7"
@@ -8716,10 +8717,6 @@ trim@0.0.1:
 trough@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/trough/-/trough-1.0.3.tgz#e29bd1614c6458d44869fc28b255ab7857ef7c24"
-
-tslib@1.7.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.7.1.tgz#bc8004164691923a79fe8378bbeb3da2017538ec"
 
 tslib@1.9.0:
   version "1.9.0"
