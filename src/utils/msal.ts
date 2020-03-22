@@ -12,7 +12,8 @@ export async function getUserTokenOrRedirect(configuration: MsalConfig) {
   const userAgentApplication = new UserAgentApplication({
     auth: {
       clientId: configuration.clientID,
-      authority: configuration.authority
+      authority: configuration.authority,
+      validateAuthority: false
     },
     cache: {
       cacheLocation: "sessionStorage",
