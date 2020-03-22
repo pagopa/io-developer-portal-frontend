@@ -41,7 +41,7 @@ class Login extends Component<WithNamespaces, never> {
 
         const isApiAdmin =
           (apimUser.apimUser &&
-            new Set<string>(apimUser.apimUser.groupNames).has("ApiAdmin")) ===
+            new Set<string>(apimUser.apimUser.groupNames).has("apiadmin")) ===
           true;
 
         localStorage.setItem("isApiAdmin", isApiAdmin.toString());

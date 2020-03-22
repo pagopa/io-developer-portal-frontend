@@ -21,7 +21,7 @@ export async function getUserTokenOrRedirect(configuration: MsalConfig) {
   });
 
   userAgentApplication.handleRedirectCallback((authError, authResponse) => {
-    console.log("getUserTokenOrRedirect::params", authError, authResponse);
+    console.debug("getUserTokenOrRedirect::params", authError, authResponse);
   });
 
   const account = userAgentApplication.getAccount();
