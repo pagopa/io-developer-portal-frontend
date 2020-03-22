@@ -20,26 +20,28 @@ class Login extends Component<WithNamespaces, never> {
       const configuration = await getFromBackend<MsalConfig>({
         path: "configuration"
       });
-      const user = await getUserTokenOrRedirect(configuration);
+      const tokenAndAccount = await getUserTokenOrRedirect(configuration);
 
-      if (user) {
+      if (tokenAndAccount) {
         console.debug(
-          "Login::getUserTokenOrRedirect::userToken",
-          user.token,
-          user.user
+          "Login::getUserTokenOrRedirect::tokenAndAccount",
+          tokenAndAccount
         );
 
         // bearer token to call backend api
-        localStorage.setItem("userToken", user.token);
+        localStorage.setItem("userToken", tokenAndAccount.token);
         // profile data (email, name, ...)
-        localStorage.setItem("userData", JSON.stringify(user.user.idToken));
+        localStorage.setItem(
+          "userData",
+          JSON.stringify(tokenAndAccount.account.idToken)
+        );
 
         const apimUser = await getFromBackend<UserData>({ path: "user" });
         console.debug("Login::apimUser", apimUser);
 
         const isApiAdmin =
           (apimUser.apimUser &&
-            new Set<string>(apimUser.apimUser.groupNames).has("ApiAdmin")) ===
+            new Set<string>(apimUser.apimUser.groupNames).has("apiadmin")) ===
           true;
 
         localStorage.setItem("isApiAdmin", isApiAdmin.toString());

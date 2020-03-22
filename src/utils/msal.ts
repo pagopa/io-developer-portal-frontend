@@ -9,44 +9,45 @@ import { UserAgentApplication } from "msal";
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 
 export async function getUserTokenOrRedirect(configuration: MsalConfig) {
-  const userAgentApplication = new UserAgentApplication(
-    configuration.clientID,
-    configuration.authority,
-    (errorDesc, token, error, tokenType, userState) => {
-      console.debug(
-        "getDefaultUserAgentApplication::params",
-        errorDesc,
-        token,
-        error,
-        tokenType,
-        userState
-      );
+  const userAgentApplication = new UserAgentApplication({
+    auth: {
+      clientId: configuration.clientID,
+      authority: configuration.authority
+    },
+    cache: {
+      cacheLocation: "sessionStorage",
+      storeAuthStateInCookie: true
     }
-  );
+  });
 
-  const user = userAgentApplication.getUser();
-  console.debug("getUserTokenOrRedirect::user", user);
+  userAgentApplication.handleRedirectCallback((authError, authResponse) => {
+    console.debug("getUserTokenOrRedirect::params", authError, authResponse);
+  });
 
-  if (!user) {
+  const account = userAgentApplication.getAccount();
+  console.debug("getUserTokenOrRedirect::account", account);
+
+  if (!account) {
     console.debug("getUserTokenOrRedirect::loginRedirect");
-    return userAgentApplication.loginRedirect([...configuration.b2cScopes]);
+    return userAgentApplication.loginRedirect({
+      scopes: [...configuration.b2cScopes]
+    });
   }
 
   try {
-    const token = await userAgentApplication.acquireTokenSilent([
-      ...configuration.b2cScopes
-    ]);
-    console.debug("getUserTokenOrRedirect::token", token);
+    const authResponse = await userAgentApplication.acquireTokenSilent({
+      scopes: [...configuration.b2cScopes]
+    });
+    console.debug("getUserTokenOrRedirect::authResponse", authResponse);
 
-    if (!token) {
-      throw new Error("getUserTokenOrRedirect: cannot get user token");
-    }
     return {
-      token,
-      user: userAgentApplication.getUser()
+      token: authResponse.accessToken,
+      account: userAgentApplication.getAccount()
     };
   } catch (e) {
     console.debug("getUserTokenOrRedirect::error", e);
-    return userAgentApplication.loginRedirect([...configuration.b2cScopes]);
+    return userAgentApplication.loginRedirect({
+      scopes: [...configuration.b2cScopes]
+    });
   }
 }
