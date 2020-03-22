@@ -19,6 +19,23 @@ type SubscriptionServiceState = {
   service?: Service;
 };
 
+function inputValueMap(name: string, value: string | boolean) {
+  switch (name) {
+    case "max_allowed_payment_amount":
+      return Number(value);
+
+    case "authorized_cidrs": {
+      if (typeof value === "string") {
+        return value.split(";");
+      }
+      return [];
+    }
+
+    default:
+      return value;
+  }
+}
+
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
     service: undefined
@@ -40,7 +57,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const name = target.name;
     const serviceDecoding = Service.decode({
       ...this.state.service,
-      [name]: name === "max_allowed_payment_amount" ? Number(value) : value
+      [name]: inputValueMap(name, value)
     });
     if (serviceDecoding.isRight()) {
       this.setState({
@@ -66,6 +83,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           department_name: service.department_name,
           service_name: service.service_name,
           max_allowed_payment_amount: service.max_allowed_payment_amount,
+          authorized_cidrs: service.authorized_cidrs,
           is_visible: service.is_visible
         })
       }
@@ -133,6 +151,19 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                         ? service.max_allowed_payment_amount.toString()
                         : undefined
                     }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("authorized_ips")}</label>
+                  <input
+                    name="authorized_cidrs"
+                    type="text"
+                    defaultValue={service.authorized_cidrs.join(";")}
                     onChange={this.handleInputChange}
                     className="mb-4"
                   />
