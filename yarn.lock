@@ -953,7 +953,7 @@
     "@types/pouchdb-adapter-http" "*"
     "@types/pouchdb-adapter-idb" "*"
     "@types/pouchdb-adapter-leveldb" "*"
-    "@types/pouchdb-adapter-localStorage" "*"
+    "@types/pouchdb-adapter-localstorage" "*"
     "@types/pouchdb-adapter-memory" "*"
     "@types/pouchdb-adapter-node-websql" "*"
     "@types/pouchdb-adapter-websql" "*"
