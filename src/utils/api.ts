@@ -1,8 +1,8 @@
 import { getConfig } from "./config";
 
 export function getUrl() {
-  const { localStorage } = window;
-  const serviceEndpoint = localStorage.getItem("serviceEndpoint");
+  const { sessionStorage } = window;
+  const serviceEndpoint = sessionStorage.getItem("serviceEndpoint");
 
   return serviceEndpoint
     ? serviceEndpoint
@@ -14,7 +14,7 @@ const getOptions = (dbName: string | undefined) => {
     headers: {
       "Content-Type": "application/json",
       "Ocp-Apim-Subscription-Key":
-        dbName || localStorage.getItem("serviceKey") || ""
+        dbName || sessionStorage.getItem("serviceKey") || ""
     }
   };
 };

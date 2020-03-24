@@ -246,8 +246,8 @@ class Profile extends Component<Props, ProfileState> {
   }
 
   public onSetKey = (serviceKey: string, service: Service) => () => {
-    localStorage.setItem("serviceKey", serviceKey);
-    localStorage.setItem("service", JSON.stringify(service));
+    sessionStorage.setItem("serviceKey", serviceKey);
+    sessionStorage.setItem("service", JSON.stringify(service));
     window.location.replace("/compose");
   };
 

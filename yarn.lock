@@ -865,9 +865,9 @@
   dependencies:
     "@types/pouchdb-core" "*"
 
-"@types/pouchdb-adapter-localstorage@*":
+"@types/pouchdb-adapter-sessionStorage@*":
   version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@types/pouchdb-adapter-localstorage/-/pouchdb-adapter-localstorage-6.1.3.tgz#0dde02ba6b9d6073a295a20196563942ba9a54bd"
+  resolved "https://registry.yarnpkg.com/@types/pouchdb-adapter-sessionStorage/-/pouchdb-adapter-sessionStorage-6.1.3.tgz#0dde02ba6b9d6073a295a20196563942ba9a54bd"
   dependencies:
     "@types/pouchdb-core" "*"
 
@@ -953,7 +953,7 @@
     "@types/pouchdb-adapter-http" "*"
     "@types/pouchdb-adapter-idb" "*"
     "@types/pouchdb-adapter-leveldb" "*"
-    "@types/pouchdb-adapter-localstorage" "*"
+    "@types/pouchdb-adapter-sessionStorage" "*"
     "@types/pouchdb-adapter-memory" "*"
     "@types/pouchdb-adapter-node-websql" "*"
     "@types/pouchdb-adapter-websql" "*"

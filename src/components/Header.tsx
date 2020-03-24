@@ -14,7 +14,7 @@ import { getConfig } from "../utils/config";
 
 class Header extends Component<RouteComponentProps, never> {
   public onSignOut = () => {
-    localStorage.removeItem("userData");
+    sessionStorage.removeItem("userData");
 
     this.goHome();
   };

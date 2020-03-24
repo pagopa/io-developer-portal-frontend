@@ -4,7 +4,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Alert } from "design-react-kit";
 
-const { localStorage } = window;
+const { sessionStorage } = window;
 
 import { getFromBackend } from "../utils/backend";
 import { getUserTokenOrRedirect } from "../utils/msal";
@@ -29,9 +29,9 @@ class Login extends Component<WithNamespaces, never> {
         );
 
         // bearer token to call backend api
-        localStorage.setItem("userToken", tokenAndAccount.token);
+        sessionStorage.setItem("userToken", tokenAndAccount.token);
         // profile data (email, name, ...)
-        localStorage.setItem(
+        sessionStorage.setItem(
           "userData",
           JSON.stringify(tokenAndAccount.account.idToken)
         );
@@ -44,7 +44,7 @@ class Login extends Component<WithNamespaces, never> {
             new Set<string>(apimUser.apimUser.groupNames).has("apiadmin")) ===
           true;
 
-        localStorage.setItem("isApiAdmin", isApiAdmin.toString());
+        sessionStorage.setItem("isApiAdmin", isApiAdmin.toString());
         window.location.replace("/");
       }
     } catch (e) {
