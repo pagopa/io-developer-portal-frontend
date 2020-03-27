@@ -18,7 +18,7 @@ import WebFont from "webfontloader";
 
 import "moment/locale/it";
 
-const { localStorage } = window;
+const { sessionStorage } = window;
 
 import Aside from "./src/components/Aside";
 import Header from "./src/components/Header";
@@ -72,7 +72,7 @@ const PrivateRoute = ({
   <Route
     {...rest}
     render={props =>
-      !!localStorage.getItem("userData") ? (
+      !!sessionStorage.getItem("userData") ? (
         <Layout>
           <Component {...props} dbName={dbName} />
         </Layout>
@@ -89,7 +89,7 @@ const PrivateRoute = ({
 );
 
 const Root = () => {
-  const dbName = localStorage.getItem("serviceKey") || "anonymous";
+  const dbName = sessionStorage.getItem("serviceKey") || "anonymous";
 
   return (
     <PouchDB name={dbName}>

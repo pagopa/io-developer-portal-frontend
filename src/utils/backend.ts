@@ -5,10 +5,11 @@ export const IO_DEVELOPER_PORTAL_BACKEND = getConfig(
 );
 
 export const getBackendUrl = () =>
-  window.localStorage.getItem("backendEndpoint") || IO_DEVELOPER_PORTAL_BACKEND;
+  window.sessionStorage.getItem("backendEndpoint") ||
+  IO_DEVELOPER_PORTAL_BACKEND;
 
 const getOptions = (token?: string) => {
-  const defaultToken = localStorage.getItem("userToken");
+  const defaultToken = sessionStorage.getItem("userToken");
   return {
     headers: Object.assign(
       {},

@@ -15,7 +15,7 @@ import Database = PouchDB.Database;
 import ExistingDocument = PouchDB.Core.ExistingDocument;
 import { getConfig } from "../utils/config";
 
-const { localStorage } = window;
+const { sessionStorage } = window;
 type OwnProps = {
   db: Database<Server>;
 };
@@ -81,7 +81,7 @@ class Servers extends Component<Props, ServersState> {
   };
 
   public onServerSelect = (server: Server | ExistingDocument<Server>) => {
-    localStorage.setItem("serviceEndpoint", server.endpoint);
+    sessionStorage.setItem("serviceEndpoint", server.endpoint);
     this.setState({}); // Without this line the component is not rendered correctly
   };
 
@@ -129,7 +129,7 @@ class Servers extends Component<Props, ServersState> {
     const { servers } = this.state;
     const { t } = this.props;
 
-    const serviceEndpoint = localStorage.getItem("serviceEndpoint");
+    const serviceEndpoint = sessionStorage.getItem("serviceEndpoint");
 
     const defaultUrl = getConfig("IO_DEVELOPER_PORTAL_APIM_BASE_URL");
 
