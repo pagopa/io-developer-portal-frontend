@@ -9,14 +9,20 @@ import { Collapse, Nav, Navbar, NavItem, NavLink } from "design-react-kit";
 import Server from "react-icons/lib/fa/server";
 import SignOut from "react-icons/lib/fa/sign-out";
 
+import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { StorageContext } from "../context/storage";
+import { getFromBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
+import { getUserAgentApplication } from "../utils/msal";
 
 class Header extends Component<RouteComponentProps, never> {
-  public onSignOut = () => {
-    sessionStorage.removeItem("userData");
-
-    this.goHome();
+  public onSignOut = async () => {
+    const configuration = await getFromBackend<MsalConfig>({
+      path: "configuration"
+    });
+    const userAgentApplication = getUserAgentApplication(configuration);
+    sessionStorage.clear();
+    userAgentApplication.logout();
   };
 
   public goHome = () => {
