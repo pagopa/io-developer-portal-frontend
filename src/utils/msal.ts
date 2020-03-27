@@ -8,8 +8,8 @@
 import { UserAgentApplication } from "msal";
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 
-export async function getUserTokenOrRedirect(configuration: MsalConfig) {
-  const userAgentApplication = new UserAgentApplication({
+export function getUserAgentApplication(configuration: MsalConfig) {
+  return new UserAgentApplication({
     auth: {
       clientId: configuration.clientID,
       authority: configuration.authority,
@@ -20,6 +20,10 @@ export async function getUserTokenOrRedirect(configuration: MsalConfig) {
       storeAuthStateInCookie: true
     }
   });
+}
+
+export async function getUserTokenOrRedirect(configuration: MsalConfig) {
+  const userAgentApplication = getUserAgentApplication(configuration);
 
   userAgentApplication.handleRedirectCallback((authError, authResponse) => {
     console.debug("getUserTokenOrRedirect::params", authError, authResponse);
