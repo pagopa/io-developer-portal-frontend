@@ -32,6 +32,10 @@ export async function getUserTokenOrRedirect(configuration: MsalConfig) {
   const account = userAgentApplication.getAccount();
   console.debug("getUserTokenOrRedirect::account", account);
 
+  if (userAgentApplication.isCallback(window.location.hash)) {
+    return;
+  }
+
   if (!account) {
     console.debug("getUserTokenOrRedirect::loginRedirect");
     return userAgentApplication.loginRedirect({
@@ -51,7 +55,7 @@ export async function getUserTokenOrRedirect(configuration: MsalConfig) {
     };
   } catch (e) {
     console.debug("getUserTokenOrRedirect::error", e);
-    return userAgentApplication.loginRedirect({
+    return userAgentApplication.acquireTokenRedirect({
       scopes: [...configuration.b2cScopes]
     });
   }
