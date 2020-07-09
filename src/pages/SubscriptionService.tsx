@@ -24,7 +24,8 @@ function inputValueMap(name: string, value: string | boolean) {
     case "max_allowed_payment_amount":
       return Number(value);
 
-    case "authorized_cidrs": {
+    case "authorized_cidrs":
+    case "authorized_recipients": {
       if (typeof value === "string") {
         return value.split(";");
       }
@@ -84,6 +85,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           service_name: service.service_name,
           max_allowed_payment_amount: service.max_allowed_payment_amount,
           authorized_cidrs: service.authorized_cidrs,
+          authorized_recipients: service.authorized_recipients,
           is_visible: service.is_visible
         })
       }
@@ -172,6 +174,19 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
               {storage.isApiAdmin && (
                 <div>
+                  <label className="m-0">{t("authorized_recipients")}</label>
+                  <input
+                    name="authorized_recipients"
+                    type="text"
+                    defaultValue={service.authorized_recipients.join(";")}
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
                   <input
                     name="is_visible"
                     type="checkbox"
@@ -190,7 +205,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
             {service.authorized_recipients.length > 0 && (
               <div className="mb-3">
-                {t("authorized_recipients")}: {service.authorized_recipients}
+                {t("authorized_recipients")}:{" "}
+                {service.authorized_recipients.join(";")}
               </div>
             )}
 
