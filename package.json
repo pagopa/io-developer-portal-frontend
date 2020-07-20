@@ -31,7 +31,7 @@
     "batch": "^0.6.1",
     "bootstrap-italia": "^0.9.6",
     "design-react-kit": "^2.4.0",
-    "i18next": "^14.1.1",
+    "i18next": "^19.6.0",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "msal": "^1.2.1",
