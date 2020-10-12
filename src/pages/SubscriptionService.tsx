@@ -8,7 +8,8 @@ import { RouteComponentProps } from "react-router";
 import { StorageContext } from "../context/storage";
 import { getFromBackend, putToBackend } from "../utils/backend";
 
-import { Service } from "../../generated/definitions/backend/Service";
+import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 
 type OwnProps = {};
 type Props = RouteComponentProps<{ service_id: string }> &
@@ -67,6 +68,21 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     }
   };
 
+  public handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    const serviceDecoding = Service.decode({
+      ...this.state.service,
+      [name]: inputValueMap(name, value)
+    });
+    if (serviceDecoding.isRight()) {
+      this.setState({
+        service: serviceDecoding.value
+      });
+    }
+  };
+
   public handleSubmit = async () => {
     const serviceDecoding = Service.decode(this.state.service);
     if (serviceDecoding.isLeft()) {
@@ -86,7 +102,49 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           max_allowed_payment_amount: service.max_allowed_payment_amount,
           authorized_cidrs: service.authorized_cidrs,
           authorized_recipients: service.authorized_recipients,
-          is_visible: service.is_visible
+          is_visible: service.is_visible,
+          description: service.service_metadata
+            ? service.service_metadata.description
+            : undefined,
+          web_url: service.service_metadata
+            ? service.service_metadata.web_url
+            : undefined,
+          app_ios: service.service_metadata
+            ? service.service_metadata.app_ios
+            : undefined,
+          app_android: service.service_metadata
+            ? service.service_metadata.app_android
+            : undefined,
+          tos_url: service.service_metadata
+            ? service.service_metadata.tos_url
+            : undefined,
+          privacy_url: service.service_metadata
+            ? service.service_metadata.privacy_url
+            : undefined,
+          address: service.service_metadata
+            ? service.service_metadata.address
+            : undefined,
+          phone: service.service_metadata
+            ? service.service_metadata.phone
+            : undefined,
+          email: service.service_metadata
+            ? service.service_metadata.email
+            : undefined,
+          pec: service.service_metadata
+            ? service.service_metadata.pec
+            : undefined,
+          cta: service.service_metadata
+            ? service.service_metadata.cta
+            : undefined,
+          token_name: service.service_metadata
+            ? service.service_metadata.token_name
+            : undefined,
+          support_url: service.service_metadata
+            ? service.service_metadata.support_url
+            : undefined,
+          scope: service.service_metadata
+            ? service.service_metadata.scope
+            : undefined
         })
       }
     });
@@ -182,6 +240,258 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onChange={this.handleInputChange}
                     className="mb-4"
                   />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("description")}</label>
+                  <input
+                    name="description"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.description
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("web_url")}</label>
+                  <input
+                    name="web_url"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.web_url
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("app_ios")}</label>
+                  <input
+                    name="app_ios"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.app_ios
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("app_android")}</label>
+                  <input
+                    name="app_android"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.app_android
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("tos_url")}</label>
+                  <input
+                    name="tos_url"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.tos_url
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("privacy_url")}</label>
+                  <input
+                    name="privacy_url"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.privacy_url
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("address")}</label>
+                  <input
+                    name="address"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.address
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("phone")}</label>
+                  <input
+                    name="phone"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.phone
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("email")}</label>
+                  <input
+                    name="email"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.email
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("pec")}</label>
+                  <input
+                    name="pec"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.pec
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("cta")}</label>
+                  <input
+                    name="cta"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.cta
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("token_name")}</label>
+                  <input
+                    name="token_name"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.token_name
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("support_url")}</label>
+                  <input
+                    name="support_url"
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.support_url
+                        : undefined
+                    }
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div>
+                  <label className="m-0">{t("scope")} </label>
+                  <select
+                    name="scope"
+                    value={
+                      service.service_metadata
+                        ? service.service_metadata.scope
+                        : undefined
+                    }
+                    onChange={this.handleSelectChange}
+                    className="mb-4"
+                  >
+                    <option
+                      aria-selected="true"
+                      key={ServiceScopeEnum.NATIONAL}
+                      value={ServiceScopeEnum.NATIONAL}
+                    >
+                      {ServiceScopeEnum.NATIONAL}
+                    </option>
+                    <option
+                      aria-selected="true"
+                      key={ServiceScopeEnum.LOCAL}
+                      value={ServiceScopeEnum.LOCAL}
+                    >
+                      {ServiceScopeEnum.LOCAL}
+                    </option>
+                  </select>
                 </div>
               )}
 
