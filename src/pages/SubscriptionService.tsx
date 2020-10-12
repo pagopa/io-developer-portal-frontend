@@ -103,48 +103,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           authorized_cidrs: service.authorized_cidrs,
           authorized_recipients: service.authorized_recipients,
           is_visible: service.is_visible,
-          description: service.service_metadata
-            ? service.service_metadata.description
-            : undefined,
-          web_url: service.service_metadata
-            ? service.service_metadata.web_url
-            : undefined,
-          app_ios: service.service_metadata
-            ? service.service_metadata.app_ios
-            : undefined,
-          app_android: service.service_metadata
-            ? service.service_metadata.app_android
-            : undefined,
-          tos_url: service.service_metadata
-            ? service.service_metadata.tos_url
-            : undefined,
-          privacy_url: service.service_metadata
-            ? service.service_metadata.privacy_url
-            : undefined,
-          address: service.service_metadata
-            ? service.service_metadata.address
-            : undefined,
-          phone: service.service_metadata
-            ? service.service_metadata.phone
-            : undefined,
-          email: service.service_metadata
-            ? service.service_metadata.email
-            : undefined,
-          pec: service.service_metadata
-            ? service.service_metadata.pec
-            : undefined,
-          cta: service.service_metadata
-            ? service.service_metadata.cta
-            : undefined,
-          token_name: service.service_metadata
-            ? service.service_metadata.token_name
-            : undefined,
-          support_url: service.service_metadata
-            ? service.service_metadata.support_url
-            : undefined,
-          scope: service.service_metadata
-            ? service.service_metadata.scope
-            : undefined
+          service_metadata: service.service_metadata
         })
       }
     });
