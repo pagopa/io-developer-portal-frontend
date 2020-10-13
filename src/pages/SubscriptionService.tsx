@@ -57,30 +57,20 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    const serviceDecoding = Service.decode({
+    Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
-    });
-    if (serviceDecoding.isRight()) {
-      this.setState({
-        service: serviceDecoding.value
-      });
-    }
+    }).map(service => this.setState({ service }));
   };
 
   public handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    const serviceDecoding = Service.decode({
+    const {
+      target: { name, value }
+    } = event;
+    Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
-    });
-    if (serviceDecoding.isRight()) {
-      this.setState({
-        service: serviceDecoding.value
-      });
-    }
+    }).map(service => this.setState({ service }));
   };
 
   public handleSubmit = async () => {
