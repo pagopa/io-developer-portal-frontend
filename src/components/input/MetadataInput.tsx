@@ -32,7 +32,7 @@ const MetadataInput = ({
             <input
               name={k}
               type="text"
-              defaultValue={Reflect.get(service_metadata, k)}
+              defaultValue={Object(service_metadata)[k]}
               onChange={onChangeText}
               className="mb-4"
             />
