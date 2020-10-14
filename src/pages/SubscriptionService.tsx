@@ -195,7 +195,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               <MetadataInput
                 onChangeText={this.handleInputChange}
                 onChangeSelect={this.handleSelectChange}
-                service={service}
+                service_metadata={service.service_metadata}
                 isApiAdmin={storage.isApiAdmin}
               />
 

@@ -1,12 +1,13 @@
 import React, { ChangeEvent } from "react";
 
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
+
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 type OwnProps = {
-  service: Service;
+  service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
   onChangeText: (event: ChangeEvent<HTMLInputElement>) => void;
   onChangeSelect: (event: ChangeEvent<HTMLSelectElement>) => void;
@@ -15,7 +16,7 @@ type OwnProps = {
 type Props = WithNamespaces & OwnProps;
 
 const MetadataInput = ({
-  service: { service_metadata },
+  service_metadata,
   onChangeText,
   onChangeSelect,
   isApiAdmin,
