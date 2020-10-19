@@ -97,7 +97,21 @@ const it = {
     eurocents: "eurocents",
     edit: "Modifica i dati del servizio",
     save: "Salva i dati del servizio",
-    title: "Servizio"
+    title: "Servizio",
+    description: "Descrizione",
+    web_url: "Web Url",
+    app_ios: "App IOS",
+    app_android: "App Android",
+    tos_url: "Tos Url",
+    privacy_url: "Privacy Url",
+    address: "Address",
+    phone: "Phone",
+    email: "Email",
+    pec: "Pec",
+    cta: "Cta",
+    token_name: "Token Name",
+    support_url: "Support Url",
+    scope: "Scope"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",

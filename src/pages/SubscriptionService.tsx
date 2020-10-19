@@ -8,7 +8,8 @@ import { RouteComponentProps } from "react-router";
 import { StorageContext } from "../context/storage";
 import { getFromBackend, putToBackend } from "../utils/backend";
 
-import { Service } from "../../generated/definitions/backend/Service";
+import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import MetadataInput from "../components/input/MetadataInput";
 
 type OwnProps = {};
 type Props = RouteComponentProps<{ service_id: string }> &
@@ -56,15 +57,20 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    const serviceDecoding = Service.decode({
+    Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
-    });
-    if (serviceDecoding.isRight()) {
-      this.setState({
-        service: serviceDecoding.value
-      });
-    }
+    }).map(service => this.setState({ service }));
+  };
+
+  public handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const {
+      target: { name, value }
+    } = event;
+    Service.decode({
+      ...this.state.service,
+      [name]: inputValueMap(name, value)
+    }).map(service => this.setState({ service }));
   };
 
   public handleSubmit = async () => {
@@ -86,7 +92,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           max_allowed_payment_amount: service.max_allowed_payment_amount,
           authorized_cidrs: service.authorized_cidrs,
           authorized_recipients: service.authorized_recipients,
-          is_visible: service.is_visible
+          is_visible: service.is_visible,
+          service_metadata: service.service_metadata
         })
       }
     });
@@ -184,6 +191,13 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   />
                 </div>
               )}
+
+              <MetadataInput
+                onChangeText={this.handleInputChange}
+                onChangeSelect={this.handleSelectChange}
+                service_metadata={service.service_metadata}
+                isApiAdmin={storage.isApiAdmin}
+              />
 
               {storage.isApiAdmin && (
                 <div>
