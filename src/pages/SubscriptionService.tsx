@@ -8,10 +8,10 @@ import { RouteComponentProps } from "react-router";
 import { StorageContext } from "../context/storage";
 import { getFromBackend, putToBackend } from "../utils/backend";
 
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
-import MetadataInput from "../components/input/MetadataInput";
 import { Alert } from "design-react-kit";
+import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
+import MetadataInput from "../components/input/MetadataInput";
 
 type OwnProps = {};
 type Props = RouteComponentProps<{ service_id: string }> &
