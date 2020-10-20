@@ -10,6 +10,8 @@ import { getFromBackend, putToBackend } from "../utils/backend";
 
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import MetadataInput from "../components/input/MetadataInput";
+import { Alert } from "design-react-kit";
+import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 
 type OwnProps = {};
 type Props = RouteComponentProps<{ service_id: string }> &
@@ -18,6 +20,7 @@ type Props = RouteComponentProps<{ service_id: string }> &
 
 type SubscriptionServiceState = {
   service?: Service;
+  isValid?: boolean;
 };
 
 function inputValueMap(name: string, value: string | boolean) {
@@ -40,14 +43,22 @@ function inputValueMap(name: string, value: string | boolean) {
 
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
-    service: undefined
+    service: undefined,
+    isValid: true
   };
 
   public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
-    const service = await getFromBackend<Service>({
+    const serviceFromBackend = await getFromBackend<Service>({
       path: `services/${serviceId}`
     });
+
+    const service = {
+      ...serviceFromBackend,
+      service_metadata: serviceFromBackend.service_metadata
+        ? serviceFromBackend.service_metadata
+        : { scope: ServiceScopeEnum.LOCAL }
+    };
 
     this.setState({
       service
@@ -61,7 +72,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
-    }).map(service => this.setState({ service }));
+    })
+      .map(service => this.setState({ service, isValid: true }))
+      .mapLeft(() => this.setState({ isValid: false }));
   };
 
   public handleMetadataChange = (
@@ -78,13 +91,15 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           : undefined),
         [name]: inputValueMap(name, value)
       }
-    }).map(service => this.setState({ service }));
+    })
+      .map(service => this.setState({ service, isValid: true }))
+      .mapLeft(() => this.setState({ isValid: value === "" }));
   };
 
   public handleSubmit = async () => {
     const serviceDecoding = Service.decode(this.state.service);
     if (serviceDecoding.isLeft()) {
-      // TODO: handle error
+      this.setState({ isValid: false });
       throw new Error("Wrong parameters format");
     }
     const service = serviceDecoding.value;
@@ -108,18 +123,19 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   };
 
   public render() {
-    const service = this.state.service;
+    const { service, isValid } = this.state;
     const { t } = this.props;
 
     return service ? (
       <StorageContext.Consumer>
         {storage => (
           <div>
+            {!isValid && <Alert color="danger">Campi non validi</Alert>}
             <h4>
               {t("title")} {service.service_id}
             </h4>
             <form className="mb-5 mt-1">
-              <label className="m-0">{t("name")}</label>
+              <label className="m-0">{t("name")}*</label>
               <input
                 name="service_name"
                 type="text"
@@ -128,7 +144,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 className="mb-4"
               />
 
-              <label className="m-0">{t("department")}</label>
+              <label className="m-0">{t("department")}*</label>
               <input
                 name="department_name"
                 type="text"
@@ -137,7 +153,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 className="mb-4"
               />
 
-              <label className="m-0">{t("organization")}</label>
+              <label className="m-0">{t("organization")}*</label>
               <input
                 name="organization_name"
                 type="text"
@@ -146,7 +162,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 className="mb-4"
               />
 
-              <label className="m-0">{t("organization_fiscal_code")}</label>
+              <label className="m-0">{t("organization_fiscal_code")}*</label>
               <input
                 name="organization_fiscal_code"
                 type="text"
@@ -189,7 +205,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
               {storage.isApiAdmin && (
                 <div>
-                  <label className="m-0">{t("authorized_recipients")}</label>
+                  <label className="m-0">{t("authorized_recipients")}*</label>
                   <input
                     name="authorized_recipients"
                     type="text"
@@ -219,7 +235,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 </div>
               )}
 
-              <Button color="primary" onClick={this.handleSubmit}>
+              <Button
+                color="primary"
+                disabled={!isValid}
+                onClick={this.handleSubmit}
+              >
                 {t("save")}
               </Button>
             </form>

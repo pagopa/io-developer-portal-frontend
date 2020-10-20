@@ -43,13 +43,11 @@ const MetadataInput = ({
           </div>
         ))}
       <div>
-        <label className="m-0">{t("scope")} </label>
+        <label className="m-0">{t("scope")}*</label>
         <select
           name="scope"
-          value={
-            service_metadata ? service_metadata.scope : ServiceScopeEnum.LOCAL
-          }
-          className="mb-4"
+          value={service_metadata ? service_metadata.scope : undefined}
+          className="form-control mb-4"
           onChange={onChange}
         >
           <option
@@ -58,11 +56,7 @@ const MetadataInput = ({
           >
             {ServiceScopeEnum.NATIONAL}
           </option>
-          <option
-            aria-selected="true"
-            key={ServiceScopeEnum.LOCAL}
-            value={ServiceScopeEnum.LOCAL}
-          >
+          <option key={ServiceScopeEnum.LOCAL} value={ServiceScopeEnum.LOCAL}>
             {ServiceScopeEnum.LOCAL}
           </option>
         </select>
