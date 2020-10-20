@@ -48,6 +48,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const service = await getFromBackend<Service>({
       path: `services/${serviceId}`
     });
+
     this.setState({
       service
     });
@@ -63,13 +64,20 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     }).map(service => this.setState({ service }));
   };
 
-  public handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  public handleMetadataChange = (
+    event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) => {
     const {
       target: { name, value }
     } = event;
     Service.decode({
       ...this.state.service,
-      [name]: inputValueMap(name, value)
+      service_metadata: {
+        ...(this.state.service && this.state.service.service_metadata
+          ? this.state.service.service_metadata
+          : undefined),
+        [name]: inputValueMap(name, value)
+      }
     }).map(service => this.setState({ service }));
   };
 
@@ -193,8 +201,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               )}
 
               <MetadataInput
-                onChangeText={this.handleInputChange}
-                onChangeSelect={this.handleSelectChange}
+                onChange={this.handleMetadataChange}
                 service_metadata={service.service_metadata}
                 isApiAdmin={storage.isApiAdmin}
               />

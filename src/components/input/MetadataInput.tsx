@@ -9,23 +9,26 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
-  onChangeText: (event: ChangeEvent<HTMLInputElement>) => void;
-  onChangeSelect: (event: ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
 };
 
 type Props = WithNamespaces & OwnProps;
 
+const metadataKeys = ServiceMetadata.type.types.reduce(
+  (p, e) => [...p, ...Object.keys(e.props)],
+  [] as readonly string[]
+);
+
 const MetadataInput = ({
   service_metadata,
-  onChangeText,
-  onChangeSelect,
+  onChange,
   isApiAdmin,
   t
 }: Props) => {
-  return isApiAdmin && service_metadata ? (
+  return isApiAdmin ? (
     // All input text Metadata (except 'scope' that is an enumeration)
     <div>
-      {Object.keys(service_metadata)
+      {metadataKeys
         .filter(k => k !== "scope")
         .map((k, i) => (
           <div key={i}>
@@ -34,7 +37,7 @@ const MetadataInput = ({
               name={k}
               type="text"
               defaultValue={Object(service_metadata)[k]}
-              onChange={onChangeText}
+              onChange={onChange}
               className="mb-4"
             />
           </div>
@@ -43,12 +46,13 @@ const MetadataInput = ({
         <label className="m-0">{t("scope")} </label>
         <select
           name="scope"
-          value={service_metadata.scope}
+          value={
+            service_metadata ? service_metadata.scope : ServiceScopeEnum.LOCAL
+          }
           className="mb-4"
-          onChange={onChangeSelect}
+          onChange={onChange}
         >
           <option
-            aria-selected="true"
             key={ServiceScopeEnum.NATIONAL}
             value={ServiceScopeEnum.NATIONAL}
           >
