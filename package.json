@@ -25,7 +25,8 @@
     "parcel:serve": "parcel serve -p 8080 index.html --public-url / --no-minify ./env-config.js",
     "build": "npm-run-all parcel:build",
     "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "prepublish": "npm run snyk-protect",
+    "test": "jest"
   },
   "dependencies": {
     "batch": "^0.6.1",
