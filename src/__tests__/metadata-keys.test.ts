@@ -6,6 +6,6 @@ describe("Metadata keys for subscription update", () => {
       Array.isArray(MetadataKeys) &&
         MetadataKeys.length &&
         MetadataKeys.every(key => typeof key === "string")
-    );
+    ).toBeTruthy();
   });
 });
