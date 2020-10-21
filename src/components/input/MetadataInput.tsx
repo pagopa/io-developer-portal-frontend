@@ -14,7 +14,11 @@ type OwnProps = {
 
 type Props = WithNamespaces & OwnProps;
 
-const metadataKeys = ServiceMetadata.type.types.reduce(
+/**
+ * Array containing all keys of ServiceMetadata, and for each of them an input is created inside the form.
+ * See https://github.com/pagopa/io-developer-portal-frontend/pull/139
+ */
+export const MetadataKeys = ServiceMetadata.type.types.reduce(
   (p, e) => [...p, ...Object.keys(e.props)],
   [] as readonly string[]
 );
@@ -28,20 +32,18 @@ const MetadataInput = ({
   return isApiAdmin ? (
     // All input text Metadata (except 'scope' that is an enumeration)
     <div>
-      {metadataKeys
-        .filter(k => k !== "scope")
-        .map((k, i) => (
-          <div key={i}>
-            <label className="m-0">{t(k)}</label>
-            <input
-              name={k}
-              type="text"
-              defaultValue={Object(service_metadata)[k]}
-              onChange={onChange}
-              className="mb-4"
-            />
-          </div>
-        ))}
+      {MetadataKeys.filter(k => k !== "scope").map((k, i) => (
+        <div key={i}>
+          <label className="m-0">{t(k)}</label>
+          <input
+            name={k}
+            type="text"
+            defaultValue={Object(service_metadata)[k]}
+            onChange={onChange}
+            className="mb-4"
+          />
+        </div>
+      ))}
       <div>
         <label className="m-0">{t("scope")}*</label>
         <select
