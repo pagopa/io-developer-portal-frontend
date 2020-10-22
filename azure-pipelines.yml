@@ -68,7 +68,6 @@ stages:
             
       # A2) Analyze source code to find errors with lint (use Linux VM)
       - job: lint
-        condition: false
         pool:
           vmImage: 'ubuntu-latest'
         steps:

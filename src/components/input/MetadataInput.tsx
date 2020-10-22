@@ -9,56 +9,56 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
-  onChangeText: (event: ChangeEvent<HTMLInputElement>) => void;
-  onChangeSelect: (event: ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
 };
 
 type Props = WithNamespaces & OwnProps;
 
+/**
+ * Array containing all keys of ServiceMetadata, and for each of them an input is created inside the form.
+ * See https://github.com/pagopa/io-developer-portal-frontend/pull/139
+ */
+export const MetadataKeys = ServiceMetadata.type.types.reduce(
+  (p, e) => [...p, ...Object.keys(e.props)],
+  [] as readonly string[]
+);
+
 const MetadataInput = ({
   service_metadata,
-  onChangeText,
-  onChangeSelect,
+  onChange,
   isApiAdmin,
   t
 }: Props) => {
-  return isApiAdmin && service_metadata ? (
+  return isApiAdmin ? (
     // All input text Metadata (except 'scope' that is an enumeration)
     <div>
-      {Object.keys(service_metadata)
-        .filter(k => k !== "scope")
-        .map((k, i) => (
-          <div key={i}>
-            <label className="m-0">{t(k)}</label>
-            <input
-              name={k}
-              type="text"
-              defaultValue={Object(service_metadata)[k]}
-              onChange={onChangeText}
-              className="mb-4"
-            />
-          </div>
-        ))}
+      {MetadataKeys.filter(k => k !== "scope").map((k, i) => (
+        <div key={i}>
+          <label className="m-0">{t(k)}</label>
+          <input
+            name={k}
+            type="text"
+            defaultValue={Object(service_metadata)[k]}
+            onChange={onChange}
+            className="mb-4"
+          />
+        </div>
+      ))}
       <div>
-        <label className="m-0">{t("scope")} </label>
+        <label className="m-0">{t("scope")}*</label>
         <select
           name="scope"
-          value={service_metadata.scope}
-          className="mb-4"
-          onChange={onChangeSelect}
+          value={service_metadata ? service_metadata.scope : undefined}
+          className="form-control mb-4"
+          onChange={onChange}
         >
           <option
-            aria-selected="true"
             key={ServiceScopeEnum.NATIONAL}
             value={ServiceScopeEnum.NATIONAL}
           >
             {ServiceScopeEnum.NATIONAL}
           </option>
-          <option
-            aria-selected="true"
-            key={ServiceScopeEnum.LOCAL}
-            value={ServiceScopeEnum.LOCAL}
-          >
+          <option key={ServiceScopeEnum.LOCAL} value={ServiceScopeEnum.LOCAL}>
             {ServiceScopeEnum.LOCAL}
           </option>
         </select>
