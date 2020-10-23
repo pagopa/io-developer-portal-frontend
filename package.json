@@ -106,7 +106,10 @@
     },
     "testMatch": [
       "**/__tests__/*.ts"
-    ]
+    ],
+    "moduleNameMapper": {
+      ".*css$": "<rootDir>/src/components/input/__tests__/mock.css"
+    }
   },
   "snyk": true
 }
