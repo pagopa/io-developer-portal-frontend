@@ -5,6 +5,8 @@ import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { LIMITS } from "../../utils/constants";
+import MetadataDescriptionEditor from "./MetadataDescriptionEditor";
 
 type OwnProps = {
   service_metadata?: ServiceMetadata;
@@ -13,6 +15,8 @@ type OwnProps = {
 };
 
 type Props = WithNamespaces & OwnProps;
+
+const { MARKDOWN } = LIMITS;
 
 /**
  * Array containing all keys of ServiceMetadata, and for each of them an input is created inside the form.
@@ -23,6 +27,10 @@ export const MetadataKeys = ServiceMetadata.type.types.reduce(
   [] as readonly string[]
 );
 
+const InputTextMetadataKeys = MetadataKeys.filter(
+  k => k !== "scope" && k !== "description"
+);
+
 const MetadataInput = ({
   service_metadata,
   onChange,
@@ -30,9 +38,22 @@ const MetadataInput = ({
   t
 }: Props) => {
   return isApiAdmin ? (
-    // All input text Metadata (except 'scope' that is an enumeration)
+    /* - Input text: all metadata except 'scope' and 'descrition'
+     * - Text area: 'descrition' according to MetadataDescritionEditor
+     * - Select: 'scope' that is an enumeration
+     */
     <div>
-      {MetadataKeys.filter(k => k !== "scope").map((k, i) => (
+      <MetadataDescriptionEditor
+        markdown={
+          service_metadata && service_metadata.description
+            ? service_metadata.description
+            : ""
+        }
+        markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
+        isMarkdownValid={true}
+        onChangeMarkdown={onChange}
+      />
+      {InputTextMetadataKeys.map((k, i) => (
         <div key={i}>
           <label className="m-0">{t(k)}</label>
           <input
