@@ -3,7 +3,7 @@ import React, { ChangeEvent, Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import { Input } from "design-react-kit";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { NodeType } from "react-markdown";
 import { LIMITS } from "../../utils/constants";
 const { MARKDOWN } = LIMITS;
 
@@ -22,7 +22,34 @@ class MetadataDescriptionEditor extends Component<Props, never> {
   public render() {
     const { markdown, t } = this.props;
     const { onChangeMarkdown } = this.props;
-
+    // tslint:disable-next-line:readonly-array
+    const allowedTypes: NodeType[] = [
+      "root",
+      "break",
+      "paragraph",
+      "emphasis",
+      "strong",
+      // "thematicBreak",
+      // "blockquote",
+      "delete",
+      // "link",
+      // "image",
+      // "linkReference",
+      // "imageReference",
+      // "table",
+      // "tableHead",
+      // "tableBody",
+      // "tableRow",
+      // "tableCell",
+      "list",
+      "listItem",
+      // "definition",
+      "heading"
+      // "inlineCode",
+      // "code",
+      // "html",
+      // "virtualHtml"
+    ];
     return (
       <section className="pages--container">
         <section className="h-90 d-flex flex-column">
@@ -43,33 +70,7 @@ class MetadataDescriptionEditor extends Component<Props, never> {
               className="description-editor--message--preview form-control card shadow h-100 flex-1"
               source={markdown}
               unwrapDisallowed={true}
-              allowedTypes={[
-                "root",
-                "break",
-                "paragraph",
-                "emphasis",
-                "strong",
-                // "thematicBreak",
-                // "blockquote",
-                "delete",
-                // "link",
-                // "image",
-                // "linkReference",
-                // "imageReference",
-                // "table",
-                // "tableHead",
-                // "tableBody",
-                // "tableRow",
-                // "tableCell",
-                "list",
-                "listItem",
-                // "definition",
-                "heading"
-                // "inlineCode",
-                // "code",
-                // "html",
-                // "virtualHtml"
-              ]}
+              allowedTypes={allowedTypes}
             />
           </section>
         </section>

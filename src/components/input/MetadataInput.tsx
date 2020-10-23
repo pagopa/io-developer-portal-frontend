@@ -27,9 +27,11 @@ export const MetadataKeys = ServiceMetadata.type.types.reduce(
   [] as readonly string[]
 );
 
-const InputTextMetadataKeys = MetadataKeys.filter(
-  k => k !== "scope" && k !== "description"
-);
+export const SortedMetadata: readonly string[] = [
+  "description",
+  ...MetadataKeys.filter(k => k !== "description" && k !== "scope"),
+  "scope"
+];
 
 const MetadataInput = ({
   service_metadata,
@@ -43,47 +45,54 @@ const MetadataInput = ({
      * - Select: 'scope' that is an enumeration
      */
     <div>
-      <MetadataDescriptionEditor
-        markdown={
-          service_metadata && service_metadata.description
-            ? service_metadata.description
-            : ""
-        }
-        markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
-        isMarkdownValid={true}
-        onChangeMarkdown={onChange}
-      />
-      {InputTextMetadataKeys.map((k, i) => (
-        <div key={i}>
-          <label className="m-0">{t(k)}</label>
-          <input
-            name={k}
-            type="text"
-            defaultValue={Object(service_metadata)[k]}
-            onChange={onChange}
-            className="mb-4"
+      {SortedMetadata.map((k, i) =>
+        k === "scope" ? (
+          <div>
+            <label className="m-0">{t("scope")}*</label>
+            <select
+              name="scope"
+              value={service_metadata ? service_metadata.scope : undefined}
+              className="form-control mb-4"
+              onChange={onChange}
+            >
+              <option
+                key={ServiceScopeEnum.NATIONAL}
+                value={ServiceScopeEnum.NATIONAL}
+              >
+                {ServiceScopeEnum.NATIONAL}
+              </option>
+              <option
+                key={ServiceScopeEnum.LOCAL}
+                value={ServiceScopeEnum.LOCAL}
+              >
+                {ServiceScopeEnum.LOCAL}
+              </option>
+            </select>
+          </div>
+        ) : k === "description" ? (
+          <MetadataDescriptionEditor
+            markdown={
+              service_metadata && service_metadata.description
+                ? service_metadata.description
+                : ""
+            }
+            markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
+            isMarkdownValid={true}
+            onChangeMarkdown={onChange}
           />
-        </div>
-      ))}
-      <div>
-        <label className="m-0">{t("scope")}*</label>
-        <select
-          name="scope"
-          value={service_metadata ? service_metadata.scope : undefined}
-          className="form-control mb-4"
-          onChange={onChange}
-        >
-          <option
-            key={ServiceScopeEnum.NATIONAL}
-            value={ServiceScopeEnum.NATIONAL}
-          >
-            {ServiceScopeEnum.NATIONAL}
-          </option>
-          <option key={ServiceScopeEnum.LOCAL} value={ServiceScopeEnum.LOCAL}>
-            {ServiceScopeEnum.LOCAL}
-          </option>
-        </select>
-      </div>
+        ) : (
+          <div key={i}>
+            <label className="m-0">{t(k)}</label>
+            <input
+              name={k}
+              type="text"
+              defaultValue={Object(service_metadata)[k]}
+              onChange={onChange}
+              className="mb-4"
+            />
+          </div>
+        )
+      )}
     </div>
   ) : null;
 };
