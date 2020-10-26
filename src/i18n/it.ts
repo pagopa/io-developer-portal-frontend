@@ -111,7 +111,8 @@ const it = {
     cta: "Cta",
     token_name: "Token Name",
     support_url: "Support Url",
-    scope: "Scope"
+    scope: "Scope",
+    metadata: "Metadati"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",

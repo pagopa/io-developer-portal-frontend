@@ -83,17 +83,16 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const {
       target: { name, value }
     } = event;
+    const inputValue = inputValueMap(name, value);
     Service.decode({
       ...this.state.service,
       service_metadata: {
         ...(this.state.service && this.state.service.service_metadata
           ? this.state.service.service_metadata
           : undefined),
-        [name]: inputValueMap(name, value)
+        [name]: inputValue === "" ? undefined : inputValue
       }
-    })
-      .map(service => this.setState({ service, isValid: true }))
-      .mapLeft(() => this.setState({ isValid: value === "" }));
+    }).map(service => this.setState({ service }));
   };
 
   public handleSubmit = async () => {
@@ -135,105 +134,109 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               {t("title")} {service.service_id}
             </h4>
             <form className="mb-5 mt-1">
-              <label className="m-0">{t("name")}*</label>
-              <input
-                name="service_name"
-                type="text"
-                defaultValue={service.service_name}
-                onChange={this.handleInputChange}
-                className="mb-4"
-              />
+              <div className="shadow p-4">
+                <label className="m-0">{t("name")}*</label>
+                <input
+                  name="service_name"
+                  type="text"
+                  defaultValue={service.service_name}
+                  onChange={this.handleInputChange}
+                  className="mb-4"
+                />
 
-              <label className="m-0">{t("department")}*</label>
-              <input
-                name="department_name"
-                type="text"
-                defaultValue={service.department_name}
-                onChange={this.handleInputChange}
-                className="mb-4"
-              />
+                <label className="m-0">{t("department")}*</label>
+                <input
+                  name="department_name"
+                  type="text"
+                  defaultValue={service.department_name}
+                  onChange={this.handleInputChange}
+                  className="mb-4"
+                />
 
-              <label className="m-0">{t("organization")}*</label>
-              <input
-                name="organization_name"
-                type="text"
-                defaultValue={service.organization_name}
-                onChange={this.handleInputChange}
-                className="mb-4"
-              />
+                <label className="m-0">{t("organization")}*</label>
+                <input
+                  name="organization_name"
+                  type="text"
+                  defaultValue={service.organization_name}
+                  onChange={this.handleInputChange}
+                  className="mb-4"
+                />
 
-              <label className="m-0">{t("organization_fiscal_code")}*</label>
-              <input
-                name="organization_fiscal_code"
-                type="text"
-                defaultValue={service.organization_fiscal_code}
-                onChange={this.handleInputChange}
-                className="mb-4"
-              />
+                <label className="m-0">{t("organization_fiscal_code")}*</label>
+                <input
+                  name="organization_fiscal_code"
+                  type="text"
+                  defaultValue={service.organization_fiscal_code}
+                  onChange={this.handleInputChange}
+                  className="mb-4"
+                />
 
-              {storage.isApiAdmin && (
-                <div>
-                  <label className="m-0">
-                    {t("max_allowed_payment_amount")}
-                  </label>
-                  <input
-                    name="max_allowed_payment_amount"
-                    type="text"
-                    defaultValue={
-                      service.max_allowed_payment_amount
-                        ? service.max_allowed_payment_amount.toString()
-                        : undefined
-                    }
-                    onChange={this.handleInputChange}
-                    className="mb-4"
-                  />
-                </div>
-              )}
+                {storage.isApiAdmin && (
+                  <div>
+                    <label className="m-0">
+                      {t("max_allowed_payment_amount")}
+                    </label>
+                    <input
+                      name="max_allowed_payment_amount"
+                      type="text"
+                      defaultValue={
+                        service.max_allowed_payment_amount
+                          ? service.max_allowed_payment_amount.toString()
+                          : undefined
+                      }
+                      onChange={this.handleInputChange}
+                      className="mb-4"
+                    />
+                  </div>
+                )}
 
-              {storage.isApiAdmin && (
-                <div>
-                  <label className="m-0">{t("authorized_ips")}</label>
-                  <input
-                    name="authorized_cidrs"
-                    type="text"
-                    defaultValue={service.authorized_cidrs.join(";")}
-                    onChange={this.handleInputChange}
-                    className="mb-4"
-                  />
-                </div>
-              )}
+                {storage.isApiAdmin && (
+                  <div>
+                    <label className="m-0">{t("authorized_ips")}</label>
+                    <input
+                      name="authorized_cidrs"
+                      type="text"
+                      defaultValue={service.authorized_cidrs.join(";")}
+                      onChange={this.handleInputChange}
+                      className="mb-4"
+                    />
+                  </div>
+                )}
 
-              {storage.isApiAdmin && (
-                <div>
-                  <label className="m-0">{t("authorized_recipients")}*</label>
-                  <input
-                    name="authorized_recipients"
-                    type="text"
-                    defaultValue={service.authorized_recipients.join(";")}
-                    onChange={this.handleInputChange}
-                    className="mb-4"
-                  />
-                </div>
-              )}
+                {storage.isApiAdmin && (
+                  <div>
+                    <label className="m-0">{t("authorized_recipients")}*</label>
+                    <input
+                      name="authorized_recipients"
+                      type="text"
+                      defaultValue={service.authorized_recipients.join(";")}
+                      onChange={this.handleInputChange}
+                      className="mb-4"
+                    />
+                  </div>
+                )}
 
-              <MetadataInput
-                onChange={this.handleMetadataChange}
-                service_metadata={service.service_metadata}
-                isApiAdmin={storage.isApiAdmin}
-              />
-
-              {storage.isApiAdmin && (
-                <div>
-                  <input
-                    name="is_visible"
-                    type="checkbox"
-                    defaultChecked={service.is_visible}
-                    onChange={this.handleInputChange}
-                    className="mb-4 mr-2"
-                  />
-                  <label className="m-0">{t("visible_service")}</label>
-                </div>
-              )}
+                {storage.isApiAdmin && (
+                  <div>
+                    <input
+                      name="is_visible"
+                      type="checkbox"
+                      defaultChecked={service.is_visible}
+                      onChange={this.handleInputChange}
+                      className="mb-4 mr-2"
+                    />
+                    <label className="m-0">{t("visible_service")}</label>
+                  </div>
+                )}
+              </div>
+              <div className="shadow p-4">
+                <h5>Metadata</h5>
+                <MetadataInput
+                  onChange={this.handleMetadataChange}
+                  service_metadata={service.service_metadata}
+                  isApiAdmin={storage.isApiAdmin}
+                />
+              </div>
 
               <Button
                 color="primary"
