@@ -8,7 +8,7 @@ import { putToBackend } from "../utils/backend";
 import * as ts from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { OrganizationFiscalCode } from "../../generated/definitions/api/OrganizationFiscalCode";
-import Logo from "../components/Logo";
+import UploadLogo from "../components/UploadLogo";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
 
@@ -174,7 +174,7 @@ class LogoOrganizations extends Component<Props, LogoState> {
                       {t("validation:fiscal_code", { max: 11 })}
                     </div>
                   )}
-                  <Logo
+                  <UploadLogo
                     errorLogoUpload={errorLogoUpload}
                     isSubmitEnabled={
                       organizationFiscalCode !== undefined &&

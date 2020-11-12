@@ -16,7 +16,7 @@ import MetadataInput from "../components/input/MetadataInput";
 import * as ts from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
-import Logo from "../components/Logo";
+import UploadLogo from "../components/UploadLogo";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
 
@@ -339,7 +339,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               {storage.isApiAdmin && (
                 <div className="shadow p-4">
                   <h5>{t("service_logo")}</h5>
-                  <Logo
+                  <UploadLogo
                     errorLogoUpload={errorLogoUpload}
                     isSubmitEnabled={logo !== undefined && logoIsValid}
                     isValid={logoIsValid}
