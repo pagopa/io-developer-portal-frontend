@@ -13,14 +13,46 @@ import { Service } from "io-functions-commons/dist/generated/definitions/Service
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import MetadataInput from "../components/input/MetadataInput";
 
+import * as ts from "io-ts";
+import { NonEmptyString } from "italia-ts-commons/lib/strings";
+import { ServiceId } from "../../generated/definitions/api/ServiceId";
+import Logo from "../components/Logo";
+import { getConfig } from "../utils/config";
+import { getBase64OfImage } from "../utils/image";
+
+const LogoParamsApi = ts.interface({
+  logo: NonEmptyString,
+  serviceId: ServiceId
+});
+
+type LogoParamsApi = ts.TypeOf<typeof LogoParamsApi>;
+
+const LogoErrorBodyApi = ts.interface({
+  detail: ts.string,
+  status: ts.number,
+  title: ts.string
+});
+
+type LogoErrorBodyApi = ts.TypeOf<typeof LogoErrorBodyApi>;
+
+const LogoSuccessBodyApi = ts.interface({});
+
+type LogoSuccessBodyApi = ts.TypeOf<typeof LogoSuccessBodyApi>;
+
+const LOGO_PATH = getConfig("IO_LOGO_PATH") + "/services/";
+
 type OwnProps = {};
 type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
 type SubscriptionServiceState = {
+  errorLogoUpload: boolean;
   service?: Service;
   isValid?: boolean;
+  logo?: string;
+  logoIsValid: boolean;
+  logoUploaded: boolean;
 };
 
 function inputValueMap(name: string, value: string | boolean) {
@@ -43,8 +75,12 @@ function inputValueMap(name: string, value: string | boolean) {
 
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
+    errorLogoUpload: false,
     service: undefined,
-    isValid: true
+    isValid: true,
+    logo: undefined,
+    logoIsValid: true,
+    logoUploaded: true
   };
 
   public async componentDidMount() {
@@ -121,8 +157,78 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     });
   };
 
+  public handleServiceLogoSubmit = async () => {
+    LogoParamsApi.decode({
+      logo: this.state.logo,
+      serviceId: this.state.service ? this.state.service.service_id : undefined
+    }).fold(
+      _ =>
+        this.setState({
+          logo: undefined,
+          logoIsValid: false,
+          logoUploaded: false
+        }),
+      async logoParamsApi => {
+        const responseOrError = await putToBackend({
+          path: `services/${logoParamsApi.serviceId}/logo`,
+          options: {
+            body: JSON.stringify({ logo: logoParamsApi.logo })
+          }
+        });
+
+        LogoErrorBodyApi.decode(responseOrError).bimap(
+          () =>
+            LogoSuccessBodyApi.decode(responseOrError).map(_ => {
+              this.setState({
+                errorLogoUpload: false,
+                logo: undefined,
+                logoIsValid: true,
+                logoUploaded: true
+              });
+            }),
+          _ =>
+            this.setState({
+              errorLogoUpload: true,
+              logo: undefined,
+              logoIsValid: false,
+              logoUploaded: false
+            })
+        );
+      }
+    );
+  };
+
+  public handleServiceLogoChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    event.target.files &&
+    event.target.files.length === 1 &&
+    event.target.files[0].type === "image/png"
+      ? this.setState({
+          logo: await getBase64OfImage(event.target.files[0]),
+          logoIsValid: true
+        })
+      : this.setState({
+          logo: undefined,
+          logoIsValid: false
+        });
+  };
+
+  public handleOnErrorImage = () => {
+    this.setState({
+      logoUploaded: false
+    });
+  };
+
   public render() {
-    const { service, isValid } = this.state;
+    const {
+      errorLogoUpload,
+      service,
+      isValid,
+      logo,
+      logoIsValid,
+      logoUploaded
+    } = this.state;
     const { t } = this.props;
 
     return service ? (
@@ -229,15 +335,35 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   </div>
                 )}
               </div>
-              <div className="shadow p-4">
-                <h5>Metadata</h5>
-                <MetadataInput
-                  onChange={this.handleMetadataChange}
-                  service_metadata={service.service_metadata}
-                  isApiAdmin={storage.isApiAdmin}
-                />
-              </div>
 
+              {storage.isApiAdmin && (
+                <div className="shadow p-4">
+                  <h5>{t("service_logo")}</h5>
+                  <Logo
+                    errorLogoUpload={errorLogoUpload}
+                    isSubmitEnabled={logo !== undefined && logoIsValid}
+                    isValid={logoIsValid}
+                    logoPath="https://www.w3schools.com/howto/img_forest.jpg"
+                    logoUploaded={logoUploaded}
+                    nameButton="service_logo_upload"
+                    nameInput="service_logo"
+                    onChangeHandler={this.handleServiceLogoChange}
+                    onError={this.handleOnErrorImage}
+                    onSubmitHandler={this.handleServiceLogoSubmit}
+                  />
+                </div>
+              )}
+
+              {storage.isApiAdmin && (
+                <div className="shadow p-4">
+                  <h5>Metadata</h5>
+                  <MetadataInput
+                    onChange={this.handleMetadataChange}
+                    service_metadata={service.service_metadata}
+                    isApiAdmin={storage.isApiAdmin}
+                  />
+                </div>
+              )}
               <Button
                 color="primary"
                 disabled={!isValid}

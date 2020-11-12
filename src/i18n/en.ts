@@ -8,7 +8,8 @@ const en = {
     send_from_template: "Send with Template",
     contacts: "Contacts",
     sent: "Messages Sent",
-    openapi: "OpenAPI specifications"
+    openapi: "OpenAPI specifications",
+    logo_organization: "Logo Organnization"
   },
   login: {
     message: "You're being redirected to the Sign in page"
@@ -112,7 +113,9 @@ const en = {
     token_name: "Token Name",
     support_url: "Support Url",
     scope: "Scope",
-    metadata: "Metadata"
+    metadata: "Metadata",
+    service_logo: "Upload Logo (PNG)",
+    service_logo_upload: "Upload"
   },
   servers: {
     select: "Select your server (endpoint) of choice",
@@ -154,6 +157,14 @@ const en = {
     markdown: "Message has to be between {{length}} characters",
     notice: "Please digit {{max}} numeric characters and the amount",
     amount: "Please digit the amount in eurocents and the notice number"
+  },
+  errors: {
+    upload_logo: "Upload logo error"
+  },
+  logoOrganizations: {
+    service_logo: "Upload Logo (PNG)",
+    service_logo_upload: "Upload",
+    organization_fiscal_code: "Invalid organization fiscal code"
   }
 };
 

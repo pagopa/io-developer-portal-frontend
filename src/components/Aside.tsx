@@ -10,6 +10,7 @@ import Book from "react-icons/lib/fa/book";
 import Envelope from "react-icons/lib/fa/envelope";
 import FileText from "react-icons/lib/fa/file-text-o";
 import Group from "react-icons/lib/fa/group";
+import Image from "react-icons/lib/fa/image";
 import Inbox from "react-icons/lib/fa/inbox";
 import Rocket from "react-icons/lib/fa/rocket";
 import TableHead from "react-icons/lib/fa/th-large";
@@ -102,6 +103,17 @@ class Aside extends Component<WithNamespaces, never> {
                   {t("openapi")}
                 </a>
               </li>
+              {storage.isApiAdmin && (
+                <li>
+                  <Link
+                    className="large list-item border-top border-custom-grey"
+                    to={{ pathname: "/logo/organizations" }}
+                  >
+                    <Image className="mr-2 aside--icon" />
+                    {t("logo_organization")}
+                  </Link>
+                </li>
+              )}
             </LinkList>
           )}
         </StorageContext.Consumer>

@@ -43,6 +43,7 @@ import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
 import "bootstrap-italia/dist/css/italia-icon-font.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./index.css";
+import LogoOrganizations from "./src/pages/LogoOrganizations";
 import { getConfig } from "./src/utils/config";
 
 const Layout = ({ children }: { children: ReactNode }) => (
@@ -151,7 +152,11 @@ const Root = () => {
               path="/service/:service_id"
               component={SubscriptionService}
             />
-
+            <PrivateRoute
+              exact={true}
+              path="/logo/organizations"
+              component={LogoOrganizations}
+            />
             <Route component={Login} />
           </Switch>
         </I18nextProvider>

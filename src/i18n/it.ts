@@ -8,7 +8,8 @@ const it = {
     send_from_template: "Invio con Template",
     contacts: "Contatti",
     sent: "Messaggi inviati",
-    openapi: "Specifiche OpenAPI"
+    openapi: "Specifiche OpenAPI",
+    logo_organization: "Logo Organizzazione"
   },
   login: {
     message: "Stai per essere reindirizzato alla pagina di Sign in"
@@ -112,7 +113,9 @@ const it = {
     token_name: "Token Name",
     support_url: "Support Url",
     scope: "Scope",
-    metadata: "Metadati"
+    metadata: "Metadati",
+    service_logo: "Upload Logo (PNG)",
+    service_logo_upload: "Upload"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",
@@ -154,6 +157,14 @@ const it = {
     markdown: "Il messaggio deve essere di {{length}} caratteri",
     notice: "Per favore digita {{max}} caratteri numerici e l'importo",
     amount: "Per favore digita l'importo in Centesimi ed il Numero di Avviso"
+  },
+  errors: {
+    upload_logo: "Caricamento logo non riuscito"
+  },
+  logoOrganizations: {
+    service_logo: "Upload Logo (PNG)",
+    service_logo_upload: "Upload",
+    organization_fiscal_code: "Codice Fiscale dell'organizzazione"
   }
 };
 
