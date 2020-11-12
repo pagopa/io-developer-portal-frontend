@@ -343,7 +343,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     errorLogoUpload={errorLogoUpload}
                     isSubmitEnabled={logo !== undefined && logoIsValid}
                     isValid={logoIsValid}
-                    logoPath="https://www.w3schools.com/howto/img_forest.jpg"
+                    logoPath={`${LOGO_PATH}/services/${service.service_id}`}
                     logoUploaded={logoUploaded}
                     nameButton="service_logo_upload"
                     nameInput="service_logo"

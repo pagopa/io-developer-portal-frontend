@@ -39,7 +39,7 @@ const Logo = ({
         <div className="input-group">
           <Input
             className="form-control"
-            id={nameInput + "_id"}
+            id={nameInput}
             name={nameInput}
             type="file"
             invalid={!isValid}
@@ -51,7 +51,7 @@ const Logo = ({
               className="btn"
               disabled={!isSubmitEnabled}
               type="button"
-              id={nameButton + "_id"}
+              id={nameButton}
               onClick={onSubmitHandler}
             >
               {t(nameButton)}
