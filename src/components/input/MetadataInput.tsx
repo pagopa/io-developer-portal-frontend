@@ -47,7 +47,7 @@ const MetadataInput = ({
     <div>
       {SortedMetadata.map((k, i) =>
         k === "scope" ? (
-          <div>
+          <div key={i}>
             <label className="m-0">{t("scope")}*</label>
             <select
               name="scope"
@@ -79,6 +79,7 @@ const MetadataInput = ({
             markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
             isMarkdownValid={true}
             onChangeMarkdown={onChange}
+            key={i}
           />
         ) : (
           <div key={i}>
