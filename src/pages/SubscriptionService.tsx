@@ -39,7 +39,8 @@ const LogoSuccessBodyApi = ts.interface({});
 
 type LogoSuccessBodyApi = ts.TypeOf<typeof LogoSuccessBodyApi>;
 
-const LOGO_PATH = getConfig("IO_LOGO_PATH") + "/services/";
+const SERVICES_LOGO_PATH =
+  getConfig("IO_DEVELOPER_PORTAL_LOGO_PATH") + "/services/";
 
 type OwnProps = {};
 type Props = RouteComponentProps<{ service_id: string }> &
@@ -343,7 +344,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     errorLogoUpload={errorLogoUpload}
                     isSubmitEnabled={logo !== undefined && logoIsValid}
                     isValid={logoIsValid}
-                    logoPath={`${LOGO_PATH}/services/${service.service_id}`}
+                    logoPath={`${SERVICES_LOGO_PATH}/services/${
+                      service.service_id
+                    }`}
                     logoUploaded={logoUploaded}
                     nameButton="service_logo_upload"
                     nameInput="service_logo"

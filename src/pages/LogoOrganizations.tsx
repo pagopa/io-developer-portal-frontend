@@ -33,7 +33,8 @@ const LogoSuccessBodyApi = ts.interface({});
 
 type LogoSuccessBodyApi = ts.TypeOf<typeof LogoSuccessBodyApi>;
 
-const LOGO_PATH = getConfig("IO_LOGO_PATH") + "/services/";
+const ORGANIZATIONS_LOGO_PATH =
+  getConfig("IO_DEVELOPER_PORTAL_LOGO_PATH") + "/organizations/";
 
 type OwnProps = {};
 type Props = WithNamespaces & OwnProps;
@@ -183,7 +184,7 @@ class LogoOrganizations extends Component<Props, LogoState> {
                       logoIsValid
                     }
                     isValid={logoIsValid}
-                    logoPath={`${LOGO_PATH}/organization/${logoId}`}
+                    logoPath={`${ORGANIZATIONS_LOGO_PATH}/organization/${logoId}`}
                     logoUploaded={logoUploaded}
                     nameButton="service_logo_upload"
                     nameInput="service_logo"
