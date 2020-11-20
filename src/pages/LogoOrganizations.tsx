@@ -184,7 +184,7 @@ class LogoOrganizations extends Component<Props, LogoState> {
                       logoIsValid
                     }
                     isValid={logoIsValid}
-                    logoPath={`${ORGANIZATIONS_LOGO_PATH}/organization/${logoId}`}
+                    logoPath={`${ORGANIZATIONS_LOGO_PATH}${logoId}`}
                     logoUploaded={logoUploaded}
                     nameButton="service_logo_upload"
                     nameInput="service_logo"
