@@ -33,7 +33,8 @@ const LogoSuccessBodyApi = ts.interface({});
 
 type LogoSuccessBodyApi = ts.TypeOf<typeof LogoSuccessBodyApi>;
 
-const LOGO_PATH = getConfig("IO_LOGO_PATH") + "/services/";
+const LOGO_PATH =
+  getConfig("IO_DEVELOPER_PORTAL_LOGO_PATH") + "/organizations/";
 
 type OwnProps = {};
 type Props = WithNamespaces & OwnProps;
