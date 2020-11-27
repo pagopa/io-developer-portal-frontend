@@ -6,7 +6,7 @@ import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definition
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { LIMITS } from "../../utils/constants";
-import MetadataDescriptionEditor from "./MetadataDescriptionEditor";
+import MarkdownEditor from "./MarkdownEditor";
 
 type OwnProps = {
   service_metadata?: ServiceMetadata;
@@ -29,7 +29,8 @@ export const MetadataKeys = ServiceMetadata.type.types.reduce(
 
 export const SortedMetadata: readonly string[] = [
   "description",
-  ...MetadataKeys.filter(k => k !== "description" && k !== "scope"),
+  "cta",
+  ...MetadataKeys.filter(k => !["description", "scope", "cta"].includes(k)),
   "scope"
 ];
 
@@ -40,8 +41,8 @@ const MetadataInput = ({
   t
 }: Props) => {
   return isApiAdmin ? (
-    /* - Input text: all metadata except 'scope' and 'descrition'
-     * - Text area: 'descrition' according to MetadataDescritionEditor
+    /* - Input text: all metadata except 'scope', 'descrition' and 'cta'
+     * - Text area: 'descrition' and 'cta' according to MarkdownEditor
      * - Select: 'scope' that is an enumeration
      */
     <div>
@@ -70,12 +71,26 @@ const MetadataInput = ({
             </select>
           </div>
         ) : k === "description" ? (
-          <MetadataDescriptionEditor
+          <MarkdownEditor
             markdown={
               service_metadata && service_metadata.description
                 ? service_metadata.description
                 : ""
             }
+            name="description"
+            markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
+            isMarkdownValid={true}
+            onChangeMarkdown={onChange}
+            key={i}
+          />
+        ) : k === "cta" ? (
+          <MarkdownEditor
+            markdown={
+              service_metadata && service_metadata.cta
+                ? service_metadata.cta
+                : ""
+            }
+            name="cta"
             markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
             isMarkdownValid={true}
             onChangeMarkdown={onChange}
