@@ -43,7 +43,7 @@ const MetadataInput = ({
 }: Props) => {
   return isApiAdmin ? (
     /* - Input text: all metadata except 'scope', 'descrition' and 'cta'
-     * - Text area: 'descrition' and 'cta' according to MarkdownEditor
+     * - Text area: 'descrition' according to MarkdownEditor and 'cta' as a simple text area
      * - Select: 'scope' that is an enumeration
      */
     <div>
