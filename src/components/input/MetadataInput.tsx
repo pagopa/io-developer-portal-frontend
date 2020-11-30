@@ -5,6 +5,7 @@ import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { Input } from "reactstrap";
 import { LIMITS } from "../../utils/constants";
 import MarkdownEditor from "./MarkdownEditor";
 
@@ -84,18 +85,21 @@ const MetadataInput = ({
             key={i}
           />
         ) : k === "cta" ? (
-          <MarkdownEditor
-            markdown={
-              service_metadata && service_metadata.cta
-                ? service_metadata.cta
-                : ""
-            }
-            name="cta"
-            markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
-            isMarkdownValid={true}
-            onChangeMarkdown={onChange}
-            key={i}
-          />
+          <div key={i}>
+            <label className="m-0">{t(k)}</label>
+            <Input
+              defaultValue={
+                service_metadata && service_metadata.cta
+                  ? service_metadata.cta
+                  : ""
+              }
+              onChange={onChange}
+              name={k}
+              type="textarea"
+              rows="15"
+              className="mb-4 h-100 flex-row"
+            />
+          </div>
         ) : (
           <div key={i}>
             <label className="m-0">{t(k)}</label>
