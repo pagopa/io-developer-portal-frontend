@@ -5,8 +5,9 @@ import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { Input } from "reactstrap";
 import { LIMITS } from "../../utils/constants";
-import MetadataDescriptionEditor from "./MetadataDescriptionEditor";
+import MarkdownEditor from "./MarkdownEditor";
 
 type OwnProps = {
   service_metadata?: ServiceMetadata;
@@ -29,7 +30,8 @@ export const MetadataKeys = ServiceMetadata.type.types.reduce(
 
 export const SortedMetadata: readonly string[] = [
   "description",
-  ...MetadataKeys.filter(k => k !== "description" && k !== "scope"),
+  "cta",
+  ...MetadataKeys.filter(k => !["description", "scope", "cta"].includes(k)),
   "scope"
 ];
 
@@ -40,8 +42,8 @@ const MetadataInput = ({
   t
 }: Props) => {
   return isApiAdmin ? (
-    /* - Input text: all metadata except 'scope' and 'descrition'
-     * - Text area: 'descrition' according to MetadataDescritionEditor
+    /* - Input text: all metadata except 'scope', 'descrition' and 'cta'
+     * - Text area: 'descrition' according to MarkdownEditor and 'cta' as a simple text area
      * - Select: 'scope' that is an enumeration
      */
     <div>
@@ -70,17 +72,34 @@ const MetadataInput = ({
             </select>
           </div>
         ) : k === "description" ? (
-          <MetadataDescriptionEditor
+          <MarkdownEditor
             markdown={
               service_metadata && service_metadata.description
                 ? service_metadata.description
                 : ""
             }
+            name="description"
             markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
             isMarkdownValid={true}
             onChangeMarkdown={onChange}
             key={i}
           />
+        ) : k === "cta" ? (
+          <div key={i}>
+            <label className="m-0">{t(k)}</label>
+            <Input
+              defaultValue={
+                service_metadata && service_metadata.cta
+                  ? service_metadata.cta
+                  : ""
+              }
+              onChange={onChange}
+              name={k}
+              type="textarea"
+              rows="15"
+              className="mb-4 h-100 flex-row"
+            />
+          </div>
         ) : (
           <div key={i}>
             <label className="m-0">{t(k)}</label>
