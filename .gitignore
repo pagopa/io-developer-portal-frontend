@@ -20,3 +20,5 @@ generated
 
 # Avoid to commit env-config.js mods
 env-config.js
+
+coverage
