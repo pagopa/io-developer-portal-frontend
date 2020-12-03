@@ -82,7 +82,7 @@ stages:
       - job: 'make_build'
         steps:
           # Build application
-          - template: azure-templates/install-dependencies.yml
+          - template: azure-templates/setup-project.yml
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.

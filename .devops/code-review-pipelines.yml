@@ -29,7 +29,7 @@ stages:
           # As we deploy on Wondows machines, we use Windows to build
           vmImage: 'windows-2019'         
         steps:
-          - template: azure-templates/install-dependencies.yml
+          - template: azure-templates/setup-project.yml
           - template: azure-templates/make-build.yml
   
   - stage: Static_analysis
@@ -38,7 +38,7 @@ stages:
 
       - job: lint     
         steps:
-        - template: azure-templates/install-dependencies.yml
+        - template: azure-templates/setup-project.yml
 
         - script: |
             yarn lint
@@ -51,7 +51,7 @@ stages:
             ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
           )
         steps:
-          - template: azure-templates/install-dependencies.yml
+          - template: azure-templates/setup-project.yml
 
           - bash: |
               yarn danger ci
@@ -66,7 +66,7 @@ stages:
     jobs:
       - job: unit_tests
         steps:
-        - template: azure-templates/install-dependencies.yml
+        - template: azure-templates/setup-project.yml
         
         - script: |
             yarn generate
