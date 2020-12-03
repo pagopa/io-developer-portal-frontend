@@ -1,4 +1,7 @@
-# Azure DevOps pipeline template used to checkout and install node dependencies.
+# Azure DevOps pipeline template used to setup the Node project:
+# 1. checkout code
+# 2. setup correct node version
+# 3. install node dependencies
 
 parameters:
 - name: 'cache_version_id'
@@ -14,20 +17,6 @@ steps:
 - checkout: self
   displayName: 'Checkout'
 
-- task: Cache@2
-  inputs:
-    key: 'yarn-${{ parameters.cache_version_id }} | "$(Agent.OS)" | yarn.lock'
-    restoreKeys: |
-      yarn-${{ parameters.cache_version_id }} | "$(Agent.OS)"
-    path: $(YARN_CACHE_FOLDER)
-  displayName: 'Cache yarn packages'
-
-  
-- task: UseNode@1
-  inputs:
-    version: $(NODE_VERSION)
-  displayName: 'Set up Node.js'
-  
 # This is needed because the pipeline may point to a different commit than expected
 # The common case is when the previous stage pushed another commit
 - ${{ if ne(parameters.gitReference, variables['Build.SourceVersion']) }}:
@@ -35,7 +24,11 @@ steps:
       git fetch && git checkout ${{ parameters.gitReference }}
     displayName: 'Checkout reference'  
 
+- task: UseNode@1
+  inputs:
+    version: $(NODE_VERSION)
+  displayName: 'Set up Node.js'
+
 - script: |
     yarn install --frozen-lockfile --no-progress --non-interactive --network-concurrency 1
   displayName: 'Install node modules'
-  condition: ne(variables.CACHE_RESTORED, 'true')
