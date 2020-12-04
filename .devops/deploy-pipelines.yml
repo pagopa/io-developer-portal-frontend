@@ -113,7 +113,7 @@ stages:
               azureSubscription: '$(STAGING_AZURE_SUBSCRIPTION)'
               destination: 'AzureBlob'
               storage: '$(STAGING_STORAGE_ACCOUNT_NAME)'
-              containerName: '$(BLOB_CONTAINER_NAME)'
+              containerName: '$web'
             displayName: Deploy to container blob
 
   # Deploy bundle to the production container
@@ -132,5 +132,5 @@ stages:
               azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
               destination: 'AzureBlob'
               storage: '$(PRODUCTION_STORAGE_ACCOUNT_NAME)'
-              containerName: '$(BLOB_CONTAINER_NAME)'
+              containerName: '$web'
             displayName: Deploy to container blob
