@@ -111,7 +111,7 @@ stages:
 
           - task: AzureFileCopy@4
             inputs:
-              sourcePath: '$(System.DefaultWorkingDirectory)/*'
+              sourcePath: '$(System.DefaultWorkingDirectory)/Bundle/*'
               azureSubscription: '$(STAGING_AZURE_SUBSCRIPTION)'
               destination: 'AzureBlob'
               storage: '$(STAGING_STORAGE_ACCOUNT_NAME)'
@@ -132,7 +132,7 @@ stages:
 
           - task: AzureFileCopy@4
             inputs:
-              sourcePath: '$(System.DefaultWorkingDirectory)/*'
+              sourcePath: '$(System.DefaultWorkingDirectory)/Bundle/*'
               azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
               destination: 'AzureBlob'
               storage: '$(PRODUCTION_STORAGE_ACCOUNT_NAME)'
