@@ -1,6 +1,6 @@
 {
   "name": "italia-backoffice",
-  "version": "1.9.4",
+  "version": "1.10.0",
   "engines": {
     "node": "^8.0.0",
     "yarn": "*"
