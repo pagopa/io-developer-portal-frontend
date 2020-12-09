@@ -103,7 +103,9 @@ stages:
       - Prepare_artifact
     jobs:
       - job: 'deploy_to_container'       
-        steps:  
+        steps:
+          - checkout: none
+  
           - download: current
             artifact: Bundle
 
@@ -124,7 +126,7 @@ stages:
       - job: 'deploy_to_container'       
         steps:
           - checkout: none
-            
+
           - download: current
             artifact: Bundle
 
