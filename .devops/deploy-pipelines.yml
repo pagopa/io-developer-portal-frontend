@@ -130,14 +130,6 @@ stages:
           - download: current
             artifact: Bundle
 
-          - task: AzureCLI@1
-            displayName: 'Purge CDN'
-            inputs:
-              azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
-              scriptLocation: inlineScript
-              inlineScript: |
-                call az cdn endpoint purge -g $(RESOURCE_GROUP_AZURE) -n $(ENDPOINT_AZURE) --profile-name $(PROFILE_NAME_CDN_AZURE) --content-paths "/*"
-
           - task: AzureFileCopy@4
             inputs:
               sourcePath: '$(Pipeline.Workspace)/Bundle/*'
@@ -146,3 +138,11 @@ stages:
               storage: '$(PRODUCTION_STORAGE_ACCOUNT_NAME)'
               containerName: '$web'
             displayName: Deploy to container blob
+
+          - task: AzureCLI@1
+            displayName: 'Purge CDN'
+            inputs:
+              azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
+              scriptLocation: inlineScript
+              inlineScript: |
+                call az cdn endpoint purge -g $(RESOURCE_GROUP_AZURE) -n $(ENDPOINT_AZURE) --profile-name $(PROFILE_NAME_CDN_AZURE) --content-paths "/*"
