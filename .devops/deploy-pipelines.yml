@@ -145,5 +145,5 @@ stages:
               azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
               scriptLocation: inlineScript
               inlineScript: |
-                call az cdn endpoint purge -g $(RESOURCE_GROUP_AZURE) -n $(ENDPOINT_AZURE) --profile-name $(PROFILE_NAME_CDN_AZURE) --content-paths "/*"
+                call az cdn endpoint purge -g $(PRODUCTION_RESOURCE_GROUP_NAME) -n $(PRODUCTION_CDN_ENDPOINT) --profile-name $(PRODUCTION_CDN_PROFILE_NAME) --content-paths "/*"
                 
