@@ -54,6 +54,7 @@ type SubscriptionServiceState = {
   logo?: string;
   logoIsValid: boolean;
   logoUploaded: boolean;
+  originalIsVisible?: boolean;
 };
 
 function inputValueMap(name: string, value: string | boolean) {
@@ -81,7 +82,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     isValid: true,
     logo: undefined,
     logoIsValid: true,
-    logoUploaded: true
+    logoUploaded: true,
+    originalIsVisible: undefined
   };
 
   public async componentDidMount() {
@@ -98,7 +100,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     };
 
     this.setState({
-      service
+      service,
+      originalIsVisible: serviceFromBackend.is_visible
     });
   }
 
@@ -228,7 +231,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       isValid,
       logo,
       logoIsValid,
-      logoUploaded
+      logoUploaded,
+      originalIsVisible
     } = this.state;
     const { t } = this.props;
 
@@ -297,18 +301,16 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   </div>
                 )}
 
-                {storage.isApiAdmin && (
-                  <div>
-                    <label className="m-0">{t("authorized_ips")}</label>
-                    <input
-                      name="authorized_cidrs"
-                      type="text"
-                      defaultValue={service.authorized_cidrs.join(";")}
-                      onChange={this.handleInputChange}
-                      className="mb-4"
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="m-0">{t("authorized_ips")}</label>
+                  <input
+                    name="authorized_cidrs"
+                    type="text"
+                    defaultValue={service.authorized_cidrs.join(";")}
+                    onChange={this.handleInputChange}
+                    className="mb-4"
+                  />
+                </div>
 
                 {storage.isApiAdmin && (
                   <div>
@@ -337,34 +339,32 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 )}
               </div>
 
-              {storage.isApiAdmin && (
-                <div className="shadow p-4">
-                  <h5>{t("service_logo")}</h5>
-                  <UploadLogo
-                    errorLogoUpload={errorLogoUpload}
-                    isSubmitEnabled={logo !== undefined && logoIsValid}
-                    isValid={logoIsValid}
-                    logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png`}
-                    logoUploaded={logoUploaded}
-                    nameButton="service_logo_upload"
-                    nameInput="service_logo"
-                    onChangeHandler={this.handleServiceLogoChange}
-                    onError={this.handleOnErrorImage}
-                    onSubmitHandler={this.handleServiceLogoSubmit}
-                  />
-                </div>
-              )}
+              <div className="shadow p-4">
+                <h5>{t("service_logo")}</h5>
+                <UploadLogo
+                  errorLogoUpload={errorLogoUpload}
+                  isSubmitEnabled={logo !== undefined && logoIsValid}
+                  isValid={logoIsValid}
+                  logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png`}
+                  logoUploaded={logoUploaded}
+                  nameButton="service_logo_upload"
+                  nameInput="service_logo"
+                  onChangeHandler={this.handleServiceLogoChange}
+                  onError={this.handleOnErrorImage}
+                  onSubmitHandler={this.handleServiceLogoSubmit}
+                />
+              </div>
 
-              {storage.isApiAdmin && (
-                <div className="shadow p-4">
-                  <h5>Metadata</h5>
-                  <MetadataInput
-                    onChange={this.handleMetadataChange}
-                    service_metadata={service.service_metadata}
-                    isApiAdmin={storage.isApiAdmin}
-                  />
-                </div>
-              )}
+              <div className="shadow p-4">
+                <h5>Metadata</h5>
+                <MetadataInput
+                  onChange={this.handleMetadataChange}
+                  service_metadata={service.service_metadata}
+                  isApiAdmin={storage.isApiAdmin}
+                  originalServiceIsVisible={originalIsVisible || false}
+                />
+              </div>
+
               <Button
                 color="primary"
                 disabled={!isValid}
