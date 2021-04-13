@@ -12,6 +12,7 @@ import MarkdownEditor from "./MarkdownEditor";
 type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
+  originalServiceIsVisible: boolean;
   onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
 };
 
@@ -31,7 +32,10 @@ export const MetadataKeys = ServiceMetadata.type.types.reduce(
 export const SortedMetadata: readonly string[] = [
   "description",
   "cta",
-  ...MetadataKeys.filter(k => !["description", "scope", "cta"].includes(k)),
+  ...MetadataKeys.filter(
+    k => !["description", "scope", "cta", "token_name"].includes(k)
+  ),
+  "token_name",
   "scope"
 ];
 
@@ -39,9 +43,10 @@ const MetadataInput = ({
   service_metadata,
   onChange,
   isApiAdmin,
+  originalServiceIsVisible,
   t
 }: Props) => {
-  return isApiAdmin ? (
+  return (
     /* - Input text: all metadata except 'scope', 'descrition' and 'cta'
      * - Text area: 'descrition' according to MarkdownEditor and 'cta' as a simple text area
      * - Select: 'scope' that is an enumeration
@@ -56,6 +61,7 @@ const MetadataInput = ({
               value={service_metadata ? service_metadata.scope : undefined}
               className="form-control mb-4"
               onChange={onChange}
+              disabled={originalServiceIsVisible && !isApiAdmin}
             >
               <option
                 key={ServiceScopeEnum.NATIONAL}
@@ -100,6 +106,18 @@ const MetadataInput = ({
               className="mb-4 h-100 flex-row"
             />
           </div>
+        ) : k === "token_name" ? (
+          <div key={i}>
+            <label className="m-0">{t(k)}</label>
+            <input
+              name={k}
+              type="text"
+              defaultValue={Object(service_metadata)[k]}
+              onChange={onChange}
+              className="mb-4"
+              disabled={!isApiAdmin}
+            />
+          </div>
         ) : (
           <div key={i}>
             <label className="m-0">{t(k)}</label>
@@ -114,7 +132,7 @@ const MetadataInput = ({
         )
       )}
     </div>
-  ) : null;
+  );
 };
 
 export default withNamespaces("service")(MetadataInput);
