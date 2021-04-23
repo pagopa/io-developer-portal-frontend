@@ -42,21 +42,25 @@ type LogoSuccessBodyApi = ts.TypeOf<typeof LogoSuccessBodyApi>;
 const SERVICES_LOGO_PATH =
   getConfig("IO_DEVELOPER_PORTAL_LOGO_PATH") + "/services/";
 
+// Lorenzo: a cosa mi serve?
 type OwnProps = {};
+// Lorenzo: viene aggiunto qui:
 type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
+// Lorenzo: possiamo rivedere questo stato? Magari ricreandolo tramite una union dei possibili stati validi evitando stati incosistenti?
 type SubscriptionServiceState = {
-  errorLogoUpload: boolean;
-  service?: Service;
-  isValid?: boolean;
-  logo?: string;
-  logoIsValid: boolean;
-  logoUploaded: boolean;
-  originalIsVisible?: boolean;
+  errorLogoUpload: boolean; // Lorenzo: verifico se il logo è stato inviato
+  service?: Service; // Lorenzo: dati del servizio, perchè opzionale?
+  isValid?: boolean; // Lorenzo: il serivizio è valido?
+  logo?: string; // Lorenzo: il servizio ha un logo?
+  logoIsValid: boolean; // Lorenzo: verifico che il logo sia una stringa valida
+  logoUploaded: boolean; // Lorenzo: verfico che il logo sia stato inviato, ma non è un duplicato di errorLogoUpload???
+  originalIsVisible?: boolean; // Lorenzo: il servizio è già visibile?
 };
 
+// Lorenzo: questa funzione prende un input e verifica se è uno dei campi tra "max_allowed_payment_amount", "authorized_cidrs", "authorized_recipients" per effettuare delle operazioni sul value oppure nessuno e ritorno il value ricevuto.
 function inputValueMap(name: string, value: string | boolean) {
   switch (name) {
     case "max_allowed_payment_amount":
@@ -76,29 +80,63 @@ function inputValueMap(name: string, value: string | boolean) {
 }
 
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
+  // Lorenzo: Il mio stato React
   public state: SubscriptionServiceState = {
     errorLogoUpload: false,
     service: undefined,
     isValid: true,
-    logo: undefined,
-    logoIsValid: true,
-    logoUploaded: true,
+    logo: undefined, // Lorenzo: parto con un logo undefined e un true a logoIsValid, non è un controsenso?
+    logoIsValid: true, // Lorenzo: si da per scontato che il logo sia valido?
+    logoUploaded: true, // Lorenzo: si da per scontato che esista un logo?
     originalIsVisible: undefined
   };
 
   public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
+
+    // Lorenzo: mi prendo il service dal backend
     const serviceFromBackend = await getFromBackend<Service>({
       path: `services/${serviceId}`
     });
-
+    console.log(serviceFromBackend);
+    /*
+    authorized_cidrs: []
+    authorized_recipients: ["AAAAAA00A00A000A"]
+    department_name: "Lorenzo Dep"
+    id: "01F3YTAWFFKVVQXS8G4RM4J69M-0000000000000000"
+    is_visible: false
+    max_allowed_payment_amount: 0
+    organization_fiscal_code: "00000000000"
+    organization_name: "Personale"
+    require_secure_channels: false
+    service_id: "01F3YTAWFFKVVQXS8G4RM4J69M"
+    service_name: "Lorenzo Invia Cose"
+    version: 0
+    /*
+    authorized_cidrs: []
+    authorized_recipients: ["AAAAAA00A00A000A"]
+    department_name: "-"
+    id: "01F3ADXET5NZD4GD9320XXQ66Y-0000000000000002"
+    is_visible: false
+    max_allowed_payment_amount: 0
+    organization_fiscal_code: "00000000000"
+    organization_name: "Personale"
+    require_secure_channels: false
+    service_id: "01F3ADXET5NZD4GD9320XXQ66Y"
+    service_metadata: {description: "# Test Metadati↵↵Questo è un test", scope: "LOCAL"}
+    service_name: "-"
+    version: 2
+    */
     const service = {
       ...serviceFromBackend,
       service_metadata: serviceFromBackend.service_metadata
         ? serviceFromBackend.service_metadata
-        : { scope: ServiceScopeEnum.LOCAL }
+        : {
+            scope: ServiceScopeEnum.LOCAL
+          }
     };
 
+    // Lorenzo: imposto lo stato :)
     this.setState({
       service,
       originalIsVisible: serviceFromBackend.is_visible
@@ -109,6 +147,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
+
+    // Lorenzo: qui ricevo un Either Left/Right che non me ne faccio nulla, al posto dell map usiamo una fold?
     Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
@@ -135,6 +175,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     }).map(service => this.setState({ service }));
   };
 
+  // Lorenzo: metodo di validazione
+  public validate() {
+    const isValid = true;
+    return isValid;
+  }
+
   public handleSubmit = async () => {
     const serviceDecoding = Service.decode(this.state.service);
     if (serviceDecoding.isLeft()) {
@@ -142,7 +188,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       throw new Error("Wrong parameters format");
     }
     const service = serviceDecoding.value;
-    await putToBackend({
+    // Lorenzo: ho bloccato l'invio al server e fatto una console.log dei dati
+    /*await putToBackend({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -158,6 +205,17 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           service_metadata: service.service_metadata
         })
       }
+    });*/
+    console.log({
+      organization_fiscal_code: service.organization_fiscal_code,
+      organization_name: service.organization_name,
+      department_name: service.department_name,
+      service_name: service.service_name,
+      max_allowed_payment_amount: service.max_allowed_payment_amount,
+      authorized_cidrs: service.authorized_cidrs,
+      authorized_recipients: service.authorized_recipients,
+      is_visible: service.is_visible,
+      service_metadata: service.service_metadata
     });
   };
 
@@ -205,6 +263,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public handleServiceLogoChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
+    // Lorenzo: aggiungo questa console
+    console.log("handleServiceLogoChange");
     event.target.files &&
     event.target.files.length === 1 &&
     event.target.files[0].type === "image/png"
