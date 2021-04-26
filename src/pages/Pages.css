@@ -3,3 +3,7 @@
     /* Header: 45px; Padding: 48px *2 */
     height: calc(100vh - 141px);
 }
+
+.error {
+  border: 1px solid red !important;
+}

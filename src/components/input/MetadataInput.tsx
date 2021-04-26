@@ -1,11 +1,11 @@
 import React, { ChangeEvent } from "react";
-
+import * as ts from "io-ts";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Input } from "reactstrap";
+import { Alert, Input } from "reactstrap";
 import { LIMITS } from "../../utils/constants";
 import MarkdownEditor from "./MarkdownEditor";
 
@@ -13,7 +13,9 @@ type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
   originalServiceIsVisible: boolean;
+  errors: { [key: string]: string },
   onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
+  onBlur: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
 };
 
 type Props = WithNamespaces & OwnProps;
@@ -42,10 +44,13 @@ export const SortedMetadata: readonly string[] = [
 const MetadataInput = ({
   service_metadata,
   onChange,
+  onBlur,
   isApiAdmin,
   originalServiceIsVisible,
+  errors,
   t
 }: Props) => {
+  console.log('Oggetto degli errori trasmetto al Metadata Component', errors);
   return (
     /* - Input text: all metadata except 'scope', 'descrition' and 'cta'
      * - Text area: 'descrition' according to MarkdownEditor and 'cta' as a simple text area
@@ -62,6 +67,7 @@ const MetadataInput = ({
               className="form-control mb-4"
               onChange={onChange}
               disabled={originalServiceIsVisible && !isApiAdmin}
+              onBlur={onBlur}
             >
               <option
                 key={ServiceScopeEnum.NATIONAL}
@@ -100,6 +106,7 @@ const MetadataInput = ({
                   : ""
               }
               onChange={onChange}
+              onBlur={onBlur}
               name={k}
               type="textarea"
               rows="15"
@@ -114,19 +121,22 @@ const MetadataInput = ({
               type="text"
               defaultValue={Object(service_metadata)[k]}
               onChange={onChange}
+              onBlur={onBlur}
               className="mb-4"
               disabled={!isApiAdmin}
             />
           </div>
         ) : (
           <div key={i}>
+            {errors[k] && <Alert color="danger" key={i}>Errore {JSON.stringify(errors[k])}</Alert>}
             <label className="m-0">{t(k)}</label>
             <input
               name={k}
               type="text"
               defaultValue={Object(service_metadata)[k]}
               onChange={onChange}
-              className="mb-4"
+              onBlur={onBlur}
+              className={errors[k] ? "mb4 error" : "mb4"}
             />
           </div>
         )

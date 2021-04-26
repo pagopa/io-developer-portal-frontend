@@ -14,11 +14,13 @@ import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definition
 import MetadataInput from "../components/input/MetadataInput";
 
 import * as ts from "io-ts";
+// Lorenzo: Qui ho i vari tipi che posso usare
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
 import UploadLogo from "../components/UploadLogo";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
+import { MailCheck, PhoneCheck, URLCheck } from "../utils/validators";
 
 const LogoParamsApi = ts.interface({
   logo: NonEmptyString,
@@ -49,8 +51,15 @@ type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
+/*const Form = ts.type({
+  fiscaleCode: FiscalCodeCheck,
+})
+type Form = ts.TypeOf<typeof Form>;*/
 // Lorenzo: possiamo rivedere questo stato? Magari ricreandolo tramite una union dei possibili stati validi evitando stati incosistenti?
 type SubscriptionServiceState = {
+  form?: {
+    metadata?: {}
+  }; // Form & {[index: string]: string};
   errorLogoUpload: boolean; // Lorenzo: verifico se il logo è stato inviato
   service?: Service; // Lorenzo: dati del servizio, perchè opzionale?
   isValid?: boolean; // Lorenzo: il serivizio è valido?
@@ -58,6 +67,7 @@ type SubscriptionServiceState = {
   logoIsValid: boolean; // Lorenzo: verifico che il logo sia una stringa valida
   logoUploaded: boolean; // Lorenzo: verfico che il logo sia stato inviato, ma non è un duplicato di errorLogoUpload???
   originalIsVisible?: boolean; // Lorenzo: il servizio è già visibile?
+  errors: {[key: string]: string} // {[key: string]: string | ts.Errors}
 };
 
 // Lorenzo: questa funzione prende un input e verifica se è uno dei campi tra "max_allowed_payment_amount", "authorized_cidrs", "authorized_recipients" per effettuare delle operazioni sul value oppure nessuno e ritorno il value ricevuto.
@@ -82,13 +92,17 @@ function inputValueMap(name: string, value: string | boolean) {
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   // Lorenzo: Il mio stato React
   public state: SubscriptionServiceState = {
+    form: {
+      metadata: {}
+    },
     errorLogoUpload: false,
     service: undefined,
     isValid: true,
     logo: undefined, // Lorenzo: parto con un logo undefined e un true a logoIsValid, non è un controsenso?
     logoIsValid: true, // Lorenzo: si da per scontato che il logo sia valido?
     logoUploaded: true, // Lorenzo: si da per scontato che esista un logo?
-    originalIsVisible: undefined
+    originalIsVisible: undefined,
+    errors: {}
   };
 
   public async componentDidMount() {
@@ -98,35 +112,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const serviceFromBackend = await getFromBackend<Service>({
       path: `services/${serviceId}`
     });
-    console.log(serviceFromBackend);
-    /*
-    authorized_cidrs: []
-    authorized_recipients: ["AAAAAA00A00A000A"]
-    department_name: "Lorenzo Dep"
-    id: "01F3YTAWFFKVVQXS8G4RM4J69M-0000000000000000"
-    is_visible: false
-    max_allowed_payment_amount: 0
-    organization_fiscal_code: "00000000000"
-    organization_name: "Personale"
-    require_secure_channels: false
-    service_id: "01F3YTAWFFKVVQXS8G4RM4J69M"
-    service_name: "Lorenzo Invia Cose"
-    version: 0
-    /*
-    authorized_cidrs: []
-    authorized_recipients: ["AAAAAA00A00A000A"]
-    department_name: "-"
-    id: "01F3ADXET5NZD4GD9320XXQ66Y-0000000000000002"
-    is_visible: false
-    max_allowed_payment_amount: 0
-    organization_fiscal_code: "00000000000"
-    organization_name: "Personale"
-    require_secure_channels: false
-    service_id: "01F3ADXET5NZD4GD9320XXQ66Y"
-    service_metadata: {description: "# Test Metadati↵↵Questo è un test", scope: "LOCAL"}
-    service_name: "-"
-    version: 2
-    */
+
     const service = {
       ...serviceFromBackend,
       service_metadata: serviceFromBackend.service_metadata
@@ -149,13 +135,95 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const name = target.name;
 
     // Lorenzo: qui ricevo un Either Left/Right che non me ne faccio nulla, al posto dell map usiamo una fold?
-    Service.decode({
+    const res = Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
     })
       .map(service => this.setState({ service, isValid: true }))
-      .mapLeft(() => this.setState({ isValid: false }));
+      .mapLeft(() => this.setState({
+        isValid: false
+      }));
+    // console.log(res);
   };
+
+  // Almeno uno tra phone, mail, pec, support_url
+  // La descrizione del servizio!
+  private getValidator(name: string) {
+    switch(name) {
+      case 'phone': {
+        return PhoneCheck
+      }
+      case 'pec':
+      case 'email': {
+        return MailCheck
+      }
+      case 'privacy_url':
+      case 'support_url': {
+        return URLCheck
+      }
+      default: {
+        return null
+      }
+    }
+  }
+
+  /*
+  Se valido un campo opzionale che fa parte di un blocco in cui ho un campo obbligatorio ma non ancora inserito, va in errore il campo opzionale. Forse dovrei avere dei metadati opzionali e metadati obbligatori. Dovrei pensare di fare dei controlli specifici sul singolo piuttosto che fare su tutto il blocco ogni volta. Altrimenti se ho dei campi obbligatori ancora non compilati dall'utente, me li segnalerebbe come errore.
+  */
+  public handleMetadataBlur = (
+    event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) => {
+    const {
+      target: { name, value }
+    } = event;
+    const inputValue = inputValueMap(name, value);
+    console.log('On Blur', name, inputValue)
+    const validator = this.getValidator(name)
+    validator ? validator.decode(value).fold(
+      err => {
+
+        return this.setState({
+          errors : {
+            ...this.state.errors,
+            [name]: err[0].message || "Errore nel campo"
+          }
+        })
+      },
+      _ => {
+        const errors: {[key:string]: string} = Object.keys(this.state.errors).reduce((result: {[key:string]: string}, key) => {
+          if(key !== name) {
+            result[key] = this.state.errors[key];
+          }
+          return result;
+        }, {});
+        return this.setState({
+          errors : errors,
+          form: {
+            ...this.state.form,
+            metadata: {
+            ...(this.state.form && this.state.form.metadata
+              ? this.state.form.metadata
+              : undefined),
+            [name]: inputValue === "" ? undefined : inputValue
+            }
+          }
+        })
+      }
+    )
+    :
+      this.setState({
+        form: {
+          ...this.state.form,
+          metadata: {
+          ...(this.state.form && this.state.form.metadata
+            ? this.state.form.metadata
+            : undefined),
+          [name]: inputValue === "" ? undefined : inputValue
+          }
+        }
+      })
+
+  }
 
   public handleMetadataChange = (
     event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
@@ -164,7 +232,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       target: { name, value }
     } = event;
     const inputValue = inputValueMap(name, value);
-    Service.decode({
+    /*Service.decode({
       ...this.state.service,
       service_metadata: {
         ...(this.state.service && this.state.service.service_metadata
@@ -172,14 +240,18 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           : undefined),
         [name]: inputValue === "" ? undefined : inputValue
       }
-    }).map(service => this.setState({ service }));
-  };
+    })
+    .map(service => this.setState({ service }));*/
 
-  // Lorenzo: metodo di validazione
-  public validate() {
-    const isValid = true;
-    return isValid;
-  }
+    /*this.setState({
+      ...this.state,
+      form: {
+        ...this.state.form,
+        [name]: inputValue === "" ? undefined : inputValue
+      }
+    });*/
+    // console.log("State", this.state);
+  };
 
   public handleSubmit = async () => {
     const serviceDecoding = Service.decode(this.state.service);
@@ -206,6 +278,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         })
       }
     });*/
+    console.log("***SALVATAGGIO DATI***");
+    console.log('*** STATO ***', this.state);
     console.log({
       organization_fiscal_code: service.organization_fiscal_code,
       organization_name: service.organization_name,
@@ -263,8 +337,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public handleServiceLogoChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    // Lorenzo: aggiungo questa console
-    console.log("handleServiceLogoChange");
     event.target.files &&
     event.target.files.length === 1 &&
     event.target.files[0].type === "image/png"
@@ -419,9 +491,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 <h5>Metadata</h5>
                 <MetadataInput
                   onChange={this.handleMetadataChange}
+                  onBlur={this.handleMetadataBlur}
                   service_metadata={service.service_metadata}
                   isApiAdmin={storage.isApiAdmin}
                   originalServiceIsVisible={originalIsVisible || false}
+                  errors={this.state.errors}
                 />
               </div>
 

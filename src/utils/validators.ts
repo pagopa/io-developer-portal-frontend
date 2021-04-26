@@ -1,5 +1,8 @@
 import toPairs from "lodash/toPairs";
 import { conformToMask } from "react-text-mask";
+// Lorenzo: Qui ho i vari tipi che posso usare
+import * as ts from "io-ts";
+import { NonEmptyString, FiscalCode } from "italia-ts-commons/lib/strings";
 
 import { CONSTANTS, LIMITS } from "./constants";
 const { CSV, CSV_HEADERS } = CONSTANTS;
@@ -59,3 +62,81 @@ export default {
   isValueRangeValid,
   areHeadersValid
 };
+
+// Lorenzo: Provo a definirmi un custom message
+type FiscalCodeCheck = ts.TypeOf<typeof FiscalCode>;
+export const FiscalCodeCheck = new ts.Type<string, string, unknown>(
+  "FiscalCode",
+  ts.string.is,
+  (u, c) =>
+    ts.string
+      .validate(u, c)
+      .chain((s) =>
+        new RegExp("^[0-9]{11}$").test(s)
+          ? ts.success(s)
+          : ts.failure(
+              u,
+              c,
+              "Il codice fiscale è errato!"
+            )
+      ),
+  String
+);
+
+
+type URLCheck = ts.TypeOf<typeof NonEmptyString>;
+export const URLCheck = new ts.Type<string, string, unknown>(
+  "URLCheck",
+  ts.string.is,
+  (u, c) =>
+    ts.string
+      .validate(u, c)
+      .chain((s) =>
+        new RegExp("^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$").test(s)
+          ? ts.success(s)
+          : ts.failure(
+              u,
+              c,
+              "L'indirizzo del sito web è malformato!"
+            )
+      ),
+  String
+);
+
+type PhoneCheck = ts.TypeOf<typeof NonEmptyString>;
+export const PhoneCheck = new ts.Type<string, string, unknown>(
+  "PhoneCheck",
+  ts.string.is,
+  (u, c) =>
+    ts.string
+      .validate(u, c)
+      .chain((s) =>
+        new RegExp("[0-9]", "g").test(s)
+          ? ts.success(s)
+          : ts.failure(
+              u,
+              c,
+              "Inserisci un telefono valido."
+            )
+      ),
+  String
+);
+
+type MailCheck = ts.TypeOf<typeof NonEmptyString>;
+export const MailCheck = new ts.Type<string, string, unknown>(
+  "MailCheck",
+  ts.string.is,
+  (u, c) =>
+    ts.string
+      .validate(u, c)
+      .chain((s) =>
+        new RegExp('^\S+@\S+$').test(s)
+          ? ts.success(s)
+          : ts.failure(
+              u,
+              c,
+              "Inserisci una mail valida."
+            )
+      ),
+  String
+);
