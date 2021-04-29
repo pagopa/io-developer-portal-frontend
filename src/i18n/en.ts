@@ -85,6 +85,10 @@ const en = {
     add: "Add subscription"
   },
   service: {
+    service_name: "Service Name",
+    department_name: "Department Name",
+    organization_name: "Organization Name",
+    authorized_cidrs: "Authorized CIDRs",
     send_as: "Sending as",
     no_services: "No API key selected!",
     name: "Name of the service",
@@ -156,7 +160,8 @@ const en = {
     subject: "Subject has to be between {{length}} characters",
     markdown: "Message has to be between {{length}} characters",
     notice: "Please digit {{max}} numeric characters and the amount",
-    amount: "Please digit the amount in eurocents and the notice number"
+    amount: "Please digit the amount in eurocents and the notice number",
+    field_error: "The field {{field}} is not valid"
   },
   errors: {
     upload_logo: "Upload logo error"

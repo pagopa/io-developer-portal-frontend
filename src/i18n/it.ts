@@ -85,6 +85,10 @@ const it = {
     add: "Aggiungi sottoscrizione"
   },
   service: {
+    service_name: "Nome Servizio",
+    department_name: "Nome Dipartimento",
+    organization_name: "Nome Ente",
+    authorized_cidrs: "CIDR Autorizzati",
     send_as: "Invio per conto di",
     no_services: "Nessuna API key selezionata!",
     name: "Nome servizio",
@@ -156,7 +160,8 @@ const it = {
     subject: "L'oggetto deve essere di {{length}} caratteri",
     markdown: "Il messaggio deve essere di {{length}} caratteri",
     notice: "Per favore digita {{max}} caratteri numerici e l'importo",
-    amount: "Per favore digita l'importo in Centesimi ed il Numero di Avviso"
+    amount: "Per favore digita l'importo in Centesimi ed il Numero di Avviso",
+    field_error: "Il campo {{field}} non è valido"
   },
   errors: {
     upload_logo: "Caricamento logo non riuscito"

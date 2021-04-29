@@ -16,10 +16,14 @@ import { RouteComponentProps } from "react-router";
 import Confirmation from "../components/modal/Confirmation";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
-import { Service } from "../../generated/definitions/backend/Service";
+// import { Service } from "../../generated/definitions/backend/Service";
+import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+
 import { SubscriptionCollection } from "../../generated/definitions/backend/SubscriptionCollection";
 import { SubscriptionContract } from "../../generated/definitions/backend/SubscriptionContract";
 import { UserData } from "../../generated/definitions/backend/UserData";
+import { Alert } from "design-react-kit";
+import { isContactExists } from "../utils/service";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
@@ -335,6 +339,24 @@ class Profile extends Component<Props, ProfileState> {
     );
   }
 
+  private checkService(service: Service) {
+    const isVisible = service && service.is_visible
+    const serviceContacts = service && service.service_metadata && isContactExists(service.service_metadata)/*Math.random() > 0.4/*(service && service.service_metadata &&
+      !service.service_metadata['phone'] &&
+      !service.service_metadata['email'] &&
+      !service.service_metadata['pec'] &&
+      !service.service_metadata['support_url']
+    )*/
+    return (
+      <div>
+        {isVisible && !serviceContacts ? <Alert color="danger">Campi non validi, il servizio non sarà visibile!</Alert> : ''}
+        {!isVisible && !serviceContacts ? <Alert color="warning">Completa i campi per renderlo visibile</Alert> : ''}
+        {isVisible && serviceContacts ? <Alert color="success">Il tuo servizio è visibile</Alert> : ''}
+        {!isVisible && serviceContacts ? <Alert color="info">Il tuo servizio è pronto per essere messo in App</Alert> : ''}
+      </div>
+    )
+  }
+
   public render() {
     const { userSubscriptions, services } = this.state;
     const { isConfirmationOpen, onConfirmOperation } = this.state;
@@ -356,6 +378,7 @@ class Profile extends Component<Props, ProfileState> {
                 ...jsxElementsArray,
                 <div key={subscription.id} className="shadow p-4 my-4">
                   <SubscriptionService service={service} t={t} />
+                  {this.checkService(service)}
                   <h6 className="mt-4">
                     {t("subscription")} ({subscription.state})
                   </h6>
