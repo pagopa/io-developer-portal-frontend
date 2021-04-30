@@ -1,93 +1,94 @@
-import React, { Component, FocusEvent } from "react";
-
+import { Alert } from "design-react-kit";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
+import React, { Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { FieldsValidatorType, getValidator } from "../../utils/validators";
-import { Option } from 'fp-ts/lib/Option';
-import { Alert } from "design-react-kit";
+
 type OwnProps = {
   name: string;
-  elem: readonly (keyof ServiceMetadata)[]
-  errors: { [key: string]: string },
-  service_metadata: {phone?: string, email?: string, pec?: string, support_url?: string},
-  onBlur: (type: Option<FieldsValidatorType>) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => void;
+  elem: ReadonlyArray<keyof ServiceMetadata>;
+  errors: { [key: string]: string };
+  service_metadata: Partial<ServiceMetadata>;
+  // service_metadata: {phone?: string, email?: string, pec?: string, support_url?: string},
+  onBlur: (
+    type: FieldsValidatorType
+  ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => void;
 };
 
 type Props = WithNamespaces & OwnProps;
-
+type ContactsFields = "pec" | "phone" | "email" | "string";
+type ContactInMetadata = { [P in ContactsFields]?: string };
 class ContactInput extends Component<Props> {
   public state: {
-    metadata: {
-      pec?: string,
-      phone?: string,
-      email?: string,
-      support_url?: string,
-      [index: string]: string | undefined
-    },
-    error: string
+    metadata: ContactInMetadata;
+    error: string;
   } = {
     metadata: {},
-    error: ''
-  }
+    error: ""
+  };
 
   constructor(props: any) {
-    super(props)
+    super(props);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     // Qui devi riportare eventuali metadati ricevuti dal backend
     this.setState({
       metadata: this.props.service_metadata
-    })
+    });
   }
 
   private async handler(
     event: FocusEvent<HTMLInputElement>,
-    k: keyof ServiceMetadata,
+    k: keyof ServiceMetadata
   ) {
     // Validazione del formato del dato
-    this.props.onBlur(getValidator(k))(event)
+    this.props.onBlur(getValidator(k))(event);
 
-    await this.setState({
+    this.setState({
       metadata: {
         ...this.state.metadata,
-        [k]: event.target.value,
-      },
-    })
+        [k]: event.target.value
+      }
+    });
 
-    await this.setState({
-      error: Object.keys(this.state.metadata).filter(el => this.state.metadata[el]).reduce(
-        (acc, el) => ''
-      , 'ricordati di inserire almeno un contatto!')
-    })
-
+    this.setState({
+      error: Object.keys(this.state.metadata)
+        .filter(el => this.state.metadata[el as ContactsFields])
+        .reduce(() => "", "ricordati di inserire almeno un contatto!")
+    });
   }
 
-  render() {
-    const { elem, errors, service_metadata, t} = this.props;
+  public render() {
+    const { elem, errors, service_metadata, t } = this.props;
     const { error } = this.state;
-    return(
+    return (
       <div>
-        {error.length > 0 && <Alert color="warning">Attenzione {JSON.stringify(error)}</Alert>}
-        {elem && elem.map((k, i) =>
-          {
+        {error.length > 0 && (
+          <Alert color="warning">Attenzione {JSON.stringify(error)}</Alert>
+        )}
+        {elem &&
+          elem.map((k, i) => {
             return (
               <div key={i}>
                 <label className="m-0">{t(k)}</label>
-                  <input
-                    name={k}
-                    type="text"
-                    defaultValue={Object(service_metadata)[k]}
-                    onBlur={(e) => this.handler(e, k)}
-                    className={errors[k] ? "mb4 error" : "mb4"}
-                  />
-                {errors[k] && <Alert color="danger" key={i}>Errore {JSON.stringify(errors[k])}</Alert>}
-          </div>
-            )
-          })
-        }
+                <input
+                  name={k}
+                  type="text"
+                  defaultValue={Object(service_metadata)[k]}
+                  onBlur={e => this.handler(e, k)}
+                  className={errors[k] ? "mb4 error" : "mb4"}
+                />
+                {errors[k] && (
+                  <Alert color="danger" key={i}>
+                    Errore {JSON.stringify(errors[k])}
+                  </Alert>
+                )}
+              </div>
+            );
+          })}
       </div>
-    )
+    );
   }
 }
 export default withNamespaces("service")(ContactInput);

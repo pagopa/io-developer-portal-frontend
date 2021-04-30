@@ -1,8 +1,6 @@
+import { Alert, Button } from "design-react-kit";
 import React, { ChangeEvent, Component, Fragment } from "react";
-
 import { WithNamespaces, withNamespaces } from "react-i18next";
-
-import { Button } from "design-react-kit";
 
 import get from "lodash/get";
 import { getStorage } from "../context/storage";
@@ -16,14 +14,14 @@ import { RouteComponentProps } from "react-router";
 import Confirmation from "../components/modal/Confirmation";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
-// import { Service } from "../../generated/definitions/backend/Service";
+
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 
 import { SubscriptionCollection } from "../../generated/definitions/backend/SubscriptionCollection";
 import { SubscriptionContract } from "../../generated/definitions/backend/SubscriptionContract";
 import { UserData } from "../../generated/definitions/backend/UserData";
-import { Alert } from "design-react-kit";
-import { isContactExists } from "../utils/service";
+
+import { isContactExists, isMandatoryFieldsValid } from "../utils/service";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
@@ -340,21 +338,41 @@ class Profile extends Component<Props, ProfileState> {
   }
 
   private checkService(service: Service) {
-    const isVisible = service && service.is_visible
-    const serviceContacts = service && service.service_metadata && isContactExists(service.service_metadata)/*Math.random() > 0.4/*(service && service.service_metadata &&
-      !service.service_metadata['phone'] &&
-      !service.service_metadata['email'] &&
-      !service.service_metadata['pec'] &&
-      !service.service_metadata['support_url']
-    )*/
+    const isVisible = service && service.is_visible;
+    const serviceContacts =
+      service &&
+      service.service_metadata &&
+      isContactExists(service.service_metadata);
+    const mandatory = service && isMandatoryFieldsValid(service);
+
     return (
       <div>
-        {isVisible && !serviceContacts ? <Alert color="danger">Campi non validi, il servizio non sarà visibile!</Alert> : ''}
-        {!isVisible && !serviceContacts ? <Alert color="warning">Completa i campi per renderlo visibile</Alert> : ''}
-        {isVisible && serviceContacts ? <Alert color="success">Il tuo servizio è visibile</Alert> : ''}
-        {!isVisible && serviceContacts ? <Alert color="info">Il tuo servizio è pronto per essere messo in App</Alert> : ''}
+        {isVisible && !serviceContacts ? (
+          <Alert color="danger">
+            Campi non validi, il servizio non sarà visibile!
+          </Alert>
+        ) : (
+          ""
+        )}
+        {!isVisible && (!serviceContacts || !mandatory) ? (
+          <Alert color="warning">Completa i campi per renderlo visibile</Alert>
+        ) : (
+          ""
+        )}
+        {isVisible && serviceContacts ? (
+          <Alert color="success">Il tuo servizio è visibile</Alert>
+        ) : (
+          ""
+        )}
+        {!isVisible && serviceContacts && mandatory ? (
+          <Alert color="info">
+            Il tuo servizio è pronto per essere messo in App
+          </Alert>
+        ) : (
+          ""
+        )}
       </div>
-    )
+    );
   }
 
   public render() {

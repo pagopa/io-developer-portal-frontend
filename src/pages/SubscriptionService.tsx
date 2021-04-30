@@ -1,28 +1,22 @@
-import React, { ChangeEvent, Component, FocusEvent } from "react";
-import { Option, isSome } from 'fp-ts/lib/Option'
-import { WithNamespaces, withNamespaces } from "react-i18next";
-
 import { Button } from "design-react-kit";
-
-import { RouteComponentProps } from "react-router";
-import { StorageContext } from "../context/storage";
-import { getFromBackend, putToBackend } from "../utils/backend";
-
 import { Alert } from "design-react-kit";
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
-import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
-import MetadataInput from "../components/input/MetadataInput";
-
+import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import * as ts from "io-ts";
-// Lorenzo: Qui ho i vari tipi che posso usare
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
+import React, { ChangeEvent, Component, FocusEvent } from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
+import { RouteComponentProps } from "react-router";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
+import MetadataInput from "../components/input/MetadataInput";
 import UploadLogo from "../components/UploadLogo";
+import { StorageContext } from "../context/storage";
+import { getFromBackend, putToBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
-import { getValidator, FieldsValidatorType} from "../utils/validators";
-import { isContactExists } from "../utils/service";
+import { isContactExists, isMandatoryFieldsValid } from "../utils/service";
+import { FieldsValidatorType, getValidator } from "../utils/validators";
 
 const LogoParamsApi = ts.interface({
   logo: NonEmptyString,
@@ -61,8 +55,8 @@ type Form = ts.TypeOf<typeof Form>;*/
 type SubscriptionServiceState = {
   form: {
     metadata: {
-      [index:string]: unknown
-    }
+      [index: string]: unknown;
+    };
   }; // Form & {[index: string]: string};
   errorLogoUpload: boolean; // Lorenzo: verifico se il logo è stato inviato
   service?: Service; // Lorenzo: dati del servizio, perchè opzionale?
@@ -71,7 +65,7 @@ type SubscriptionServiceState = {
   logoIsValid: boolean; // Lorenzo: verifico che il logo sia una stringa valida
   logoUploaded: boolean; // Lorenzo: verfico che il logo sia stato inviato, ma non è un duplicato di errorLogoUpload???
   originalIsVisible?: boolean; // Lorenzo: il servizio è già visibile?
-  errors: {[key: string]: string} // {[key: string]: string | ts.Errors}
+  errors: { [key: string]: string }; // {[key: string]: string | ts.Errors}
 };
 
 // Lorenzo: questa funzione prende un input e verifica se è uno dei campi tra "max_allowed_payment_amount", "authorized_cidrs", "authorized_recipients" per effettuare delle operazioni sul value oppure nessuno e ritorno il value ricevuto.
@@ -98,7 +92,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
     form: {
       metadata: {
-        scope: 'LOCAL'
+        scope: "LOCAL"
       }
     },
     errorLogoUpload: false,
@@ -114,7 +108,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
 
-    // Lorenzo: mi prendo il service dal backend
     const serviceFromBackend = await getFromBackend<Service>({
       path: `services/${serviceId}`
     });
@@ -128,12 +121,69 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           }
     };
 
-    // Lorenzo: imposto lo stato :)
     this.setState({
       service,
       originalIsVisible: serviceFromBackend.is_visible
     });
   }
+
+  private handleError = (name: string) => {
+    this.setState({
+      errors: {
+        ...this.state.errors,
+        [name]: this.props.t("validation:field_error", {
+          field: this.props.t(name)
+        })
+      },
+      isValid: false
+    });
+  };
+
+  private setData = (
+    errors: { [key: string]: string },
+    name: string,
+    inputValue: string | boolean
+  ) => {
+    return this.setState({
+      errors,
+      isValid: Object.keys(errors).length > 0 ? false : true,
+      form: {
+        ...this.state.form,
+        [name]: inputValue === "" ? undefined : inputValueMap(name, inputValue)
+      }
+    });
+  };
+
+  private setMetadata = (
+    errors: { [key: string]: string },
+    name: string,
+    inputValue: string | boolean | number | string[]
+  ) => {
+    this.setState({
+      errors,
+      isValid: Object.keys(errors).length > 0 ? false : true,
+      form: {
+        ...this.state.form,
+        metadata: {
+          ...(this.state.form && this.state.form.metadata
+            ? this.state.form.metadata
+            : undefined),
+          [name]: inputValue === "" ? undefined : inputValue
+        }
+      }
+    });
+  };
+
+  private removeError = (name: string) =>
+    Object.keys(this.state.errors).reduce(
+      (result: { [key: string]: string }, key) => {
+        if (key !== name) {
+          result[key] = this.state.errors[key];
+        }
+        return result;
+      },
+      {}
+    );
 
   public handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
@@ -146,141 +196,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       [name]: inputValueMap(name, value)
     })
       .map(service => this.setState({ service, isValid: true }))
-      .mapLeft(() => this.setState({
-        isValid: false
-      }));
+      .mapLeft(() =>
+        this.setState({
+          isValid: false
+        })
+      );
   };
-
-  public getHandleBlur = (type: Option<FieldsValidatorType>) => (event: FocusEvent<HTMLInputElement>) => {
-    const target = event.target;
-    const inputValue = target.type === "checkbox" ? target.checked : target.value;
-    const name = target.name;
-    console.log('On Blur', name, inputValue, Object.keys(this.state.errors).length);
-
-    isSome(type) ? type.value.decode(inputValueMap(name, inputValue)).fold(
-      err => {
-        console.log('Inserisco errore', name, inputValue)
-        return this.setState({
-          errors : {
-            ...this.state.errors,
-            [name]: this.props.t("validation:field_error", { field: this.props.t(name) })
-          },
-          isValid: false
-        })
-      },
-      () => {
-        console.log('Elimino errore', name, inputValue)
-        const errors: {[key:string]: string} = Object.keys(this.state.errors).reduce((result: {[key:string]: string}, key) => {
-          if(key !== name) {
-            result[key] = this.state.errors[key];
-          }
-          return result;
-        }, {});
-        return this.setState({
-          errors : errors,
-          isValid: Object.keys(errors).length > 0 ? false : true,
-          form: {
-            ...this.state.form,
-
-            [name]: inputValue === "" ? undefined : inputValue
-
-          }
-        })
-      }
-    )
-    :
-      this.setState( () => {
-        const errors: {[key:string]: string} = Object.keys(this.state.errors).reduce((result: {[key:string]: string}, key) => {
-          if(key !== name) {
-            result[key] = this.state.errors[key];
-          }
-          return result;
-        }, {});
-        return{
-          errors : errors,
-          isValid: Object.keys(errors).length > 0 ? false : true,
-          form: {
-            ...this.state.form,
-
-            [name]: inputValue === "" ? undefined : inputValue
-
-          }
-      }
-    })
-    console.log(this.state)
-  }
-
-  /*
-  Se valido un campo opzionale che fa parte di un blocco in cui ho un campo obbligatorio ma non ancora inserito, va in errore il campo opzionale. Forse dovrei avere dei metadati opzionali e metadati obbligatori. Dovrei pensare di fare dei controlli specifici sul singolo piuttosto che fare su tutto il blocco ogni volta. Altrimenti se ho dei campi obbligatori ancora non compilati dall'utente, me li segnalerebbe come errore.
-  */
-  public getHandleMetadataBlur = (type: Option<FieldsValidatorType>) => (
-    event: FocusEvent<HTMLSelectElement | HTMLInputElement>
-  ) => {
-    const {
-      target: { name, value }
-    } = event;
-    const inputValue = inputValueMap(name, value);
-    console.log('On Blur Metadata', name, value, inputValue, Object.keys(this.state.errors).length);
-    (value && value.length>0) && isSome(type) ? type.value.decode(inputValue).fold(
-      err => {
-        console.log('Inserisco errore', name, inputValue)
-        return this.setState({
-          errors : {
-            ...this.state.errors,
-            [name]: this.props.t("validation:field_error", { field: this.props.t(name) })
-          },
-          isValid: false
-        })
-      },
-      () => {
-        console.log('Elimino errore', name, inputValue)
-        const errors: {[key:string]: string} = Object.keys(this.state.errors).reduce((result: {[key:string]: string}, key) => {
-          if(key !== name) {
-            result[key] = this.state.errors[key];
-          }
-          return result;
-        }, {});
-        return this.setState({
-          errors : errors,
-          isValid: Object.keys(errors).length > 0 ? false : true,
-          form: {
-            ...this.state.form,
-            metadata: {
-            ...(this.state.form && this.state.form.metadata
-              ? this.state.form.metadata
-              : undefined),
-            [name]: inputValue === "" ? undefined : inputValue
-            }
-          }
-        })
-      }
-    )
-    :
-      this.setState( () => {
-        const errors: {[key:string]: string} = Object.keys(this.state.errors).reduce((result: {[key:string]: string}, key) => {
-          if(key !== name) {
-            result[key] = this.state.errors[key];
-          }
-          return result;
-        }, {});
-        return{
-          errors : errors,
-          isValid: Object.keys(errors).length > 0 ? false : true,
-          form: {
-            ...this.state.form,
-            metadata: {
-            ...(this.state.form && this.state.form.metadata
-              ? this.state.form.metadata
-              : undefined),
-            [name]: inputValue === "" ? undefined : inputValue
-            }
-          }
-      }
-    })
-    console.log(this.state)
-
-
-  }
 
   public handleMetadataChange = (
     event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
@@ -297,12 +218,45 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           : undefined),
         [name]: inputValue === "" ? undefined : inputValue
       }
-    })
-    .map(service => this.setState({ service }));
+    }).map(service => this.setState({ service }));
+  };
+
+  public getHandleBlur = (type: FieldsValidatorType) => (
+    event: FocusEvent<HTMLInputElement>
+  ) => {
+    const target = event.target;
+    const inputValue =
+      target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+
+    type
+      .decode(inputValueMap(name, inputValue))
+      .fold(
+        (err: ts.Errors) => this.handleError(name),
+        (_: unknown) => this.setData(this.removeError(name), name, inputValue)
+      );
+  };
+
+  public getHandleMetadataBlur = (type: FieldsValidatorType) => (
+    event: FocusEvent<HTMLSelectElement | HTMLInputElement>
+  ) => {
+    const {
+      target: { name, value }
+    } = event;
+    const inputValue = inputValueMap(name, value);
+
+    value && value.length > 0
+      ? type
+          .decode(inputValue)
+          .fold(
+            (err: ts.Errors) => this.handleError(name),
+            (_: unknown) =>
+              this.setMetadata(this.removeError(name), name, inputValue)
+          )
+      : this.setMetadata(this.removeError(name), name, inputValue);
   };
 
   public handleSubmit = async () => {
-
     const serviceToUpdate = {
       ...this.state.service,
       ...this.state.form,
@@ -310,32 +264,23 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         ...(this.state.service ? this.state.service.service_metadata : {}),
         ...this.state.form.metadata
       }
-    }
-
-    /*
-    support_url?: (string & INonEmptyStringTag) | undefined; }' is not assignable to type '{  support_url?: (string & INonEmptyStringTag) | undefined; }'
-    support_url?: (string & INonEmptyStringTag) | undefined; }' is not assignable to type '{ scope: ServiceScopeEnum; }'.
-    Types of property 'scope' are incompatible.
-      Type 'ServiceScopeEnum | undefined' is not assignable to type 'ServiceScopeEnum'.
-        Type 'undefined' is not assignable to type 'ServiceScopeEnum'.ts(2322)
-    */
+    };
 
     const serviceDecoding = Service.decode(serviceToUpdate);
 
-    /*const notExistContact = (this.state.form && this.state.form.metadata &&
-      !this.state.form.metadata['phone'] &&
-      !this.state.form.metadata['email'] &&
-      !this.state.form.metadata['pec'] &&
-      !this.state.form.metadata['support_url']
-    )*/
-    if (serviceDecoding.isLeft() || (serviceToUpdate.service_metadata && isContactExists(serviceToUpdate.service_metadata as ServiceMetadata))) {
+    if (
+      serviceDecoding.isLeft() ||
+      (serviceToUpdate.service_metadata &&
+        !isContactExists(serviceToUpdate.service_metadata as ServiceMetadata) &&
+        !isMandatoryFieldsValid(serviceToUpdate.service_metadata as Service))
+    ) {
       this.setState({ isValid: false });
       throw new Error("Wrong parameters format");
     }
 
     const service = serviceDecoding.value;
-    // Lorenzo: ho bloccato l'invio al server e fatto una console.log dei dati
-    /*await putToBackend({
+
+    await putToBackend({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -351,19 +296,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           service_metadata: service.service_metadata
         })
       }
-    });*/
-    console.log("***SALVATAGGIO DATI***", service);
-    console.log('*** STATO ***', this.state);
-    console.log({
-      organization_fiscal_code: service.organization_fiscal_code,
-      organization_name: service.organization_name,
-      department_name: service.department_name,
-      service_name: service.service_name,
-      max_allowed_payment_amount: service.max_allowed_payment_amount,
-      authorized_cidrs: service.authorized_cidrs,
-      authorized_recipients: service.authorized_recipients,
-      is_visible: service.is_visible,
-      service_metadata: service.service_metadata
     });
   };
 
@@ -447,7 +379,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         {storage => (
           <div>
             {!isValid && <Alert color="danger">Campi non validi</Alert>}
-
             <h4>
               {t("title")} {service.service_id}
             </h4>
@@ -458,40 +389,63 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   name="service_name"
                   type="text"
                   defaultValue={service.service_name}
-                  onBlur={this.getHandleBlur(getValidator('service_name'))}
+                  onBlur={this.getHandleBlur(getValidator("service_name"))}
                   className="mb-4"
                 />
-                {this.state.errors['service_name'] && <Alert color="danger">Errore {JSON.stringify(this.state.errors['service_name'])}</Alert>}
+                {this.state.errors["service_name"] && (
+                  <Alert color="danger">
+                    Errore {JSON.stringify(this.state.errors["service_name"])}
+                  </Alert>
+                )}
 
                 <label className="m-0">{t("department")}*</label>
                 <input
                   name="department_name"
                   type="text"
                   defaultValue={service.department_name}
-                  onBlur={this.getHandleBlur(getValidator('department_name'))}
+                  onBlur={this.getHandleBlur(getValidator("department_name"))}
                   className="mb-4"
                 />
-                {this.state.errors['department_name'] && <Alert color="danger">Errore {JSON.stringify(this.state.errors['department_name'])}</Alert>}
+                {this.state.errors["department_name"] && (
+                  <Alert color="danger">
+                    Errore{" "}
+                    {JSON.stringify(this.state.errors["department_name"])}
+                  </Alert>
+                )}
 
                 <label className="m-0">{t("organization")}*</label>
                 <input
                   name="organization_name"
                   type="text"
                   defaultValue={service.organization_name}
-                  onBlur={this.getHandleBlur(getValidator('organization_name'))}
+                  onBlur={this.getHandleBlur(getValidator("organization_name"))}
                   className="mb-4"
                 />
-                {this.state.errors['organization_name'] && <Alert color="danger">Errore {JSON.stringify(this.state.errors['organization_name'])}</Alert>}
+                {this.state.errors["organization_name"] && (
+                  <Alert color="danger">
+                    Errore{" "}
+                    {JSON.stringify(this.state.errors["organization_name"])}
+                  </Alert>
+                )}
 
                 <label className="m-0">{t("organization_fiscal_code")}*</label>
                 <input
                   name="organization_fiscal_code"
                   type="text"
                   defaultValue={service.organization_fiscal_code}
-                  onBlur={this.getHandleBlur(getValidator('organization_fiscal_code'))}
+                  onBlur={this.getHandleBlur(
+                    getValidator("organization_fiscal_code")
+                  )}
                   className="mb-4"
                 />
-                {this.state.errors['organization_fiscal_code'] && <Alert color="danger">Errore {JSON.stringify(this.state.errors['organization_fiscal_code'])}</Alert>}
+                {this.state.errors["organization_fiscal_code"] && (
+                  <Alert color="danger">
+                    Errore{" "}
+                    {JSON.stringify(
+                      this.state.errors["organization_fiscal_code"]
+                    )}
+                  </Alert>
+                )}
 
                 {storage.isApiAdmin && (
                   <div>
@@ -506,7 +460,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                           ? service.max_allowed_payment_amount.toString()
                           : undefined
                       }
-                      onBlur={this.getHandleBlur(getValidator('max_allowed_payment_amount'))}
+                      onBlur={this.getHandleBlur(
+                        getValidator("max_allowed_payment_amount")
+                      )}
                       className="mb-4"
                     />
                   </div>
@@ -519,10 +475,17 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     type="text"
                     defaultValue={service.authorized_cidrs.join(";")}
                     onChange={this.handleInputChange}
-                    onBlur={this.getHandleBlur(getValidator('authorized_cidrs'))}
+                    onBlur={this.getHandleBlur(
+                      getValidator("authorized_cidrs")
+                    )}
                     className="mb-4"
                   />
-                  {this.state.errors['authorized_cidrs'] && <Alert color="danger">Errore {JSON.stringify(this.state.errors['authorized_cidrs'])}</Alert>}
+                  {this.state.errors["authorized_cidrs"] && (
+                    <Alert color="danger">
+                      Errore{" "}
+                      {JSON.stringify(this.state.errors["authorized_cidrs"])}
+                    </Alert>
+                  )}
                 </div>
 
                 {storage.isApiAdmin && (
