@@ -138,31 +138,45 @@ export type FieldsValidatorType =
       >
     >;
 
-export const getValidator = (prop: keyof ServiceMetadata | keyof Service) => {
+type InputValue = string | boolean | number | readonly string[];
+export const checkValue = (
+  prop: keyof ServiceMetadata | keyof Service,
+  value: InputValue
+): ts.Validation<string | ValidUrl> => {
+  console.log("PROP TO VERIFY", prop);
   switch (prop) {
+    /*case "authorized_cidrs": {
+      console.log("CHECK IP ADDRESS CIDR", value);
+      ts.readonlyArray(CIDR)
+        .decode(["192.168.1.1"])
+        .fold(e => console.log("ERRORE", e), a => console.log("OK"));
+      return ts.readonlyArray(CIDR).decode(value);
+    }*/
+    case "organization_fiscal_code": {
+      console.log("CHECK ORGANIZATIONAL FISCAL CODE");
+      return OrganizationFiscalCode.decode(value);
+    }
     case "phone": {
-      return PhoneCheck;
+      console.log("CHECK PHONE");
+      return PhoneCheck.decode(value);
     }
     case "pec":
     case "email": {
-      return EmailString;
+      console.log("CHECK EMAIL");
+      return EmailString.decode(value);
     }
-    case "web_url":
-    case "tos_url":
     case "app_android":
     case "app_ios":
     case "privacy_url":
-    case "support_url": {
-      return UrlFromStringV2;
-    }
-    case "authorized_cidrs": {
-      return ts.readonlyArray(CIDR);
-    }
-    case "organization_fiscal_code": {
-      return OrganizationFiscalCode;
+    case "support_url":
+    case "tos_url":
+    case "web_url": {
+      console.log("CHECK URL");
+      return UrlFromStringV2.decode(value);
     }
     default: {
-      return NonEmptyString;
+      console.log("CHECK DEFAULT");
+      return NonEmptyString.decode(value);
     }
   }
 };

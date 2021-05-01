@@ -12,8 +12,6 @@ import { LIMITS } from "../../utils/constants";
 
 import MarkdownEditor from "./MarkdownEditor";
 
-import { FieldsValidatorType, getValidator } from "../../utils/validators";
-
 type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
@@ -21,7 +19,7 @@ type OwnProps = {
   errors: { [key: string]: string };
   onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
   onBlur: (
-    type: FieldsValidatorType
+    prop: keyof ServiceMetadata
   ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => void;
 };
 
@@ -101,7 +99,7 @@ const MetadataInput = ({
             type="text"
             defaultValue={Object(service_metadata)[k]}
             onChange={onChange}
-            onBlur={onBlur(getValidator(k))}
+            onBlur={onBlur(k)}
             className={errors[k] ? "mb4 error" : "mb4"}
             {...more}
           />
@@ -137,7 +135,7 @@ const MetadataInput = ({
   };
 
   const scopeField = () => {
-    return SortedMetadata.filter(elem => elem === "scope").map((elem, i) => {
+    return SortedMetadata.filter(elem => elem === "scope").map((_, i) => {
       return (
         <div key={i}>
           <label className="m-0">{t("scope")}*</label>
@@ -147,7 +145,7 @@ const MetadataInput = ({
             className="form-control mb-4"
             onChange={onChange}
             disabled={originalServiceIsVisible && !isApiAdmin}
-            onBlur={onBlur(getValidator("scope"))}
+            onBlur={onBlur("scope")}
           >
             <option
               key={ServiceScopeEnum.NATIONAL}
@@ -165,24 +163,22 @@ const MetadataInput = ({
   };
 
   const descriptionField = () => {
-    return SortedMetadata.filter(elem => elem === "description").map(
-      (elem, i) => {
-        return (
-          <MarkdownEditor
-            markdown={
-              service_metadata && service_metadata.description
-                ? service_metadata.description
-                : ""
-            }
-            name="description"
-            markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
-            isMarkdownValid={true}
-            onChangeMarkdown={onChange}
-            key={i}
-          />
-        );
-      }
-    );
+    return SortedMetadata.filter(elem => elem === "description").map((_, i) => {
+      return (
+        <MarkdownEditor
+          markdown={
+            service_metadata && service_metadata.description
+              ? service_metadata.description
+              : ""
+          }
+          name="description"
+          markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
+          isMarkdownValid={true}
+          onChangeMarkdown={onChange}
+          key={i}
+        />
+      );
+    });
   };
 
   const ctaField = () => {
@@ -197,7 +193,7 @@ const MetadataInput = ({
                 : ""
             }
             onChange={onChange}
-            onBlur={onBlur(getValidator("cta"))}
+            onBlur={onBlur("cta")}
             name={k}
             type="textarea"
             rows="15"

@@ -4,15 +4,14 @@ import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions
 export const isContactExists = (metadata: ServiceMetadata): boolean => {
   return !!(
     metadata &&
-    (metadata["phone"] ||
-      metadata["email"] ||
-      metadata["pec"] ||
-      metadata["support_url"])
+    (metadata[`phone`] ||
+      metadata[`email`] ||
+      metadata[`pec`] ||
+      metadata[`support_url`])
   );
 };
 
 export const isMandatoryFieldsValid = (service: Service): boolean => {
-  console.log("isMandatoryField", service);
   return !!(
     service &&
     service.authorized_cidrs &&

@@ -2,7 +2,6 @@ import { Alert } from "design-react-kit";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import React, { Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { FieldsValidatorType, getValidator } from "../../utils/validators";
 
 type OwnProps = {
   name: string;
@@ -11,7 +10,7 @@ type OwnProps = {
   service_metadata: Partial<ServiceMetadata>;
   // service_metadata: {phone?: string, email?: string, pec?: string, support_url?: string},
   onBlur: (
-    type: FieldsValidatorType
+    prop: keyof ServiceMetadata
   ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => void;
 };
 
@@ -27,10 +26,6 @@ class ContactInput extends Component<Props> {
     error: ""
   };
 
-  constructor(props: any) {
-    super(props);
-  }
-
   public componentDidMount() {
     // Qui devi riportare eventuali metadati ricevuti dal backend
     this.setState({
@@ -43,7 +38,7 @@ class ContactInput extends Component<Props> {
     k: keyof ServiceMetadata
   ) {
     // Validazione del formato del dato
-    this.props.onBlur(getValidator(k))(event);
+    this.props.onBlur(k)(event); // ATTENZIONE
 
     this.setState({
       metadata: {

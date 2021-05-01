@@ -4,6 +4,7 @@ import { Service } from "io-functions-commons/dist/generated/definitions/Service
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import * as ts from "io-ts";
+
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import React, { ChangeEvent, Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -16,7 +17,7 @@ import { getFromBackend, putToBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
 import { isContactExists, isMandatoryFieldsValid } from "../utils/service";
-import { FieldsValidatorType, getValidator } from "../utils/validators";
+import { checkValue } from "../utils/validators";
 
 const LogoParamsApi = ts.interface({
   logo: NonEmptyString,
@@ -24,6 +25,7 @@ const LogoParamsApi = ts.interface({
 });
 
 type LogoParamsApi = ts.TypeOf<typeof LogoParamsApi>;
+type InputValue = string | boolean | number | readonly string[];
 
 const LogoErrorBodyApi = ts.interface({
   detail: ts.string,
@@ -40,36 +42,29 @@ type LogoSuccessBodyApi = ts.TypeOf<typeof LogoSuccessBodyApi>;
 const SERVICES_LOGO_PATH =
   getConfig("IO_DEVELOPER_PORTAL_LOGO_PATH") + "/services/";
 
-// Lorenzo: a cosa mi serve?
 type OwnProps = {};
-// Lorenzo: viene aggiunto qui:
+
 type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
-/*const Form = ts.type({
-  fiscaleCode: FiscalCodeCheck,
-})
-type Form = ts.TypeOf<typeof Form>;*/
-// Lorenzo: possiamo rivedere questo stato? Magari ricreandolo tramite una union dei possibili stati validi evitando stati incosistenti?
 type SubscriptionServiceState = {
   form: {
     metadata: {
       [index: string]: unknown;
     };
-  }; // Form & {[index: string]: string};
-  errorLogoUpload: boolean; // Lorenzo: verifico se il logo è stato inviato
-  service?: Service; // Lorenzo: dati del servizio, perchè opzionale?
-  isValid?: boolean; // Lorenzo: il serivizio è valido?
-  logo?: string; // Lorenzo: il servizio ha un logo?
-  logoIsValid: boolean; // Lorenzo: verifico che il logo sia una stringa valida
-  logoUploaded: boolean; // Lorenzo: verfico che il logo sia stato inviato, ma non è un duplicato di errorLogoUpload???
-  originalIsVisible?: boolean; // Lorenzo: il servizio è già visibile?
-  errors: { [key: string]: string }; // {[key: string]: string | ts.Errors}
+  };
+  errorLogoUpload: boolean;
+  service?: Service;
+  isValid?: boolean;
+  logo?: string;
+  logoIsValid: boolean;
+  logoUploaded: boolean;
+  originalIsVisible?: boolean;
+  errors: { [key: string]: string };
 };
 
-// Lorenzo: questa funzione prende un input e verifica se è uno dei campi tra "max_allowed_payment_amount", "authorized_cidrs", "authorized_recipients" per effettuare delle operazioni sul value oppure nessuno e ritorno il value ricevuto.
-function inputValueMap(name: string, value: string | boolean) {
+function inputValueMap(name: string, value: InputValue) {
   switch (name) {
     case "max_allowed_payment_amount":
       return Number(value);
@@ -88,7 +83,6 @@ function inputValueMap(name: string, value: string | boolean) {
 }
 
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
-  // Lorenzo: Il mio stato React
   public state: SubscriptionServiceState = {
     form: {
       metadata: {
@@ -98,9 +92,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     errorLogoUpload: false,
     service: undefined,
     isValid: true,
-    logo: undefined, // Lorenzo: parto con un logo undefined e un true a logoIsValid, non è un controsenso?
-    logoIsValid: true, // Lorenzo: si da per scontato che il logo sia valido?
-    logoUploaded: true, // Lorenzo: si da per scontato che esista un logo?
+    logo: undefined,
+    logoIsValid: true,
+    logoUploaded: true,
     originalIsVisible: undefined,
     errors: {}
   };
@@ -142,11 +136,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   private setData = (
     errors: { [key: string]: string },
     name: string,
-    inputValue: string | boolean
+    inputValue: InputValue
   ) => {
     return this.setState({
       errors,
-      isValid: Object.keys(errors).length > 0 ? false : true,
+      isValid: Object.keys(errors).length > 0 === true,
       form: {
         ...this.state.form,
         [name]: inputValue === "" ? undefined : inputValueMap(name, inputValue)
@@ -157,11 +151,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   private setMetadata = (
     errors: { [key: string]: string },
     name: string,
-    inputValue: string | boolean | number | string[]
+    inputValue: InputValue
   ) => {
     this.setState({
       errors,
-      isValid: Object.keys(errors).length > 0 ? false : true,
+      isValid: Object.keys(errors).length > 0 === true,
       form: {
         ...this.state.form,
         metadata: {
@@ -174,23 +168,17 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     });
   };
 
-  private removeError = (name: string) =>
-    Object.keys(this.state.errors).reduce(
-      (result: { [key: string]: string }, key) => {
-        if (key !== name) {
-          result[key] = this.state.errors[key];
-        }
-        return result;
-      },
-      {}
-    );
+  private removeError = (name: string) => {
+    const key = name;
+    const { [key]: fieldToRemove, ...others } = this.state.errors;
+    return others;
+  };
 
   public handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
 
-    // Lorenzo: qui ricevo un Either Left/Right che non me ne faccio nulla, al posto dell map usiamo una fold?
     Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
@@ -221,38 +209,34 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     }).map(service => this.setState({ service }));
   };
 
-  public getHandleBlur = (type: FieldsValidatorType) => (
+  public getHandleBlur = (prop: keyof ServiceMetadata | keyof Service) => (
     event: FocusEvent<HTMLInputElement>
   ) => {
     const target = event.target;
     const inputValue =
       target.type === "checkbox" ? target.checked : target.value;
-    const name = target.name;
-
-    type
-      .decode(inputValueMap(name, inputValue))
-      .fold(
-        (err: ts.Errors) => this.handleError(name),
-        (_: unknown) => this.setData(this.removeError(name), name, inputValue)
-      );
+    console.log("Input", prop, inputValue);
+    const value = inputValueMap(prop, inputValue);
+    console.log("Value", inputValue);
+    checkValue(prop, inputValue).fold(
+      () => this.handleError(prop),
+      () => this.setData(this.removeError(prop), prop, value)
+    );
   };
 
-  public getHandleMetadataBlur = (type: FieldsValidatorType) => (
-    event: FocusEvent<HTMLSelectElement | HTMLInputElement>
-  ) => {
+  public getHandleMetadataBlur = (
+    prop: keyof ServiceMetadata | keyof Service
+  ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => {
     const {
       target: { name, value }
     } = event;
     const inputValue = inputValueMap(name, value);
 
     value && value.length > 0
-      ? type
-          .decode(inputValue)
-          .fold(
-            (err: ts.Errors) => this.handleError(name),
-            (_: unknown) =>
-              this.setMetadata(this.removeError(name), name, inputValue)
-          )
+      ? checkValue(prop, inputValue).fold(
+          () => this.handleError(name),
+          () => this.setMetadata(this.removeError(name), name, inputValue)
+        )
       : this.setMetadata(this.removeError(name), name, inputValue);
   };
 
@@ -389,27 +373,27 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   name="service_name"
                   type="text"
                   defaultValue={service.service_name}
-                  onBlur={this.getHandleBlur(getValidator("service_name"))}
+                  onBlur={this.getHandleBlur("service_name")}
                   className="mb-4"
                 />
-                {this.state.errors["service_name"] && (
+                {this.state.errors[`service_name`] && (
                   <Alert color="danger">
-                    Errore {JSON.stringify(this.state.errors["service_name"])}
+                    Errore {JSON.stringify(this.state.errors[`service_name`])}
                   </Alert>
                 )}
 
-                <label className="m-0">{t("department")}*</label>
+                <label className="m-0">{t(`department`)}*</label>
                 <input
                   name="department_name"
                   type="text"
                   defaultValue={service.department_name}
-                  onBlur={this.getHandleBlur(getValidator("department_name"))}
+                  onBlur={this.getHandleBlur("department_name")}
                   className="mb-4"
                 />
-                {this.state.errors["department_name"] && (
+                {this.state.errors[`department_name`] && (
                   <Alert color="danger">
                     Errore{" "}
-                    {JSON.stringify(this.state.errors["department_name"])}
+                    {JSON.stringify(this.state.errors[`department_name`])}
                   </Alert>
                 )}
 
@@ -418,13 +402,13 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   name="organization_name"
                   type="text"
                   defaultValue={service.organization_name}
-                  onBlur={this.getHandleBlur(getValidator("organization_name"))}
+                  onBlur={this.getHandleBlur("organization_name")}
                   className="mb-4"
                 />
-                {this.state.errors["organization_name"] && (
+                {this.state.errors[`organization_name`] && (
                   <Alert color="danger">
                     Errore{" "}
-                    {JSON.stringify(this.state.errors["organization_name"])}
+                    {JSON.stringify(this.state.errors[`organization_name`])}
                   </Alert>
                 )}
 
@@ -433,16 +417,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   name="organization_fiscal_code"
                   type="text"
                   defaultValue={service.organization_fiscal_code}
-                  onBlur={this.getHandleBlur(
-                    getValidator("organization_fiscal_code")
-                  )}
+                  onBlur={this.getHandleBlur("organization_fiscal_code")}
                   className="mb-4"
                 />
-                {this.state.errors["organization_fiscal_code"] && (
+                {this.state.errors[`organization_fiscal_code`] && (
                   <Alert color="danger">
                     Errore{" "}
                     {JSON.stringify(
-                      this.state.errors["organization_fiscal_code"]
+                      this.state.errors[`organization_fiscal_code`]
                     )}
                   </Alert>
                 )}
@@ -460,9 +442,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                           ? service.max_allowed_payment_amount.toString()
                           : undefined
                       }
-                      onBlur={this.getHandleBlur(
-                        getValidator("max_allowed_payment_amount")
-                      )}
+                      onBlur={this.getHandleBlur("max_allowed_payment_amount")}
                       className="mb-4"
                     />
                   </div>
@@ -475,15 +455,13 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     type="text"
                     defaultValue={service.authorized_cidrs.join(";")}
                     onChange={this.handleInputChange}
-                    onBlur={this.getHandleBlur(
-                      getValidator("authorized_cidrs")
-                    )}
+                    onBlur={this.getHandleBlur("authorized_cidrs")}
                     className="mb-4"
                   />
-                  {this.state.errors["authorized_cidrs"] && (
+                  {this.state.errors[`authorized_cidrs`] && (
                     <Alert color="danger">
                       Errore{" "}
-                      {JSON.stringify(this.state.errors["authorized_cidrs"])}
+                      {JSON.stringify(this.state.errors[`authorized_cidrs`])}
                     </Alert>
                   )}
                 </div>
