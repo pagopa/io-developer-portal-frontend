@@ -50,9 +50,7 @@ type Props = RouteComponentProps<{ service_id: string }> &
 
 type SubscriptionServiceState = {
   form: {
-    metadata: {
-      [index: string]: unknown;
-    };
+    metadata: {};
   };
   errorLogoUpload: boolean;
   service?: Service;
@@ -129,7 +127,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           field: this.props.t(name)
         })
       },
-      isValid: false
+      isValid: Object.keys(this.state.errors).length > 0 === false
     });
   };
 
@@ -138,14 +136,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     name: string,
     inputValue: InputValue
   ) => {
-    return this.setState({
+    this.setState(() => ({
       errors,
-      isValid: Object.keys(errors).length > 0 === true,
+      isValid: Object.keys(errors).length > 0 === false,
       form: {
         ...this.state.form,
-        [name]: inputValue === "" ? undefined : inputValueMap(name, inputValue)
+        [name]: inputValue === "" ? undefined : inputValue
       }
-    });
+    }));
   };
 
   private setMetadata = (
@@ -155,7 +153,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   ) => {
     this.setState({
       errors,
-      isValid: Object.keys(errors).length > 0 === true,
+      isValid: Object.keys(errors).length > 0 === false,
       form: {
         ...this.state.form,
         metadata: {
@@ -178,7 +176,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-
     Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
@@ -186,7 +183,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       .map(service => this.setState({ service, isValid: true }))
       .mapLeft(() =>
         this.setState({
-          isValid: false
+          isValid: true
         })
       );
   };
@@ -215,10 +212,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const target = event.target;
     const inputValue =
       target.type === "checkbox" ? target.checked : target.value;
-    console.log("Input", prop, inputValue);
     const value = inputValueMap(prop, inputValue);
-    console.log("Value", inputValue);
-    checkValue(prop, inputValue).fold(
+
+    checkValue(prop, value).fold(
       () => this.handleError(prop),
       () => this.setData(this.removeError(prop), prop, value)
     );
@@ -231,7 +227,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       target: { name, value }
     } = event;
     const inputValue = inputValueMap(name, value);
-
     value && value.length > 0
       ? checkValue(prop, inputValue).fold(
           () => this.handleError(name),
@@ -245,8 +240,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       ...this.state.service,
       ...this.state.form,
       service_metadata: {
-        ...(this.state.service ? this.state.service.service_metadata : {}),
-        ...this.state.form.metadata
+        ...(this.state.service && this.state.service.service_metadata),
+        ...this.state.form.metadata,
+        scope: this.state.service!.service_metadata!.scope || "LOCAL"
       }
     };
 
@@ -254,9 +250,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
     if (
       serviceDecoding.isLeft() ||
-      (serviceToUpdate.service_metadata &&
-        !isContactExists(serviceToUpdate.service_metadata as ServiceMetadata) &&
-        !isMandatoryFieldsValid(serviceToUpdate.service_metadata as Service))
+      (!isContactExists(serviceToUpdate.service_metadata as ServiceMetadata) ||
+        !isMandatoryFieldsValid(serviceToUpdate as Service))
     ) {
       this.setState({ isValid: false });
       throw new Error("Wrong parameters format");
@@ -264,7 +259,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
     const service = serviceDecoding.value;
 
-    await putToBackend({
+    /*await putToBackend({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -280,7 +275,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           service_metadata: service.service_metadata
         })
       }
-    });
+    });*/
+    console.log("SALVATAGGIO");
+    console.log(this.state.form);
+    console.log(serviceToUpdate);
   };
 
   public handleServiceLogoSubmit = async () => {
@@ -454,7 +452,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     name="authorized_cidrs"
                     type="text"
                     defaultValue={service.authorized_cidrs.join(";")}
-                    onChange={this.handleInputChange}
                     onBlur={this.getHandleBlur("authorized_cidrs")}
                     className="mb-4"
                   />

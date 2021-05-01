@@ -142,27 +142,19 @@ type InputValue = string | boolean | number | readonly string[];
 export const checkValue = (
   prop: keyof ServiceMetadata | keyof Service,
   value: InputValue
-): ts.Validation<string | ValidUrl> => {
-  console.log("PROP TO VERIFY", prop);
+): ts.Validation<string | ValidUrl | any> => {
   switch (prop) {
-    /*case "authorized_cidrs": {
-      console.log("CHECK IP ADDRESS CIDR", value);
-      ts.readonlyArray(CIDR)
-        .decode(["192.168.1.1"])
-        .fold(e => console.log("ERRORE", e), a => console.log("OK"));
+    case "authorized_cidrs": {
       return ts.readonlyArray(CIDR).decode(value);
-    }*/
+    }
     case "organization_fiscal_code": {
-      console.log("CHECK ORGANIZATIONAL FISCAL CODE");
       return OrganizationFiscalCode.decode(value);
     }
     case "phone": {
-      console.log("CHECK PHONE");
       return PhoneCheck.decode(value);
     }
     case "pec":
     case "email": {
-      console.log("CHECK EMAIL");
       return EmailString.decode(value);
     }
     case "app_android":
@@ -171,11 +163,9 @@ export const checkValue = (
     case "support_url":
     case "tos_url":
     case "web_url": {
-      console.log("CHECK URL");
       return UrlFromStringV2.decode(value);
     }
     default: {
-      console.log("CHECK DEFAULT");
       return NonEmptyString.decode(value);
     }
   }
