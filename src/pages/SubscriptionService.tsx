@@ -259,7 +259,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
     const service = serviceDecoding.value;
 
-    /*await putToBackend({
+    await putToBackend({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -275,10 +275,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           service_metadata: service.service_metadata
         })
       }
-    });*/
-    console.log("SALVATAGGIO");
-    console.log(this.state.form);
-    console.log(serviceToUpdate);
+    });
   };
 
   public handleServiceLogoSubmit = async () => {
