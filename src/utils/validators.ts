@@ -12,7 +12,7 @@ import { conformToMask } from "react-text-mask";
 
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
-import * as url from "url";
+
 import { CIDR } from "../../generated/definitions/api/CIDR";
 import { OrganizationFiscalCode } from "../../generated/definitions/backend/OrganizationFiscalCode";
 import { CONSTANTS, LIMITS } from "./constants";
@@ -91,7 +91,7 @@ export const PhoneCheck = new ts.Type<string, string, unknown>(
 );
 
 const isUrl = (v: ts.mixed): v is ValidUrl =>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // tslint:disable-next-line: no-any
   ts.object.is(v) && ts.string.is((v as any).href);
 
 export const UrlFromStringV2 = new ts.Type<ValidUrl, string>(
@@ -142,7 +142,16 @@ type InputValue = string | boolean | number | readonly string[];
 export const checkValue = (
   prop: keyof ServiceMetadata | keyof Service,
   value: InputValue
-): ts.Validation<string | ValidUrl | any> => {
+): ts.Validation<
+  | string
+  | ValidUrl
+  | ReadonlyArray<
+      string &
+        IPatternStringTag<
+          "^([0-9]{1,3}[.]){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$"
+        >
+    >
+> => {
   switch (prop) {
     case "authorized_cidrs": {
       return ts.readonlyArray(CIDR).decode(value);

@@ -50,12 +50,12 @@ const { MARKDOWN } = LIMITS;
 export const MetadataKeys = ServiceMetadata.type.types.reduce(
   (p, e) => [
     ...p,
-    ...(Object.keys(e.props) as readonly (keyof ServiceMetadata)[])
+    ...(Object.keys(e.props) as ReadonlyArray<keyof ServiceMetadata>)
   ],
-  [] as readonly (keyof ServiceMetadata)[]
+  [] as ReadonlyArray<keyof ServiceMetadata>
 );
 
-export const SortedMetadata: readonly (keyof ServiceMetadata)[] = [
+export const SortedMetadata: ReadonlyArray<keyof ServiceMetadata> = [
   "description",
   "cta",
   ...MetadataKeys.filter(

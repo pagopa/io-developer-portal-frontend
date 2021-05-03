@@ -242,7 +242,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       service_metadata: {
         ...(this.state.service && this.state.service.service_metadata),
         ...this.state.form.metadata,
-        scope: this.state.service!.service_metadata!.scope || "LOCAL"
+        scope:
+          this.state.service && this.state.service.service_metadata
+            ? this.state.service.service_metadata.scope
+            : "LOCAL"
       }
     };
 
