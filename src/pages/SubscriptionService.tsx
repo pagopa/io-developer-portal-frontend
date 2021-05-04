@@ -16,7 +16,7 @@ import { StorageContext } from "../context/storage";
 import { getFromBackend, putToBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
-import { isContactExists, isMandatoryFieldsValid } from "../utils/service";
+import { ValidService } from "../utils/service";
 import { checkValue } from "../utils/validators";
 
 const LogoParamsApi = ts.interface({
@@ -49,17 +49,15 @@ type Props = RouteComponentProps<{ service_id: string }> &
   OwnProps;
 
 type SubscriptionServiceState = {
-  form: {
-    metadata: {};
-  };
   errorLogoUpload: boolean;
   service?: Service;
   isValid?: boolean;
+  isSaved: boolean;
   logo?: string;
   logoIsValid: boolean;
   logoUploaded: boolean;
   originalIsVisible?: boolean;
-  errors: { [key: string]: string };
+  errors: Record<string, string>;
 };
 
 function inputValueMap(name: string, value: InputValue) {
@@ -82,14 +80,10 @@ function inputValueMap(name: string, value: InputValue) {
 
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
-    form: {
-      metadata: {
-        scope: "LOCAL"
-      }
-    },
     errorLogoUpload: false,
     service: undefined,
     isValid: true,
+    isSaved: false,
     logo: undefined,
     logoIsValid: true,
     logoUploaded: true,
@@ -127,48 +121,57 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           field: this.props.t(name)
         })
       },
-      isValid: Object.keys(this.state.errors).length > 0 === false
+      isValid: false
     });
   };
 
   private setData = (
-    errors: { [key: string]: string },
+    errors: Record<string, string>,
     name: string,
     inputValue: InputValue
   ) => {
-    this.setState(() => ({
-      errors,
-      isValid: Object.keys(errors).length > 0 === false,
-      form: {
-        ...this.state.form,
-        [name]: inputValue === "" ? undefined : inputValue
-      }
-    }));
+    Service.decode({
+      ...this.state.service,
+      [name]: inputValue === "" ? undefined : inputValue
+    }).fold(
+      () => this.setState({ isValid: false }),
+      service =>
+        this.setState(() => ({
+          errors,
+          isValid: Object.keys(errors).length === 0,
+          service,
+          isSaved: false
+        }))
+    );
   };
 
   private setMetadata = (
-    errors: { [key: string]: string },
+    errors: Record<string, string>,
     name: string,
     inputValue: InputValue
   ) => {
-    this.setState({
-      errors,
-      isValid: Object.keys(errors).length > 0 === false,
-      form: {
-        ...this.state.form,
-        metadata: {
-          ...(this.state.form && this.state.form.metadata
-            ? this.state.form.metadata
-            : undefined),
-          [name]: inputValue === "" ? undefined : inputValue
-        }
+    Service.decode({
+      ...this.state.service,
+      service_metadata: {
+        ...(this.state.service && this.state.service.service_metadata
+          ? this.state.service.service_metadata
+          : undefined),
+        [name]: inputValue === "" ? undefined : inputValue
       }
-    });
+    }).fold(
+      () => this.setState({ isValid: false }),
+      service =>
+        this.setState(() => ({
+          errors,
+          isValid: Object.keys(errors).length === 0,
+          service,
+          isSaved: false
+        }))
+    );
   };
 
-  private removeError = (name: string) => {
-    const key = name;
-    const { [key]: fieldToRemove, ...others } = this.state.errors;
+  private removeError = (keyName: string) => {
+    const { [keyName]: fieldToRemove, ...others } = this.state.errors;
     return others;
   };
 
@@ -183,6 +186,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       .map(service => this.setState({ service, isValid: true }))
       .mapLeft(() =>
         this.setState({
+          isSaved: false,
           isValid: true
         })
       );
@@ -203,7 +207,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           : undefined),
         [name]: inputValue === "" ? undefined : inputValue
       }
-    }).map(service => this.setState({ service }));
+    }).map(service => this.setState({ service, isSaved: false }));
   };
 
   public getHandleBlur = (prop: keyof ServiceMetadata | keyof Service) => (
@@ -238,10 +242,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public handleSubmit = async () => {
     const serviceToUpdate = {
       ...this.state.service,
-      ...this.state.form,
       service_metadata: {
         ...(this.state.service && this.state.service.service_metadata),
-        ...this.state.form.metadata,
         scope:
           this.state.service && this.state.service.service_metadata
             ? this.state.service.service_metadata.scope
@@ -249,20 +251,15 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       }
     };
 
-    const serviceDecoding = Service.decode(serviceToUpdate);
-
-    if (
-      serviceDecoding.isLeft() ||
-      (!isContactExists(serviceToUpdate.service_metadata as ServiceMetadata) ||
-        !isMandatoryFieldsValid(serviceToUpdate as Service))
-    ) {
+    const serviceDecoding = ValidService.decode(serviceToUpdate);
+    if (serviceDecoding.isLeft()) {
       this.setState({ isValid: false });
       throw new Error("Wrong parameters format");
     }
 
     const service = serviceDecoding.value;
 
-    await putToBackend({
+    const updateServiceResponse = await putToBackend<{ statusCode: number }>({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -279,6 +276,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         })
       }
     });
+
+    if (Service.is(updateServiceResponse)) {
+      this.setState({ isSaved: true });
+    }
   };
 
   public handleServiceLogoSubmit = async () => {
@@ -349,6 +350,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       errorLogoUpload,
       service,
       isValid,
+      isSaved,
       logo,
       logoIsValid,
       logoUploaded,
@@ -360,7 +362,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       <StorageContext.Consumer>
         {storage => (
           <div>
-            {!isValid && <Alert color="danger">Campi non validi</Alert>}
             <h4>
               {t("title")} {service.service_id}
             </h4>
@@ -461,6 +462,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       {JSON.stringify(this.state.errors[`authorized_cidrs`])}
                     </Alert>
                   )}
+                  {this.state.errors[`authorized_cidrs`] && (
+                    <Alert color="danger">
+                      Errore{" "}
+                      {JSON.stringify(this.state.errors[`authorized_cidrs`])}
+                    </Alert>
+                  )}
                 </div>
 
                 {storage.isApiAdmin && (
@@ -525,6 +532,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               >
                 {t("save")}
               </Button>
+              {!isValid && <Alert color="danger">Campi non validi</Alert>}
+              {isSaved && <Alert color="success">Form salvata</Alert>}
             </form>
 
             {service.authorized_recipients.length > 0 && (

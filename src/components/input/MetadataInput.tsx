@@ -16,7 +16,7 @@ type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
   originalServiceIsVisible: boolean;
-  errors: { [key: string]: string };
+  errors: Record<string, string>;
   onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
   onBlur: (
     prop: keyof ServiceMetadata
@@ -97,7 +97,7 @@ const MetadataInput = ({
           <input
             name={k}
             type="text"
-            defaultValue={Object(service_metadata)[k]}
+            defaultValue={service_metadata && service_metadata[k]}
             onChange={onChange}
             onBlur={onBlur(k)}
             className={errors[k] ? "mb4 error" : "mb4"}

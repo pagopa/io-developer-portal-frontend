@@ -114,31 +114,8 @@ export const UrlFromStringV2 = new ts.Type<ValidUrl, string>(
 
 export type UrlFromStringV2 = ts.TypeOf<typeof UrlFromStringV2>;
 
-export type FieldsValidatorType =
-  | ts.Type<string, string, unknown>
-  | ts.Type<ValidUrl, string, unknown>
-  | ts.Type<string & IEmailStringTag, string, unknown>
-  | ts.Type<string & INonEmptyStringTag, string & INonEmptyStringTag, unknown>
-  | ts.Type<
-      string & IPatternStringTag<"^[0-9]{11}$">,
-      string & IPatternStringTag<"^[0-9]{11}$">,
-      unknown
-    >
-  | ts.ReadonlyArrayC<
-      ts.Type<
-        string &
-          IPatternStringTag<
-            "^([0-9]{1,3}[.]){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$"
-          >,
-        string &
-          IPatternStringTag<
-            "^([0-9]{1,3}[.]){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$"
-          >,
-        unknown
-      >
-    >;
-
 type InputValue = string | boolean | number | readonly string[];
+
 export const checkValue = (
   prop: keyof ServiceMetadata | keyof Service,
   value: InputValue

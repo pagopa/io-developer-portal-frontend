@@ -21,7 +21,7 @@ import { SubscriptionCollection } from "../../generated/definitions/backend/Subs
 import { SubscriptionContract } from "../../generated/definitions/backend/SubscriptionContract";
 import { UserData } from "../../generated/definitions/backend/UserData";
 
-import { isContactExists, isMandatoryFieldsValid } from "../utils/service";
+import { ValidService } from "../utils/service";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
@@ -339,32 +339,28 @@ class Profile extends Component<Props, ProfileState> {
 
   private checkService(service: Service) {
     const isVisible = service && service.is_visible;
-    const serviceContacts =
-      service &&
-      service.service_metadata &&
-      isContactExists(service.service_metadata);
-    const mandatory = service && isMandatoryFieldsValid(service);
+    const errorOrValidService = ValidService.decode(service);
 
     return (
       <div>
-        {isVisible && !serviceContacts ? (
+        {isVisible && errorOrValidService.isLeft() ? (
           <Alert color="danger">
             Campi non validi, il servizio non sarà visibile!
           </Alert>
         ) : (
           ""
         )}
-        {!isVisible && (!serviceContacts || !mandatory) ? (
+        {!isVisible && errorOrValidService.isLeft() ? (
           <Alert color="warning">Completa i campi per renderlo visibile</Alert>
         ) : (
           ""
         )}
-        {isVisible && serviceContacts ? (
+        {isVisible && errorOrValidService.isRight() ? (
           <Alert color="success">Il tuo servizio è visibile</Alert>
         ) : (
           ""
         )}
-        {!isVisible && serviceContacts && mandatory ? (
+        {!isVisible && errorOrValidService.isRight() ? (
           <Alert color="info">
             Il tuo servizio è pronto per essere messo in App
           </Alert>

@@ -6,9 +6,8 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 type OwnProps = {
   name: string;
   elem: ReadonlyArray<keyof ServiceMetadata>;
-  errors: { [key: string]: string };
+  errors: Record<string, string>;
   service_metadata: Partial<ServiceMetadata>;
-  // service_metadata: {phone?: string, email?: string, pec?: string, support_url?: string},
   onBlur: (
     prop: keyof ServiceMetadata
   ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => void;
@@ -27,23 +26,22 @@ class ContactInput extends Component<Props> {
   };
 
   public componentDidMount() {
-    // Qui devi riportare eventuali metadati ricevuti dal backend
     this.setState({
       metadata: this.props.service_metadata
     });
   }
 
-  private async handler(
+  private async handlerOnBlurInputData(
     event: FocusEvent<HTMLInputElement>,
-    k: keyof ServiceMetadata
+    inputField: keyof ServiceMetadata
   ) {
-    // Validazione del formato del dato
-    this.props.onBlur(k)(event); // ATTENZIONE
+    // Validate input data
+    this.props.onBlur(inputField)(event);
 
     this.setState({
       metadata: {
         ...this.state.metadata,
-        [k]: event.target.value
+        [inputField]: event.target.value
       }
     });
 
@@ -70,8 +68,8 @@ class ContactInput extends Component<Props> {
                 <input
                   name={k}
                   type="text"
-                  defaultValue={Object(service_metadata)[k]}
-                  onBlur={e => this.handler(e, k)}
+                  defaultValue={service_metadata[k]}
+                  onBlur={e => this.handlerOnBlurInputData(e, k)}
                   className={errors[k] ? "mb4 error" : "mb4"}
                 />
                 {errors[k] && (
