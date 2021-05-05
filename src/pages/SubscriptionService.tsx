@@ -58,6 +58,7 @@ type SubscriptionServiceState = {
   logoUploaded: boolean;
   originalIsVisible?: boolean;
   errors: Record<string, string>;
+  logoHash: number;
 };
 
 function inputValueMap(name: string, value: InputValue) {
@@ -88,7 +89,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     logoIsValid: true,
     logoUploaded: true,
     originalIsVisible: undefined,
-    errors: {}
+    errors: {},
+    logoHash: Date.now()
   };
 
   public async componentDidMount() {
@@ -308,7 +310,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 errorLogoUpload: false,
                 logo: undefined,
                 logoIsValid: true,
-                logoUploaded: true
+                logoUploaded: true,
+                logoHash: Date.now()
               });
             }),
           _ =>
@@ -354,7 +357,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       logo,
       logoIsValid,
       logoUploaded,
-      originalIsVisible
+      originalIsVisible,
+      logoHash
     } = this.state;
     const { t } = this.props;
 
@@ -462,12 +466,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       {JSON.stringify(this.state.errors[`authorized_cidrs`])}
                     </Alert>
                   )}
-                  {this.state.errors[`authorized_cidrs`] && (
-                    <Alert color="danger">
-                      Errore{" "}
-                      {JSON.stringify(this.state.errors[`authorized_cidrs`])}
-                    </Alert>
-                  )}
                 </div>
 
                 {storage.isApiAdmin && (
@@ -503,7 +501,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   errorLogoUpload={errorLogoUpload}
                   isSubmitEnabled={logo !== undefined && logoIsValid}
                   isValid={logoIsValid}
-                  logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png`}
+                  logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png?${logoHash}`}
                   logoUploaded={logoUploaded}
                   nameButton="service_logo_upload"
                   nameInput="service_logo"
