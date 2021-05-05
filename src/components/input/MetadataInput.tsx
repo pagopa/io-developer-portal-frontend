@@ -81,12 +81,14 @@ const MetadataInput = ({
       elem === "email" ||
       elem === "support_url"
   );
-  const appfields = MetadataKeys.filter(
-    elem => elem === "app_ios" || elem === "app_android"
-  );
+
   const otherfields = MetadataKeys.filter(
-    elem => elem === "tos_url" || elem === "address" || elem === "privacy_url"
+    elem => elem === "app_ios" || elem === "app_android" || elem === "address"
   );
+  // privacy_url*, tos_url, ios_url, android_url, address
+  const secondaryFields = MetadataKeys.filter(
+    elem => elem === "tos_url" || elem === "privacy_url"
+  ).sort();
 
   const renderFields = (fields: readonly ValidFields[], option?: {}) => {
     const more = option ? option : {};
@@ -105,7 +107,7 @@ const MetadataInput = ({
           />
           {errors[k] && (
             <Alert color="danger" key={i}>
-              Errore {JSON.stringify(errors[k])}
+              {JSON.stringify(errors[k])}
             </Alert>
           )}
         </div>
@@ -132,34 +134,6 @@ const MetadataInput = ({
         onBlur={onBlur}
       />
     );
-  };
-
-  const scopeField = () => {
-    return SortedMetadata.filter(elem => elem === "scope").map((_, i) => {
-      return (
-        <div key={i}>
-          <label className="m-0">{t("scope")}*</label>
-          <select
-            name="scope"
-            value={service_metadata ? service_metadata.scope : undefined}
-            className="form-control mb-4"
-            onChange={onChange}
-            disabled={originalServiceIsVisible && !isApiAdmin}
-            onBlur={onBlur("scope")}
-          >
-            <option
-              key={ServiceScopeEnum.NATIONAL}
-              value={ServiceScopeEnum.NATIONAL}
-            >
-              {ServiceScopeEnum.NATIONAL}
-            </option>
-            <option key={ServiceScopeEnum.LOCAL} value={ServiceScopeEnum.LOCAL}>
-              {ServiceScopeEnum.LOCAL}
-            </option>
-          </select>
-        </div>
-      );
-    });
   };
 
   const descriptionField = () => {
@@ -196,7 +170,7 @@ const MetadataInput = ({
             onBlur={onBlur("cta")}
             name={k}
             type="textarea"
-            rows="15"
+            rows="8"
             className="mb-4 h-100 flex-row"
           />
         </div>
@@ -209,15 +183,21 @@ const MetadataInput = ({
      * - Text area: 'descrition' according to MarkdownEditor and 'cta' as a simple text area
      * - Select: 'scope' that is an enumeration
      */
-    <div>
+    <React.Fragment>
       {descriptionField()}
-      {ctaField()}
-      {renderFields(["token_name"], { disabled: !isApiAdmin })}
-      {renderFields(appfields)}
+
+      {renderFields(secondaryFields)}
+
       {renderFields(otherfields)}
+      <h5 className="mt-4">{t("contact_fields")}</h5>
+      <span>{t("contact_fields_message")}</span>
       {contactFields()}
-      {scopeField()}
-    </div>
+
+      {ctaField()}
+      {renderFields(["token_name"], {
+        disabled: !isApiAdmin
+      })}
+    </React.Fragment>
   );
 };
 

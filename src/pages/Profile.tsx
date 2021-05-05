@@ -344,26 +344,22 @@ class Profile extends Component<Props, ProfileState> {
     return (
       <div>
         {isVisible && errorOrValidService.isLeft() ? (
-          <Alert color="danger">
-            Campi non validi, il servizio non sarà visibile!
-          </Alert>
+          <Alert color="danger">{this.props.t("service_not_valid")}</Alert>
         ) : (
           ""
         )}
         {!isVisible && errorOrValidService.isLeft() ? (
-          <Alert color="warning">Completa i campi per renderlo visibile</Alert>
+          <Alert color="warning">{this.props.t("service_draft")}</Alert>
         ) : (
           ""
         )}
         {isVisible && errorOrValidService.isRight() ? (
-          <Alert color="success">Il tuo servizio è visibile</Alert>
+          <Alert color="success">{this.props.t("service_active")}</Alert>
         ) : (
           ""
         )}
         {!isVisible && errorOrValidService.isRight() ? (
-          <Alert color="info">
-            Il tuo servizio è pronto per essere messo in App
-          </Alert>
+          <Alert color="info">{this.props.t("service_not_active")}</Alert>
         ) : (
           ""
         )}

@@ -48,7 +48,7 @@ class ContactInput extends Component<Props> {
     this.setState({
       error: Object.keys(this.state.metadata)
         .filter(el => this.state.metadata[el as ContactsFields])
-        .reduce(() => "", "ricordati di inserire almeno un contatto!")
+        .reduce(() => "", this.props.t("contact_fields_message"))
     });
   }
 
@@ -56,9 +56,9 @@ class ContactInput extends Component<Props> {
     const { elem, errors, service_metadata, t } = this.props;
     const { error } = this.state;
     return (
-      <div>
+      <div className="shadow p-5 mt-2 mb-2">
         {error.length > 0 && (
-          <Alert color="warning">Attenzione {JSON.stringify(error)}</Alert>
+          <Alert color="warning">{JSON.stringify(error)}</Alert>
         )}
         {elem &&
           elem.map((k, i) => {
@@ -74,7 +74,7 @@ class ContactInput extends Component<Props> {
                 />
                 {errors[k] && (
                   <Alert color="danger" key={i}>
-                    Errore {JSON.stringify(errors[k])}
+                    {JSON.stringify(errors[k])}
                   </Alert>
                 )}
               </div>

@@ -381,7 +381,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`service_name`] && (
                   <Alert color="danger">
-                    Errore {JSON.stringify(this.state.errors[`service_name`])}
+                    {JSON.stringify(this.state.errors[`service_name`])}
                   </Alert>
                 )}
 
@@ -395,7 +395,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`department_name`] && (
                   <Alert color="danger">
-                    Errore{" "}
                     {JSON.stringify(this.state.errors[`department_name`])}
                   </Alert>
                 )}
@@ -410,7 +409,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`organization_name`] && (
                   <Alert color="danger">
-                    Errore{" "}
                     {JSON.stringify(this.state.errors[`organization_name`])}
                   </Alert>
                 )}
@@ -425,7 +423,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`organization_fiscal_code`] && (
                   <Alert color="danger">
-                    Errore{" "}
                     {JSON.stringify(
                       this.state.errors[`organization_fiscal_code`]
                     )}
@@ -462,7 +459,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   />
                   {this.state.errors[`authorized_cidrs`] && (
                     <Alert color="danger">
-                      Errore{" "}
                       {JSON.stringify(this.state.errors[`authorized_cidrs`])}
                     </Alert>
                   )}
@@ -481,6 +477,34 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   </div>
                 )}
 
+                <div>
+                  <label className="m-0">{t("scope")}*</label>
+                  <select
+                    name="scope"
+                    value={
+                      service.service_metadata
+                        ? service.service_metadata.scope
+                        : undefined
+                    }
+                    className="form-control mb-4"
+                    disabled={service.is_visible && !storage.isApiAdmin}
+                    onChange={this.handleMetadataChange}
+                  >
+                    <option
+                      key={ServiceScopeEnum.NATIONAL}
+                      value={ServiceScopeEnum.NATIONAL}
+                    >
+                      {t(ServiceScopeEnum.NATIONAL.toLocaleLowerCase())}
+                    </option>
+                    <option
+                      key={ServiceScopeEnum.LOCAL}
+                      value={ServiceScopeEnum.LOCAL}
+                    >
+                      {t(ServiceScopeEnum.LOCAL.toLocaleLowerCase())}
+                    </option>
+                  </select>
+                </div>
+
                 {storage.isApiAdmin && (
                   <div>
                     <input
@@ -495,8 +519,20 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 )}
               </div>
 
-              <div className="shadow p-4">
-                <h5>{t("service_logo")}</h5>
+              <div className="shadow p-4 mt-4 mb-4">
+                <h5>{t("scheda_servizio")}</h5>
+                <MetadataInput
+                  onChange={this.handleMetadataChange}
+                  onBlur={this.getHandleMetadataBlur}
+                  service_metadata={service.service_metadata}
+                  isApiAdmin={storage.isApiAdmin}
+                  originalServiceIsVisible={originalIsVisible || false}
+                  errors={this.state.errors}
+                />
+              </div>
+
+              <div className="shadow p-4 mt-4 mb-4">
+                <h6>{t("service_logo")}</h6>
                 <UploadLogo
                   errorLogoUpload={errorLogoUpload}
                   isSubmitEnabled={logo !== undefined && logoIsValid}
@@ -511,18 +547,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
               </div>
 
-              <div className="shadow p-4">
-                <h5>Metadata</h5>
-                <MetadataInput
-                  onChange={this.handleMetadataChange}
-                  onBlur={this.getHandleMetadataBlur}
-                  service_metadata={service.service_metadata}
-                  isApiAdmin={storage.isApiAdmin}
-                  originalServiceIsVisible={originalIsVisible || false}
-                  errors={this.state.errors}
-                />
-              </div>
-
               <Button
                 color="primary"
                 disabled={!isValid}
@@ -531,7 +555,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 {t("save")}
               </Button>
               {!isValid && <Alert color="danger">Campi non validi</Alert>}
-              {isSaved && <Alert color="success">Form salvata</Alert>}
+              {isSaved && <Alert color="success">Dati salvati</Alert>}
             </form>
 
             {service.authorized_recipients.length > 0 && (
