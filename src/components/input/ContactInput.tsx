@@ -1,4 +1,6 @@
 import { Alert } from "design-react-kit";
+import { none, Option, some } from "fp-ts/lib/Option";
+import { fromPredicate } from "fp-ts/lib/Option";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import React, { Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -7,7 +9,7 @@ type OwnProps = {
   name: string;
   elem: ReadonlyArray<keyof ServiceMetadata>;
   errors: Record<string, string>;
-  service_metadata: Partial<ServiceMetadata>;
+  serviceMetadata: Partial<ServiceMetadata>;
   onBlur: (
     prop: keyof ServiceMetadata
   ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => void;
@@ -19,15 +21,15 @@ type ContactInMetadata = { [P in ContactsFields]?: string };
 class ContactInput extends Component<Props> {
   public state: {
     metadata: ContactInMetadata;
-    error: string;
+    error: Option<string>;
   } = {
     metadata: {},
-    error: ""
+    error: none
   };
 
   public componentDidMount() {
     this.setState({
-      metadata: this.props.service_metadata
+      metadata: this.props.serviceMetadata
     });
   }
 
@@ -38,28 +40,34 @@ class ContactInput extends Component<Props> {
     // Validate input data
     this.props.onBlur(inputField)(event);
 
-    this.setState({
-      metadata: {
-        ...this.state.metadata,
-        [inputField]: event.target.value
+    this.setState(
+      {
+        metadata: {
+          ...this.state.metadata,
+          [inputField]: event.target.value
+        }
+      },
+      () => {
+        // Check if exist at least one field on metadata object, if so I'll return a none otherwise a some
+        this.setState({
+          error: fromPredicate<ReadonlyArray<ContactsFields>>(
+            _ => _.length === 0
+          )(Object.keys(this.state.metadata).filter(
+            el => this.state.metadata[el as ContactsFields]
+          ) as ReadonlyArray<ContactsFields>).map(_ =>
+            this.props.t("contact_fields_message")
+          )
+        });
       }
-    });
-
-    this.setState({
-      error: Object.keys(this.state.metadata)
-        .filter(el => this.state.metadata[el as ContactsFields])
-        .reduce(() => "", this.props.t("contact_fields_message"))
-    });
+    );
   }
 
   public render() {
-    const { elem, errors, service_metadata, t } = this.props;
+    const { elem, errors, serviceMetadata, t } = this.props;
     const { error } = this.state;
     return (
       <div className="shadow p-5 mt-2 mb-2">
-        {error.length > 0 && (
-          <Alert color="warning">{JSON.stringify(error)}</Alert>
-        )}
+        {error.isSome() && <Alert color="warning">{error.value}</Alert>}
         {elem &&
           elem.map((k, i) => {
             return (
@@ -68,7 +76,7 @@ class ContactInput extends Component<Props> {
                 <input
                   name={k}
                   type="text"
-                  defaultValue={service_metadata[k]}
+                  defaultValue={serviceMetadata[k]}
                   onBlur={e => this.handlerOnBlurInputData(e, k)}
                   className={errors[k] ? "mb4 error" : "mb4"}
                 />

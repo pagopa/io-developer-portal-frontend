@@ -1,10 +1,10 @@
-import { Button } from "design-react-kit";
-import { Alert } from "design-react-kit";
+import { Alert, Button } from "design-react-kit";
+import { fromOption } from "fp-ts/lib/Either";
+
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import * as ts from "io-ts";
-
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import React, { ChangeEvent, Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -17,7 +17,7 @@ import { getFromBackend, putToBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
 import { ValidService } from "../utils/service";
-import { checkValue } from "../utils/validators";
+import { checkValue, InputValue } from "../utils/validators";
 
 const LogoParamsApi = ts.interface({
   logo: NonEmptyString,
@@ -25,7 +25,6 @@ const LogoParamsApi = ts.interface({
 });
 
 type LogoParamsApi = ts.TypeOf<typeof LogoParamsApi>;
-type InputValue = string | boolean | number | readonly string[];
 
 const LogoErrorBodyApi = ts.interface({
   detail: ts.string,
@@ -58,7 +57,7 @@ type SubscriptionServiceState = {
   logoUploaded: boolean;
   originalIsVisible?: boolean;
   errors: Record<string, string>;
-  logoHash: number;
+  timestampLogo: number;
 };
 
 function inputValueMap(name: string, value: InputValue) {
@@ -90,7 +89,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     logoUploaded: true,
     originalIsVisible: undefined,
     errors: {},
-    logoHash: Date.now()
+    timestampLogo: Date.now()
   };
 
   public async componentDidMount() {
@@ -189,7 +188,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       .mapLeft(() =>
         this.setState({
           isSaved: false,
-          isValid: true
+          isValid: false
         })
       );
   };
@@ -233,12 +232,13 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       target: { name, value }
     } = event;
     const inputValue = inputValueMap(name, value);
-    value && value.length > 0
-      ? checkValue(prop, inputValue).fold(
-          () => this.handleError(name),
-          () => this.setMetadata(this.removeError(name), name, inputValue)
-        )
-      : this.setMetadata(this.removeError(name), name, inputValue);
+
+    checkValue(prop, inputValue).fold(
+      () => this.handleError(prop),
+      () => this.setMetadata(this.removeError(name), name, inputValue)
+    );
+
+    // : this.setMetadata(this.removeError(name), name, inputValue);
   };
 
   public handleSubmit = async () => {
@@ -311,7 +311,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 logo: undefined,
                 logoIsValid: true,
                 logoUploaded: true,
-                logoHash: Date.now()
+                timestampLogo: Date.now()
               });
             }),
           _ =>
@@ -358,7 +358,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       logoIsValid,
       logoUploaded,
       originalIsVisible,
-      logoHash
+      timestampLogo
     } = this.state;
     const { t } = this.props;
 
@@ -381,11 +381,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`service_name`] && (
                   <Alert color="danger">
-                    {JSON.stringify(this.state.errors[`service_name`])}
+                    {this.state.errors[`service_name`]}
                   </Alert>
                 )}
 
-                <label className="m-0">{t(`department`)}*</label>
+                <label className="m-0">{t("department")}*</label>
                 <input
                   name="department_name"
                   type="text"
@@ -395,7 +395,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`department_name`] && (
                   <Alert color="danger">
-                    {JSON.stringify(this.state.errors[`department_name`])}
+                    {this.state.errors[`department_name`]}
                   </Alert>
                 )}
 
@@ -409,7 +409,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`organization_name`] && (
                   <Alert color="danger">
-                    {JSON.stringify(this.state.errors[`organization_name`])}
+                    {this.state.errors[`organization_name`]}
                   </Alert>
                 )}
 
@@ -423,9 +423,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 />
                 {this.state.errors[`organization_fiscal_code`] && (
                   <Alert color="danger">
-                    {JSON.stringify(
-                      this.state.errors[`organization_fiscal_code`]
-                    )}
+                    {this.state.errors[`organization_fiscal_code`]}
                   </Alert>
                 )}
 
@@ -526,7 +524,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   onBlur={this.getHandleMetadataBlur}
                   service_metadata={service.service_metadata}
                   isApiAdmin={storage.isApiAdmin}
-                  originalServiceIsVisible={originalIsVisible || false}
                   errors={this.state.errors}
                 />
               </div>
@@ -537,7 +534,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   errorLogoUpload={errorLogoUpload}
                   isSubmitEnabled={logo !== undefined && logoIsValid}
                   isValid={logoIsValid}
-                  logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png?${logoHash}`}
+                  logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png?${timestampLogo}`}
                   logoUploaded={logoUploaded}
                   nameButton="service_logo_upload"
                   nameInput="service_logo"

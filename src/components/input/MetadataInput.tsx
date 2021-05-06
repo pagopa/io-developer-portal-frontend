@@ -1,6 +1,5 @@
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 
-import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import React, { ChangeEvent, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -15,7 +14,6 @@ import MarkdownEditor from "./MarkdownEditor";
 type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
-  originalServiceIsVisible: boolean;
   errors: Record<string, string>;
   onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
   onBlur: (
@@ -25,21 +23,7 @@ type OwnProps = {
 
 type Props = WithNamespaces & OwnProps;
 
-type ValidFields =
-  | "scope"
-  | "description"
-  | "web_url"
-  | "app_ios"
-  | "app_android"
-  | "tos_url"
-  | "privacy_url"
-  | "address"
-  | "phone"
-  | "email"
-  | "pec"
-  | "cta"
-  | "token_name"
-  | "support_url";
+type ValidFields = keyof ServiceMetadata;
 
 const { MARKDOWN } = LIMITS;
 
@@ -70,7 +54,6 @@ const MetadataInput = ({
   onChange,
   onBlur,
   isApiAdmin,
-  originalServiceIsVisible,
   errors,
   t
 }: Props) => {
@@ -121,7 +104,7 @@ const MetadataInput = ({
         name="contacts"
         elem={contactfields}
         errors={errors}
-        service_metadata={
+        serviceMetadata={
           service_metadata
             ? {
                 phone: service_metadata.phone,
@@ -137,45 +120,39 @@ const MetadataInput = ({
   };
 
   const descriptionField = () => {
-    return SortedMetadata.filter(elem => elem === "description").map((_, i) => {
-      return (
-        <MarkdownEditor
-          markdown={
-            service_metadata && service_metadata.description
-              ? service_metadata.description
-              : ""
-          }
-          name="description"
-          markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
-          isMarkdownValid={true}
-          onChangeMarkdown={onChange}
-          key={i}
-        />
-      );
-    });
+    return (
+      <MarkdownEditor
+        markdown={
+          service_metadata && service_metadata.description
+            ? service_metadata.description
+            : ""
+        }
+        name="description"
+        markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
+        isMarkdownValid={true}
+        onChangeMarkdown={onChange}
+        key={SortedMetadata.indexOf("description")}
+      />
+    );
   };
 
   const ctaField = () => {
-    return SortedMetadata.filter(elem => elem === "cta").map((k, i) => {
-      return (
-        <div key={i}>
-          <label className="m-0">{t(k)}</label>
-          <Input
-            defaultValue={
-              service_metadata && service_metadata.cta
-                ? service_metadata.cta
-                : ""
-            }
-            onChange={onChange}
-            onBlur={onBlur("cta")}
-            name={k}
-            type="textarea"
-            rows="8"
-            className="mb-4 h-100 flex-row"
-          />
-        </div>
-      );
-    });
+    return (
+      <div key={SortedMetadata.indexOf("cta")}>
+        <label className="m-0">{t("cta")}</label>
+        <Input
+          defaultValue={
+            service_metadata && service_metadata.cta ? service_metadata.cta : ""
+          }
+          onChange={onChange}
+          onBlur={onBlur("cta")}
+          name={"cta"}
+          type="textarea"
+          rows="8"
+          className="mb-4 h-100 flex-row"
+        />
+      </div>
+    );
   };
 
   return (

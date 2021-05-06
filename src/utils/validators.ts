@@ -1,17 +1,18 @@
+import { right } from "fp-ts/lib/Either";
+
+import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
+
 import * as ts from "io-ts";
+
 import {
   EmailString,
-  IEmailStringTag,
-  INonEmptyStringTag,
   IPatternStringTag,
   NonEmptyString
 } from "italia-ts-commons/lib/strings";
 import { ValidUrl } from "italia-ts-commons/lib/url";
 import toPairs from "lodash/toPairs";
 import { conformToMask } from "react-text-mask";
-
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
-import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 
 import { CIDR } from "../../generated/definitions/api/CIDR";
 import { OrganizationFiscalCode } from "../../generated/definitions/backend/OrganizationFiscalCode";
@@ -80,13 +81,12 @@ export const PhoneCheck = new ts.Type<string, string, unknown>(
   "PhoneCheck",
   ts.string.is,
   (u, c) =>
-    ts.string
-      .validate(u, c)
-      .chain(s =>
-        new RegExp("[0-9]", "g").test(s)
-          ? ts.success(s)
-          : ts.failure(u, c, "Inserisci un telefono valido.")
-      ),
+    ts.string.validate(u, c).chain(s =>
+      // tslint:disable-next-line: prettier
+      new RegExp("^(\\+)?([0-9][\\s\\/\\.\\-]?)+$", "g").test(s)
+        ? ts.success(s)
+        : ts.failure(u, c, "Inserisci un telefono valido.")
+    ),
   String
 );
 
@@ -114,12 +114,14 @@ export const UrlFromStringV2 = new ts.Type<ValidUrl, string>(
 
 export type UrlFromStringV2 = ts.TypeOf<typeof UrlFromStringV2>;
 
-type InputValue = string | boolean | number | readonly string[];
+export type InputValue = string | boolean | number | readonly string[];
 
 export const checkValue = (
   prop: keyof ServiceMetadata | keyof Service,
   value: InputValue
 ): ts.Validation<
+  // tslint:disable-next-line: max-union-size
+  | InputValue
   | string
   | ValidUrl
   | ReadonlyArray<
@@ -137,21 +139,27 @@ export const checkValue = (
       return OrganizationFiscalCode.decode(value);
     }
     case "phone": {
-      return PhoneCheck.decode(value);
+      return value ? PhoneCheck.decode(value) : right(value);
     }
     case "pec":
     case "email": {
-      return EmailString.decode(value);
+      return value ? EmailString.decode(value) : right(value);
     }
     case "app_android":
     case "app_ios":
-    case "privacy_url":
     case "support_url":
     case "tos_url":
     case "web_url": {
+      return value ? UrlFromStringV2.decode(value) : right(value);
+    }
+    case "privacy_url": {
       return UrlFromStringV2.decode(value);
     }
+    case "address": {
+      return value ? NonEmptyString.decode(value) : right(value);
+    }
     default: {
+      // All other fields are required as NonEmptyString
       return NonEmptyString.decode(value);
     }
   }
