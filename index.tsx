@@ -72,20 +72,19 @@ const PrivateRoute = ({
 }: PrivateRouteParams) => (
   <Route
     {...rest}
-    render={
-      props =>
-        !!sessionStorage.getItem("userData") ? (
-          <Layout>
-            <Component {...props} dbName={dbName} />
-          </Layout>
-        ) : null /*(
+    render={props =>
+      !!sessionStorage.getItem("userData") ? (
+        <Layout>
+          <Component {...props} dbName={dbName} />
+        </Layout>
+      ) : (
         <Redirect
           to={{
             pathname: "/login",
             state: { from: props.location }
           }}
         />
-      )*/
+      )
     }
   />
 );

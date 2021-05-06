@@ -1,5 +1,5 @@
 import { Alert } from "design-react-kit";
-import { none, Option, some } from "fp-ts/lib/Option";
+import { none, Option } from "fp-ts/lib/Option";
 import { fromPredicate } from "fp-ts/lib/Option";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import React, { Component, FocusEvent } from "react";

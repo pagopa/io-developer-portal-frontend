@@ -1,5 +1,4 @@
 import { Alert, Button } from "design-react-kit";
-import { fromOption } from "fp-ts/lib/Either";
 
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
@@ -348,6 +347,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     });
   };
 
+  // tslint:disable-next-line: cognitive-complexity no-big-function
   public render() {
     const {
       errorLogoUpload,
@@ -357,14 +357,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       logo,
       logoIsValid,
       logoUploaded,
-      originalIsVisible,
       timestampLogo
     } = this.state;
     const { t } = this.props;
 
     return service ? (
       <StorageContext.Consumer>
-        {storage => (
+        {// tslint:disable-next-line: no-big-function
+        storage => (
           <div>
             <h4>
               {t("title")} {service.service_id}
