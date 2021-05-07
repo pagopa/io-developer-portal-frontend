@@ -135,6 +135,9 @@ export const checkValue = (
     case "authorized_cidrs": {
       return ts.readonlyArray(CIDR).decode(value);
     }
+    case "cta": {
+      return value ? NonEmptyString.decode(value) : right(value);
+    }
     case "organization_fiscal_code": {
       return OrganizationFiscalCode.decode(value);
     }
