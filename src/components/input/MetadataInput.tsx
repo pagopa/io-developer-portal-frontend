@@ -151,6 +151,11 @@ const MetadataInput = ({
           rows="8"
           className="mb-4 h-100 flex-row"
         />
+        {errors[`cta`] && (
+          <Alert color="danger" key="cta">
+            {JSON.stringify(errors[`cta`])}
+          </Alert>
+        )}
       </div>
     );
   };
