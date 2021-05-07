@@ -28,6 +28,7 @@ resources:
 
 stages:
   - stage: Build
+    dependsOn: []
     jobs:
       - job: make_build
         steps:
@@ -35,6 +36,7 @@ stages:
         - template: azure-templates/make-build.yml
 
   - stage: Static_analysis
+    dependsOn: []
     jobs:
       - job: lint
         steps:
@@ -54,6 +56,7 @@ stages:
             displayName: 'Danger CI'
 
   - stage: Test
+    dependsOn: []
     jobs:
       - job: unit_tests
         steps:
