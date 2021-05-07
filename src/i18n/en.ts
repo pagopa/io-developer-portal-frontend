@@ -86,7 +86,8 @@ const en = {
     service_draft: "Service in draft",
     service_not_active: "Service not active",
     service_not_valid: "Fields not valid, service not active",
-    service_active: "Service active"
+    service_active: "Service active",
+    service_loading: "Loading service data"
   },
   service: {
     service_name: "Service Name",

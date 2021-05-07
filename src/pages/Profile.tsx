@@ -340,8 +340,7 @@ class Profile extends Component<Props, ProfileState> {
   private checkService(service: Service) {
     const isVisible = service && service.is_visible;
     const errorOrValidService = ValidService.decode(service);
-
-    return (
+    return service ? (
       <div>
         {isVisible && errorOrValidService.isLeft() ? (
           <Alert color="danger">{this.props.t("service_not_valid")}</Alert>
@@ -363,6 +362,10 @@ class Profile extends Component<Props, ProfileState> {
         ) : (
           ""
         )}
+      </div>
+    ) : (
+      <div>
+        <Alert color="info">{this.props.t("service_loading")}</Alert>
       </div>
     );
   }

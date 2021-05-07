@@ -86,7 +86,8 @@ const it = {
     service_draft: "Servizio in bozza",
     service_not_active: "Servizio non attivo",
     service_not_valid: "Campi non validi, il servizio non è attivo",
-    service_active: "Servizio attivo"
+    service_active: "Servizio attivo",
+    service_loading: "Recupero dati servizio"
   },
   service: {
     service_name: "Nome Servizio",
