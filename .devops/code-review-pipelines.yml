@@ -32,9 +32,7 @@ stages:
       - job: make_build
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
-        - script: |
-            yarn build
-          displayName: 'Build'
+        - template: azure-templates/make-build.yml
 
   - stage: Static_analysis
     jobs:
