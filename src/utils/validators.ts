@@ -132,21 +132,10 @@ export const checkValue = (
     >
 > => {
   switch (prop) {
-    case "authorized_cidrs": {
-      return ts.readonlyArray(CIDR).decode(value);
-    }
-    case "cta": {
+    case "address":
+    case "cta":
+    case "token_name": {
       return value ? NonEmptyString.decode(value) : right(value);
-    }
-    case "organization_fiscal_code": {
-      return OrganizationFiscalCode.decode(value);
-    }
-    case "phone": {
-      return value ? PhoneCheck.decode(value) : right(value);
-    }
-    case "pec":
-    case "email": {
-      return value ? EmailString.decode(value) : right(value);
     }
     case "app_android":
     case "app_ios":
@@ -155,11 +144,21 @@ export const checkValue = (
     case "web_url": {
       return value ? UrlFromStringV2.decode(value) : right(value);
     }
+    case "authorized_cidrs": {
+      return ts.readonlyArray(CIDR).decode(value);
+    }
+    case "organization_fiscal_code": {
+      return OrganizationFiscalCode.decode(value);
+    }
+    case "pec":
+    case "email": {
+      return value ? EmailString.decode(value) : right(value);
+    }
+    case "phone": {
+      return value ? PhoneCheck.decode(value) : right(value);
+    }
     case "privacy_url": {
       return UrlFromStringV2.decode(value);
-    }
-    case "address": {
-      return value ? NonEmptyString.decode(value) : right(value);
     }
     default: {
       // All other fields are required as NonEmptyString
