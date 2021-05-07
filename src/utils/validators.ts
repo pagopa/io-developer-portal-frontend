@@ -1,7 +1,23 @@
+import { right } from "fp-ts/lib/Either";
+
+import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
+
+import * as ts from "io-ts";
+
+import {
+  EmailString,
+  IPatternStringTag,
+  NonEmptyString
+} from "italia-ts-commons/lib/strings";
+import { ValidUrl } from "italia-ts-commons/lib/url";
 import toPairs from "lodash/toPairs";
 import { conformToMask } from "react-text-mask";
 
+import { CIDR } from "../../generated/definitions/api/CIDR";
+import { OrganizationFiscalCode } from "../../generated/definitions/backend/OrganizationFiscalCode";
 import { CONSTANTS, LIMITS } from "./constants";
+
 const { CSV, CSV_HEADERS } = CONSTANTS;
 
 export const isMaskValid = (value: string, mask: ReadonlyArray<RegExp>) => {
@@ -58,4 +74,93 @@ export default {
   isLengthValid,
   isValueRangeValid,
   areHeadersValid
+};
+
+type PhoneCheck = ts.TypeOf<typeof NonEmptyString>;
+export const PhoneCheck = new ts.Type<string, string, unknown>(
+  "PhoneCheck",
+  ts.string.is,
+  (u, c) =>
+    ts.string.validate(u, c).chain(s =>
+      // tslint:disable-next-line: prettier
+      new RegExp("^(\\+)?([0-9][\\s\\/\\.\\-]?)+$", "g").test(s)
+        ? ts.success(s)
+        : ts.failure(u, c, "Inserisci un telefono valido.")
+    ),
+  String
+);
+
+const isUrl = (v: ts.mixed): v is ValidUrl =>
+  // tslint:disable-next-line: no-any
+  ts.object.is(v) && ts.string.is((v as any).href);
+
+export const UrlFromStringV2 = new ts.Type<ValidUrl, string>(
+  "UrlFromStringV2",
+  isUrl,
+  (v, c) =>
+    isUrl(v)
+      ? ts.success(v)
+      : ts.string.validate(v, c).chain(s => {
+          try {
+            const d = new URL(s);
+            // we can safely use url.href in calling methods
+            return !d.href ? ts.failure(s, c) : ts.success(d as ValidUrl);
+          } catch (e) {
+            return ts.failure(s, c);
+          }
+        }),
+  a => a.toString()
+);
+
+export type UrlFromStringV2 = ts.TypeOf<typeof UrlFromStringV2>;
+
+export type InputValue = string | boolean | number | readonly string[];
+
+export const checkValue = (
+  prop: keyof ServiceMetadata | keyof Service,
+  value: InputValue
+): ts.Validation<
+  // tslint:disable-next-line: max-union-size
+  | InputValue
+  | string
+  | ValidUrl
+  | ReadonlyArray<
+      string &
+        IPatternStringTag<
+          "^([0-9]{1,3}[.]){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$"
+        >
+    >
+> => {
+  switch (prop) {
+    case "authorized_cidrs": {
+      return ts.readonlyArray(CIDR).decode(value);
+    }
+    case "organization_fiscal_code": {
+      return OrganizationFiscalCode.decode(value);
+    }
+    case "phone": {
+      return value ? PhoneCheck.decode(value) : right(value);
+    }
+    case "pec":
+    case "email": {
+      return value ? EmailString.decode(value) : right(value);
+    }
+    case "app_android":
+    case "app_ios":
+    case "support_url":
+    case "tos_url":
+    case "web_url": {
+      return value ? UrlFromStringV2.decode(value) : right(value);
+    }
+    case "privacy_url": {
+      return UrlFromStringV2.decode(value);
+    }
+    case "address": {
+      return value ? NonEmptyString.decode(value) : right(value);
+    }
+    default: {
+      // All other fields are required as NonEmptyString
+      return NonEmptyString.decode(value);
+    }
+  }
 };

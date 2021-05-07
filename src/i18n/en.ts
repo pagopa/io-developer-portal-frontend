@@ -82,9 +82,18 @@ const en = {
     secondary_key: "Secondary key",
     regenerate: "Regenerate",
     use: "Use this key",
-    add: "Add subscription"
+    add: "Add subscription",
+    service_draft: "Service in draft",
+    service_not_active: "Service not active",
+    service_not_valid: "Fields not valid, service not active",
+    service_active: "Service active",
+    service_loading: "Loading service data"
   },
   service: {
+    service_name: "Service Name",
+    department_name: "Department Name",
+    organization_name: "Organization Name",
+    authorized_cidrs: "Authorized origin IP",
     send_as: "Sending as",
     no_services: "No API key selected!",
     name: "Name of the service",
@@ -92,7 +101,7 @@ const en = {
     organization: "Organization",
     organization_fiscal_code: "Fiscal Code for Organization",
     authorized_recipients: "Authorized recipients (Fiscal Codes)",
-    authorized_ips: "Authorized IPs",
+    authorized_ips: "Authorized IPs*",
     max_allowed_payment_amount: "Maximum allowd payment amount",
     visible_service: "Visible in service list",
     eurocents: "eurocents",
@@ -104,7 +113,7 @@ const en = {
     app_ios: "App IOS",
     app_android: "App Android",
     tos_url: "Tos Url",
-    privacy_url: "Privacy Url",
+    privacy_url: "Privacy Url*",
     address: "Address",
     phone: "Phone",
     email: "Email",
@@ -115,7 +124,13 @@ const en = {
     scope: "Scope",
     metadata: "Metadata",
     service_logo: "Upload Logo (PNG)",
-    service_logo_upload: "Upload"
+    service_logo_upload: "Upload",
+    scheda_servizio: "Service Details",
+    contact_fields: "Contact Fields",
+    contact_fields_message:
+      "You need at least one contact point to citizen assistance",
+    national: "National",
+    local: "Local"
   },
   servers: {
     select: "Select your server (endpoint) of choice",
@@ -156,7 +171,8 @@ const en = {
     subject: "Subject has to be between {{length}} characters",
     markdown: "Message has to be between {{length}} characters",
     notice: "Please digit {{max}} numeric characters and the amount",
-    amount: "Please digit the amount in eurocents and the notice number"
+    amount: "Please digit the amount in eurocents and the notice number",
+    field_error: "The field {{field}} is not valid"
   },
   errors: {
     upload_logo: "Upload logo error"

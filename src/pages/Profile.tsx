@@ -1,8 +1,6 @@
+import { Alert, Button } from "design-react-kit";
 import React, { ChangeEvent, Component, Fragment } from "react";
-
 import { WithNamespaces, withNamespaces } from "react-i18next";
-
-import { Button } from "design-react-kit";
 
 import get from "lodash/get";
 import { getStorage } from "../context/storage";
@@ -16,10 +14,14 @@ import { RouteComponentProps } from "react-router";
 import Confirmation from "../components/modal/Confirmation";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
-import { Service } from "../../generated/definitions/backend/Service";
+
+import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+
 import { SubscriptionCollection } from "../../generated/definitions/backend/SubscriptionCollection";
 import { SubscriptionContract } from "../../generated/definitions/backend/SubscriptionContract";
 import { UserData } from "../../generated/definitions/backend/UserData";
+
+import { ValidService } from "../utils/service";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
@@ -335,6 +337,39 @@ class Profile extends Component<Props, ProfileState> {
     );
   }
 
+  private checkService(service: Service) {
+    const isVisible = service && service.is_visible;
+    const errorOrValidService = ValidService.decode(service);
+    return service ? (
+      <div>
+        {isVisible && errorOrValidService.isLeft() ? (
+          <Alert color="danger">{this.props.t("service_not_valid")}</Alert>
+        ) : (
+          ""
+        )}
+        {!isVisible && errorOrValidService.isLeft() ? (
+          <Alert color="warning">{this.props.t("service_draft")}</Alert>
+        ) : (
+          ""
+        )}
+        {isVisible && errorOrValidService.isRight() ? (
+          <Alert color="success">{this.props.t("service_active")}</Alert>
+        ) : (
+          ""
+        )}
+        {!isVisible && errorOrValidService.isRight() ? (
+          <Alert color="info">{this.props.t("service_not_active")}</Alert>
+        ) : (
+          ""
+        )}
+      </div>
+    ) : (
+      <div>
+        <Alert color="info">{this.props.t("service_loading")}</Alert>
+      </div>
+    );
+  }
+
   public render() {
     const { userSubscriptions, services } = this.state;
     const { isConfirmationOpen, onConfirmOperation } = this.state;
@@ -356,6 +391,7 @@ class Profile extends Component<Props, ProfileState> {
                 ...jsxElementsArray,
                 <div key={subscription.id} className="shadow p-4 my-4">
                   <SubscriptionService service={service} t={t} />
+                  {this.checkService(service)}
                   <h6 className="mt-4">
                     {t("subscription")} ({subscription.state})
                   </h6>

@@ -82,9 +82,18 @@ const it = {
     secondary_key: "Chiave secondaria",
     regenerate: "Rigenera",
     use: "Usa questa chiave",
-    add: "Aggiungi sottoscrizione"
+    add: "Aggiungi sottoscrizione",
+    service_draft: "Servizio in bozza",
+    service_not_active: "Servizio non attivo",
+    service_not_valid: "Campi non validi, il servizio non è attivo",
+    service_active: "Servizio attivo",
+    service_loading: "Recupero dati servizio"
   },
   service: {
+    service_name: "Nome Servizio",
+    department_name: "Nome Dipartimento",
+    organization_name: "Nome Ente",
+    authorized_cidrs: "IP di origine autorizzati",
     send_as: "Invio per conto di",
     no_services: "Nessuna API key selezionata!",
     name: "Nome servizio",
@@ -92,7 +101,7 @@ const it = {
     organization: "Ente",
     organization_fiscal_code: "Codice fiscale ente",
     authorized_recipients: "Codici fiscali destinatari autorizzati",
-    authorized_ips: "IP di origine autorizzati",
+    authorized_ips: "IP di origine autorizzati*",
     max_allowed_payment_amount: "Importo massimo autorizzato",
     visible_service: "Visibile nella lista servizi",
     eurocents: "eurocents",
@@ -104,18 +113,24 @@ const it = {
     app_ios: "App IOS",
     app_android: "App Android",
     tos_url: "Tos Url",
-    privacy_url: "Privacy Url",
-    address: "Address",
-    phone: "Phone",
+    privacy_url: "Privacy Url*",
+    address: "Indirizzo",
+    phone: "Telefono",
     email: "Email",
     pec: "Pec",
     cta: "Cta",
-    token_name: "Token Name",
-    support_url: "Support Url",
-    scope: "Scope",
+    token_name: "Nome Token",
+    support_url: "Url di Supporto",
+    scope: "Area di competenza",
     metadata: "Metadati",
     service_logo: "Upload Logo (PNG)",
-    service_logo_upload: "Upload"
+    service_logo_upload: "Upload",
+    scheda_servizio: "Scheda Servizio",
+    contact_fields: "Campi di contatto",
+    contact_fields_message:
+      "È obbligatorio almeno un campo di contatto per assistenza al cittadino",
+    national: "Nazionale",
+    local: "Locale"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",
@@ -156,7 +171,8 @@ const it = {
     subject: "L'oggetto deve essere di {{length}} caratteri",
     markdown: "Il messaggio deve essere di {{length}} caratteri",
     notice: "Per favore digita {{max}} caratteri numerici e l'importo",
-    amount: "Per favore digita l'importo in Centesimi ed il Numero di Avviso"
+    amount: "Per favore digita l'importo in Centesimi ed il Numero di Avviso",
+    field_error: "Il campo {{field}} non è valido"
   },
   errors: {
     upload_logo: "Caricamento logo non riuscito"

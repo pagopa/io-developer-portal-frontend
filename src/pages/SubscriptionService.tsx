@@ -1,24 +1,22 @@
-import React, { ChangeEvent, Component } from "react";
+import { Alert, Button } from "design-react-kit";
 
-import { WithNamespaces, withNamespaces } from "react-i18next";
-
-import { Button } from "design-react-kit";
-
-import { RouteComponentProps } from "react-router";
-import { StorageContext } from "../context/storage";
-import { getFromBackend, putToBackend } from "../utils/backend";
-
-import { Alert } from "design-react-kit";
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
-import MetadataInput from "../components/input/MetadataInput";
-
 import * as ts from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
+import React, { ChangeEvent, Component, FocusEvent } from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
+import { RouteComponentProps } from "react-router";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
+import MetadataInput from "../components/input/MetadataInput";
 import UploadLogo from "../components/UploadLogo";
+import { StorageContext } from "../context/storage";
+import { getFromBackend, putToBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
+import { ValidService } from "../utils/service";
+import { checkValue, InputValue } from "../utils/validators";
 
 const LogoParamsApi = ts.interface({
   logo: NonEmptyString,
@@ -43,6 +41,7 @@ const SERVICES_LOGO_PATH =
   getConfig("IO_DEVELOPER_PORTAL_LOGO_PATH") + "/services/";
 
 type OwnProps = {};
+
 type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
@@ -51,13 +50,16 @@ type SubscriptionServiceState = {
   errorLogoUpload: boolean;
   service?: Service;
   isValid?: boolean;
+  isSaved: boolean;
   logo?: string;
   logoIsValid: boolean;
   logoUploaded: boolean;
   originalIsVisible?: boolean;
+  errors: Record<string, string>;
+  timestampLogo: number;
 };
 
-function inputValueMap(name: string, value: string | boolean) {
+function inputValueMap(name: string, value: InputValue) {
   switch (name) {
     case "max_allowed_payment_amount":
       return Number(value);
@@ -80,14 +82,18 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     errorLogoUpload: false,
     service: undefined,
     isValid: true,
+    isSaved: false,
     logo: undefined,
     logoIsValid: true,
     logoUploaded: true,
-    originalIsVisible: undefined
+    originalIsVisible: undefined,
+    errors: {},
+    timestampLogo: Date.now()
   };
 
   public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
+
     const serviceFromBackend = await getFromBackend<Service>({
       path: `services/${serviceId}`
     });
@@ -96,7 +102,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       ...serviceFromBackend,
       service_metadata: serviceFromBackend.service_metadata
         ? serviceFromBackend.service_metadata
-        : { scope: ServiceScopeEnum.LOCAL }
+        : {
+            scope: ServiceScopeEnum.LOCAL
+          }
     };
 
     this.setState({
@@ -104,6 +112,68 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       originalIsVisible: serviceFromBackend.is_visible
     });
   }
+
+  private handleError = (name: string) => {
+    this.setState({
+      errors: {
+        ...this.state.errors,
+        [name]: this.props.t("validation:field_error", {
+          field: this.props.t(name)
+        })
+      },
+      isValid: false
+    });
+  };
+
+  private setData = (
+    errors: Record<string, string>,
+    name: string,
+    inputValue: InputValue
+  ) => {
+    Service.decode({
+      ...this.state.service,
+      [name]: inputValue === "" ? undefined : inputValue
+    }).fold(
+      () => this.setState({ isValid: false }),
+      service =>
+        this.setState(() => ({
+          errors,
+          isValid: Object.keys(errors).length === 0,
+          service,
+          isSaved: false
+        }))
+    );
+  };
+
+  private setMetadata = (
+    errors: Record<string, string>,
+    name: string,
+    inputValue: InputValue
+  ) => {
+    Service.decode({
+      ...this.state.service,
+      service_metadata: {
+        ...(this.state.service && this.state.service.service_metadata
+          ? this.state.service.service_metadata
+          : undefined),
+        [name]: inputValue === "" ? undefined : inputValue
+      }
+    }).fold(
+      () => this.setState({ isValid: false }),
+      service =>
+        this.setState(() => ({
+          errors,
+          isValid: Object.keys(errors).length === 0,
+          service,
+          isSaved: false
+        }))
+    );
+  };
+
+  private removeError = (keyName: string) => {
+    const { [keyName]: fieldToRemove, ...others } = this.state.errors;
+    return others;
+  };
 
   public handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
@@ -114,7 +184,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       [name]: inputValueMap(name, value)
     })
       .map(service => this.setState({ service, isValid: true }))
-      .mapLeft(() => this.setState({ isValid: false }));
+      .mapLeft(() =>
+        this.setState({
+          isSaved: false,
+          isValid: false
+        })
+      );
   };
 
   public handleMetadataChange = (
@@ -132,17 +207,60 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           : undefined),
         [name]: inputValue === "" ? undefined : inputValue
       }
-    }).map(service => this.setState({ service }));
+    }).map(service => this.setState({ service, isSaved: false }));
+  };
+
+  public getHandleBlur = (prop: keyof ServiceMetadata | keyof Service) => (
+    event: FocusEvent<HTMLInputElement>
+  ) => {
+    const target = event.target;
+    const inputValue =
+      target.type === "checkbox" ? target.checked : target.value;
+    const value = inputValueMap(prop, inputValue);
+
+    checkValue(prop, value).fold(
+      () => this.handleError(prop),
+      () => this.setData(this.removeError(prop), prop, value)
+    );
+  };
+
+  public getHandleMetadataBlur = (
+    prop: keyof ServiceMetadata | keyof Service
+  ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const {
+      target: { name, value }
+    } = event;
+    const inputValue = inputValueMap(name, value);
+
+    checkValue(prop, inputValue).fold(
+      () => this.handleError(prop),
+      () => this.setMetadata(this.removeError(name), name, inputValue)
+    );
+
+    // : this.setMetadata(this.removeError(name), name, inputValue);
   };
 
   public handleSubmit = async () => {
-    const serviceDecoding = Service.decode(this.state.service);
+    const serviceToUpdate = {
+      ...this.state.service,
+      service_metadata: {
+        ...(this.state.service && this.state.service.service_metadata),
+        scope:
+          this.state.service && this.state.service.service_metadata
+            ? this.state.service.service_metadata.scope
+            : "LOCAL"
+      }
+    };
+
+    const serviceDecoding = ValidService.decode(serviceToUpdate);
     if (serviceDecoding.isLeft()) {
       this.setState({ isValid: false });
       throw new Error("Wrong parameters format");
     }
+
     const service = serviceDecoding.value;
-    await putToBackend({
+
+    const updateServiceResponse = await putToBackend<{ statusCode: number }>({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -159,6 +277,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         })
       }
     });
+
+    if (Service.is(updateServiceResponse)) {
+      this.setState({ isSaved: true });
+    }
   };
 
   public handleServiceLogoSubmit = async () => {
@@ -187,7 +309,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 errorLogoUpload: false,
                 logo: undefined,
                 logoIsValid: true,
-                logoUploaded: true
+                logoUploaded: true,
+                timestampLogo: Date.now()
               });
             }),
           _ =>
@@ -224,23 +347,25 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     });
   };
 
+  // tslint:disable-next-line: cognitive-complexity no-big-function
   public render() {
     const {
       errorLogoUpload,
       service,
       isValid,
+      isSaved,
       logo,
       logoIsValid,
       logoUploaded,
-      originalIsVisible
+      timestampLogo
     } = this.state;
     const { t } = this.props;
 
     return service ? (
       <StorageContext.Consumer>
-        {storage => (
+        {// tslint:disable-next-line: no-big-function
+        storage => (
           <div>
-            {!isValid && <Alert color="danger">Campi non validi</Alert>}
             <h4>
               {t("title")} {service.service_id}
             </h4>
@@ -251,36 +376,56 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   name="service_name"
                   type="text"
                   defaultValue={service.service_name}
-                  onChange={this.handleInputChange}
+                  onBlur={this.getHandleBlur("service_name")}
                   className="mb-4"
                 />
+                {this.state.errors[`service_name`] && (
+                  <Alert color="danger">
+                    {this.state.errors[`service_name`]}
+                  </Alert>
+                )}
 
                 <label className="m-0">{t("department")}*</label>
                 <input
                   name="department_name"
                   type="text"
                   defaultValue={service.department_name}
-                  onChange={this.handleInputChange}
+                  onBlur={this.getHandleBlur("department_name")}
                   className="mb-4"
                 />
+                {this.state.errors[`department_name`] && (
+                  <Alert color="danger">
+                    {this.state.errors[`department_name`]}
+                  </Alert>
+                )}
 
                 <label className="m-0">{t("organization")}*</label>
                 <input
                   name="organization_name"
                   type="text"
                   defaultValue={service.organization_name}
-                  onChange={this.handleInputChange}
+                  onBlur={this.getHandleBlur("organization_name")}
                   className="mb-4"
                 />
+                {this.state.errors[`organization_name`] && (
+                  <Alert color="danger">
+                    {this.state.errors[`organization_name`]}
+                  </Alert>
+                )}
 
                 <label className="m-0">{t("organization_fiscal_code")}*</label>
                 <input
                   name="organization_fiscal_code"
                   type="text"
                   defaultValue={service.organization_fiscal_code}
-                  onChange={this.handleInputChange}
+                  onBlur={this.getHandleBlur("organization_fiscal_code")}
                   className="mb-4"
                 />
+                {this.state.errors[`organization_fiscal_code`] && (
+                  <Alert color="danger">
+                    {this.state.errors[`organization_fiscal_code`]}
+                  </Alert>
+                )}
 
                 {storage.isApiAdmin && (
                   <div>
@@ -295,7 +440,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                           ? service.max_allowed_payment_amount.toString()
                           : undefined
                       }
-                      onChange={this.handleInputChange}
+                      onBlur={this.getHandleBlur("max_allowed_payment_amount")}
                       className="mb-4"
                     />
                   </div>
@@ -307,9 +452,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     name="authorized_cidrs"
                     type="text"
                     defaultValue={service.authorized_cidrs.join(";")}
-                    onChange={this.handleInputChange}
+                    onBlur={this.getHandleBlur("authorized_cidrs")}
                     className="mb-4"
                   />
+                  {this.state.errors[`authorized_cidrs`] && (
+                    <Alert color="danger">
+                      {JSON.stringify(this.state.errors[`authorized_cidrs`])}
+                    </Alert>
+                  )}
                 </div>
 
                 {storage.isApiAdmin && (
@@ -325,6 +475,34 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   </div>
                 )}
 
+                <div>
+                  <label className="m-0">{t("scope")}*</label>
+                  <select
+                    name="scope"
+                    value={
+                      service.service_metadata
+                        ? service.service_metadata.scope
+                        : undefined
+                    }
+                    className="form-control mb-4"
+                    disabled={service.is_visible && !storage.isApiAdmin}
+                    onChange={this.handleMetadataChange}
+                  >
+                    <option
+                      key={ServiceScopeEnum.NATIONAL}
+                      value={ServiceScopeEnum.NATIONAL}
+                    >
+                      {t(ServiceScopeEnum.NATIONAL.toLocaleLowerCase())}
+                    </option>
+                    <option
+                      key={ServiceScopeEnum.LOCAL}
+                      value={ServiceScopeEnum.LOCAL}
+                    >
+                      {t(ServiceScopeEnum.LOCAL.toLocaleLowerCase())}
+                    </option>
+                  </select>
+                </div>
+
                 {storage.isApiAdmin && (
                   <div>
                     <input
@@ -339,29 +517,30 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 )}
               </div>
 
-              <div className="shadow p-4">
-                <h5>{t("service_logo")}</h5>
+              <div className="shadow p-4 mt-4 mb-4">
+                <h5>{t("scheda_servizio")}</h5>
+                <MetadataInput
+                  onChange={this.handleMetadataChange}
+                  onBlur={this.getHandleMetadataBlur}
+                  service_metadata={service.service_metadata}
+                  isApiAdmin={storage.isApiAdmin}
+                  errors={this.state.errors}
+                />
+              </div>
+
+              <div className="shadow p-4 mt-4 mb-4">
+                <h6>{t("service_logo")}</h6>
                 <UploadLogo
                   errorLogoUpload={errorLogoUpload}
                   isSubmitEnabled={logo !== undefined && logoIsValid}
                   isValid={logoIsValid}
-                  logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png`}
+                  logoPath={`${SERVICES_LOGO_PATH}${service.service_id.toLowerCase()}.png?${timestampLogo}`}
                   logoUploaded={logoUploaded}
                   nameButton="service_logo_upload"
                   nameInput="service_logo"
                   onChangeHandler={this.handleServiceLogoChange}
                   onError={this.handleOnErrorImage}
                   onSubmitHandler={this.handleServiceLogoSubmit}
-                />
-              </div>
-
-              <div className="shadow p-4">
-                <h5>Metadata</h5>
-                <MetadataInput
-                  onChange={this.handleMetadataChange}
-                  service_metadata={service.service_metadata}
-                  isApiAdmin={storage.isApiAdmin}
-                  originalServiceIsVisible={originalIsVisible || false}
                 />
               </div>
 
@@ -372,6 +551,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               >
                 {t("save")}
               </Button>
+              {!isValid && <Alert color="danger">Campi non validi</Alert>}
+              {isSaved && <Alert color="success">Dati salvati</Alert>}
             </form>
 
             {service.authorized_recipients.length > 0 && (
