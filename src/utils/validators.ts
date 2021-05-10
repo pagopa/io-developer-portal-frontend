@@ -1,4 +1,4 @@
-import { left, right } from "fp-ts/lib/Either";
+import { right } from "fp-ts/lib/Either";
 
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
