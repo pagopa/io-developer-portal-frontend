@@ -161,7 +161,7 @@ export const checkValue = (
       return UrlFromStringV2.decode(value);
     }
     default: {
-      // All other fields are required as NonEmptyString
+      // All other fields are optional as NonEmptyString
       return value ? NonEmptyString.decode(value) : right(value);
     }
   }
