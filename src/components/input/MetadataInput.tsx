@@ -66,9 +66,13 @@ const MetadataInput = ({
   );
 
   const otherfields = MetadataKeys.filter(
-    elem => elem === "app_ios" || elem === "app_android" || elem === "address"
+    elem =>
+      elem === "app_ios" ||
+      elem === "app_android" ||
+      elem === "web_url" ||
+      elem === "address"
   );
-  // privacy_url*, tos_url, ios_url, android_url, address
+
   const secondaryFields = MetadataKeys.filter(
     elem => elem === "tos_url" || elem === "privacy_url"
   ).sort();
