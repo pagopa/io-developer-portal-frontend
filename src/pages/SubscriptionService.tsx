@@ -443,6 +443,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       onBlur={this.getHandleBlur("max_allowed_payment_amount")}
                       className="mb-4"
                     />
+                    {this.state.errors[`max_allowed_payment_amount`] && (
+                      <Alert color="danger">
+                        {this.state.errors[`max_allowed_payment_amount`]}
+                      </Alert>
+                    )}
                   </div>
                 )}
 

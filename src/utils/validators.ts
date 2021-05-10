@@ -1,16 +1,18 @@
-import { right } from "fp-ts/lib/Either";
+import { left, right } from "fp-ts/lib/Either";
 
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 
 import * as ts from "io-ts";
 
+import { WithinRangeInteger } from "italia-ts-commons/lib/numbers";
 import {
   EmailString,
   IPatternStringTag,
   NonEmptyString
 } from "italia-ts-commons/lib/strings";
 import { ValidUrl } from "italia-ts-commons/lib/url";
+
 import toPairs from "lodash/toPairs";
 import { conformToMask } from "react-text-mask";
 
@@ -132,11 +134,6 @@ export const checkValue = (
     >
 > => {
   switch (prop) {
-    case "address":
-    case "cta":
-    case "token_name": {
-      return value ? NonEmptyString.decode(value) : right(value);
-    }
     case "app_android":
     case "app_ios":
     case "support_url":
@@ -146,6 +143,9 @@ export const checkValue = (
     }
     case "authorized_cidrs": {
       return ts.readonlyArray(CIDR).decode(value);
+    }
+    case "max_allowed_payment_amount": {
+      return WithinRangeInteger(0, 10000000000).decode(value);
     }
     case "organization_fiscal_code": {
       return OrganizationFiscalCode.decode(value);
@@ -162,7 +162,7 @@ export const checkValue = (
     }
     default: {
       // All other fields are required as NonEmptyString
-      return NonEmptyString.decode(value);
+      return value ? NonEmptyString.decode(value) : right(value);
     }
   }
 };
