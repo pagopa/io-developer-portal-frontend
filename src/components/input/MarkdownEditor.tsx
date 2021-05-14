@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component } from "react";
+import React, { ChangeEvent, Component, FocusEvent } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -16,13 +16,16 @@ type OwnProps = {
   name: string;
   isMarkdownValid: boolean;
   onChangeMarkdown: (event: ChangeEvent<HTMLInputElement>) => void;
+  onBlurMarkdown: (
+    event: FocusEvent<HTMLSelectElement | HTMLInputElement>
+  ) => void;
 };
 type Props = WithNamespaces & OwnProps;
 
 class MarkdownEditor extends Component<Props, never> {
   public render() {
     const { markdown, name, t } = this.props;
-    const { onChangeMarkdown } = this.props;
+    const { onChangeMarkdown, onBlurMarkdown } = this.props;
     // tslint:disable-next-line:readonly-array
     const allowedTypes: NodeType[] = [
       "root",
@@ -65,6 +68,7 @@ class MarkdownEditor extends Component<Props, never> {
                 minLength={MARKDOWN.MIN}
                 maxLength={MARKDOWN.MAX}
                 onChange={onChangeMarkdown}
+                onBlur={onBlurMarkdown}
               />
             </section>
             <ReactMarkdown

@@ -144,6 +144,9 @@ export const checkValue = (
     case "authorized_cidrs": {
       return ts.readonlyArray(CIDR).decode(value);
     }
+    case "description": {
+      return NonEmptyString.decode(value);
+    }
     case "max_allowed_payment_amount": {
       return WithinRangeInteger(0, 10000000000).decode(value);
     }

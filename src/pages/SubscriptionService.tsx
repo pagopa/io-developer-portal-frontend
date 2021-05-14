@@ -8,6 +8,7 @@ import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import React, { ChangeEvent, Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RouteComponentProps } from "react-router";
+import { CIDR } from "../../generated/definitions/api/CIDR";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
 import MetadataInput from "../components/input/MetadataInput";
 import UploadLogo from "../components/UploadLogo";
@@ -59,6 +60,12 @@ type SubscriptionServiceState = {
   timestampLogo: number;
 };
 
+function isValidIPSubnet(value: string): CIDR {
+  return value.lastIndexOf("/") === -1
+    ? (`${value}/32` as CIDR)
+    : (value as CIDR);
+}
+
 function inputValueMap(name: string, value: InputValue) {
   switch (name) {
     case "max_allowed_payment_amount":
@@ -67,7 +74,7 @@ function inputValueMap(name: string, value: InputValue) {
     case "authorized_cidrs":
     case "authorized_recipients": {
       if (typeof value === "string") {
-        return value.split(";");
+        return value.split(";").map(isValidIPSubnet);
       }
       return [];
     }
@@ -100,6 +107,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
     const service = {
       ...serviceFromBackend,
+      authorized_cidrs: serviceFromBackend.authorized_cidrs.map(
+        isValidIPSubnet
+      ),
       service_metadata: serviceFromBackend.service_metadata
         ? serviceFromBackend.service_metadata
         : {
@@ -236,8 +246,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       () => this.handleError(prop),
       () => this.setMetadata(this.removeError(name), name, inputValue)
     );
-
-    // : this.setMetadata(this.removeError(name), name, inputValue);
   };
 
   public handleSubmit = async () => {
@@ -453,6 +461,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
                 <div>
                   <label className="m-0">{t("authorized_ips")}</label>
+                  <p>
+                    <small>{t("example_authorized_ips")}</small>
+                  </p>
                   <input
                     name="authorized_cidrs"
                     type="text"
