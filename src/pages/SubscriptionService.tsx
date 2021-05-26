@@ -76,7 +76,15 @@ function inputValueMap(name: string, value: InputValue) {
   switch (name) {
     case "max_allowed_payment_amount":
       return Number(value);
-    case "authorized_cidrs":
+    case "authorized_cidrs": {
+      if (typeof value === "string") {
+        return value
+          .replace(/\s/g, "")
+          .replace(/\;$/, "")
+          .split(";");
+      }
+      return [];
+    }
     case "authorized_recipients": {
       if (typeof value === "string") {
         return value.split(";");
