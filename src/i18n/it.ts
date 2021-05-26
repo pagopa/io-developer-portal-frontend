@@ -131,7 +131,9 @@ const it = {
     contact_fields_message:
       "È obbligatorio almeno un campo di contatto per assistenza al cittadino",
     national: "Nazionale",
-    local: "Locale"
+    local: "Locale",
+    service_saved_ok: "Scheda Servizio salvata correttamente",
+    service_saved_error: "Errore nel salvataggio della Scheda Servizio"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",

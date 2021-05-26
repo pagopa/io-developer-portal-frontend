@@ -131,7 +131,9 @@ const en = {
     contact_fields_message:
       "You need at least one contact point to citizen assistance",
     national: "National",
-    local: "Local"
+    local: "Local",
+    service_saved_ok: "Service succesfully saved.",
+    service_saved_error: "Error on save Service"
   },
   servers: {
     select: "Select your server (endpoint) of choice",

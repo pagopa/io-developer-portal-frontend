@@ -47,11 +47,17 @@ type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
+enum ServiceFormState {
+  "SAVED_OK" = "SAVED_OK", // Succesfull saved to backend
+  "SAVED_ERROR" = "SAVED_ERROR", // Unsuccesfull saved to backend
+  "NOT_SAVE" = "NOT_SAVE" // Not yet saved to backend
+}
+
 type SubscriptionServiceState = {
   errorLogoUpload: boolean;
   service?: Service;
   isValid?: boolean;
-  isSaved: boolean;
+  formState: ServiceFormState;
   logo?: string;
   logoIsValid: boolean;
   logoUploaded: boolean;
@@ -60,7 +66,7 @@ type SubscriptionServiceState = {
   timestampLogo: number;
 };
 
-function isValidIPSubnet(value: string): CIDR {
+function withDefaultSubnet(value: string): CIDR {
   return value.lastIndexOf("/") === -1
     ? (`${value}/32` as CIDR)
     : (value as CIDR);
@@ -70,11 +76,10 @@ function inputValueMap(name: string, value: InputValue) {
   switch (name) {
     case "max_allowed_payment_amount":
       return Number(value);
-
     case "authorized_cidrs":
     case "authorized_recipients": {
       if (typeof value === "string") {
-        return value.split(";").map(isValidIPSubnet);
+        return value.split(";");
       }
       return [];
     }
@@ -89,7 +94,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     errorLogoUpload: false,
     service: undefined,
     isValid: true,
-    isSaved: false,
+    formState: ServiceFormState.NOT_SAVE,
     logo: undefined,
     logoIsValid: true,
     logoUploaded: true,
@@ -108,7 +113,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const service = {
       ...serviceFromBackend,
       authorized_cidrs: serviceFromBackend.authorized_cidrs.map(
-        isValidIPSubnet
+        withDefaultSubnet
       ),
       service_metadata: serviceFromBackend.service_metadata
         ? serviceFromBackend.service_metadata
@@ -150,7 +155,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           errors,
           isValid: Object.keys(errors).length === 0,
           service,
-          isSaved: false
+          formState: ServiceFormState.NOT_SAVE
         }))
     );
   };
@@ -175,7 +180,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           errors,
           isValid: Object.keys(errors).length === 0,
           service,
-          isSaved: false
+          formState: ServiceFormState.NOT_SAVE
         }))
     );
   };
@@ -196,7 +201,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       .map(service => this.setState({ service, isValid: true }))
       .mapLeft(() =>
         this.setState({
-          isSaved: false,
+          formState: ServiceFormState.NOT_SAVE,
           isValid: false
         })
       );
@@ -217,7 +222,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           : undefined),
         [name]: inputValue === "" ? undefined : inputValue
       }
-    }).map(service => this.setState({ service, isSaved: false }));
+    }).map(service =>
+      this.setState({
+        service,
+        formState: ServiceFormState.NOT_SAVE
+      })
+    );
   };
 
   public getHandleBlur = (prop: keyof ServiceMetadata | keyof Service) => (
@@ -287,7 +297,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     });
 
     if (Service.is(updateServiceResponse)) {
-      this.setState({ isSaved: true });
+      this.setState({ formState: ServiceFormState.SAVED_OK });
+    } else {
+      this.setState({ formState: ServiceFormState.SAVED_ERROR });
     }
   };
 
@@ -361,7 +373,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       errorLogoUpload,
       service,
       isValid,
-      isSaved,
+      formState,
       logo,
       logoIsValid,
       logoUploaded,
@@ -485,9 +497,16 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       name="authorized_recipients"
                       type="text"
                       defaultValue={service.authorized_recipients.join(";")}
-                      onChange={this.handleInputChange}
+                      onBlur={this.getHandleBlur("authorized_recipients")}
                       className="mb-4"
                     />
+                    {this.state.errors[`authorized_recipients`] && (
+                      <Alert color="danger">
+                        {JSON.stringify(
+                          this.state.errors[`authorized_recipients`]
+                        )}
+                      </Alert>
+                    )}
                   </div>
                 )}
 
@@ -568,7 +587,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 {t("save")}
               </Button>
               {!isValid && <Alert color="danger">Campi non validi</Alert>}
-              {isSaved && <Alert color="success">Dati salvati</Alert>}
+              {formState === ServiceFormState.SAVED_OK && (
+                <Alert color="success">{t("service_saved_ok")}</Alert>
+              )}
+              {formState === ServiceFormState.SAVED_ERROR && (
+                <Alert color="danger">{t("service_saved_error")}</Alert>
+              )}
             </form>
 
             {service.authorized_recipients.length > 0 && (
