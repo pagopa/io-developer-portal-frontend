@@ -108,6 +108,7 @@ const en = {
     eurocents: "eurocents",
     edit: "Edit service's details",
     save: "Save service's details",
+    save_draft: "Save draft service",
     title: "Service",
     description: "Description*",
     web_url: "Web Url",

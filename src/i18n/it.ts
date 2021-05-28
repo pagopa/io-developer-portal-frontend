@@ -108,6 +108,7 @@ const it = {
     eurocents: "eurocents",
     edit: "Modifica i dati del servizio",
     save: "Salva i dati del servizio",
+    save_draft: "Salva i dati in bozza",
     title: "Servizio",
     description: "Descrizione*",
     web_url: "Web Url",
