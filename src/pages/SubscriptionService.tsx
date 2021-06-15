@@ -79,8 +79,8 @@ function inputValueMap(name: string, value: InputValue) {
     case "authorized_cidrs": {
       if (typeof value === "string") {
         return value
-          .replace(/\s/g, "")
-          .replace(/\;$/, "")
+          .replace(/\s/g, "") // Remove all whitespaces
+          .replace(/\;$/, "") // Remove last semicolon to avoid empty string on last
           .split(";");
       }
       return [];
@@ -206,10 +206,15 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       ...this.state.service,
       [name]: inputValueMap(name, value)
     })
-      .map(service => this.setState({ service, isValid: true }))
+      .map(service =>
+        this.setState({
+          service,
+          formState: ServiceFormState.NOT_SAVE,
+          isValid: true
+        })
+      )
       .mapLeft(() =>
         this.setState({
-          formState: ServiceFormState.NOT_SAVE,
           isValid: false
         })
       );
@@ -267,13 +272,13 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   };
 
   private validateServiceData = (
-    validatore: ts.Decoder<
+    validator: ts.Decoder<
       ValidService | ValidDraftService,
       ValidService | ValidDraftService
     >,
     data: unknown
   ) => {
-    const decoded = validatore.decode(data as (
+    const decoded = validator.decode(data as (
       | ValidService
       | ValidDraftService));
     if (decoded.isLeft()) {
