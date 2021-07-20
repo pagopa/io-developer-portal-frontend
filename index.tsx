@@ -49,12 +49,10 @@ import { getConfig } from "./src/utils/config";
 const Layout = ({ children }: { children: ReactNode }) => (
   <section className="row">
     <div className="col-3">
-      <div className="ml-4 pt-5 pb-5">
-        <Aside />
-      </div>
+      <Aside />
     </div>
     <div className="col-9">
-      <div className="mr-4 pt-5 pb-5">{children}</div>
+      <React.Fragment>{children}</React.Fragment>
     </div>
   </section>
 );

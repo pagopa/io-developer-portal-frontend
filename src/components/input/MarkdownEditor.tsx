@@ -46,9 +46,10 @@ class MarkdownEditor extends Component<Props, never> {
       // "tableRow",
       // "tableCell",
       "list",
-      "listItem",
+      "listItem"
+      // tslint:disable-next-line: no-commented-code
       // "definition",
-      "heading"
+      // "heading"
       // "inlineCode",
       // "code",
       // "html",
@@ -71,12 +72,15 @@ class MarkdownEditor extends Component<Props, never> {
                 onBlur={onBlurMarkdown}
               />
             </section>
-            <ReactMarkdown
-              className="editor--message--preview form-control card shadow h-100 flex-1"
-              source={markdown}
-              unwrapDisallowed={true}
-              allowedTypes={allowedTypes}
-            />
+            <div className="p-4 editor--message--preview h-100 flex-1">
+              <p className="markdown-title-preview">Come comparirà in app:</p>
+              <ReactMarkdown
+                className=""
+                source={markdown}
+                unwrapDisallowed={true}
+                allowedTypes={allowedTypes}
+              />
+            </div>
           </section>
         </section>
       </section>

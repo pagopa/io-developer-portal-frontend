@@ -70,6 +70,7 @@ const en = {
     }
   },
   profile: {
+    new_service: "New Service",
     new_user: "New user",
     key: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     name: "Name",
@@ -83,13 +84,36 @@ const en = {
     regenerate: "Regenerate",
     use: "Use this key",
     add: "Add subscription",
-    service_draft: "Service in draft",
-    service_not_active: "Service not active",
-    service_not_valid: "Fields not valid, service not active",
-    service_active: "Service active",
-    service_loading: "Loading service data"
+    close: "Close",
+    service_draft: "draft",
+    service_review: "review",
+    service_not_valid: "incomplete or incorrect data",
+    service_valid: "active",
+    service_loading: "Loading service data",
+    create_new_service: "Create new service"
+  },
+  modal: {
+    important: "Important!",
+    new_service: "New Service",
+    publish_service: "Go Live!",
+    publish_confirmation:
+      "You confirm that you wish to proceed with the publication request for the service",
+    publish_warning:
+      "The service can only be published if the account that created it corresponds to the Delegate indicated in the membership agreement. Please check this correspondence before proceeding.",
+    publish_details:
+      "Once the request has been sent, the service will no longer be modifiable until the moment of publication. The PagoPA team will carry out a verification and will notify you at the time of publication, or will provide you with instructions in the event of a negative outcome of the request.",
+    deactive_service: "Disable the Service",
+    deactive_confirmation:
+      "You confirm that you wish to proceed with the deactivation request for the service",
+    deactive_details:
+      "Once the request has been entered, the PagoPA team will proceed with the deactivation, from that moment the service will no longer be visible in the app and it will not be possible to use it for communication to citizens",
+    add: "Add subscription",
+    close: "Close",
+    cancel: "Cancel",
+    confirm: "Confirm"
   },
   service: {
+    description_service: "Service Description",
     service_name: "Service Name",
     department_name: "Department Name",
     organization_name: "Organization Name",
@@ -108,13 +132,15 @@ const en = {
     eurocents: "eurocents",
     edit: "Edit service's details",
     save: "Save service's details",
+    publish: "Publish service",
+    unpublish: "Unpublish service",
     save_draft: "Save draft service",
     title: "Service",
     description: "Description*",
     web_url: "Web Url",
-    app_ios: "App IOS",
-    app_android: "App Android",
-    tos_url: "Tos Url",
+    app_ios: "App IOS Url",
+    app_android: "App Android Url",
+    tos_url: "Terms and Conditions (TOS) Url",
     privacy_url: "Privacy Url*",
     address: "Address",
     phone: "Phone",
@@ -125,7 +151,7 @@ const en = {
     support_url: "Support Url",
     scope: "Scope",
     metadata: "Metadata",
-    service_logo: "Upload Logo (PNG)",
+    service_logo: "Service Logo (PNG)",
     service_logo_upload: "Upload",
     scheda_servizio: "Service Details",
     contact_fields: "Contact Fields",
@@ -134,7 +160,32 @@ const en = {
     national: "National",
     local: "Local",
     service_saved_ok: "Service succesfully saved.",
-    service_saved_error: "Error on save Service"
+    service_saved_error: "Error on save Service",
+    state: "Service State",
+    publish_message:
+      "Once you have completed the service sheet, you can proceed to publish it in the app.",
+    publish_guide:
+      "For more information on the required fields for publication, see our online",
+    publish_info:
+      "Once the request has been sent, the PagoPA team will carry out a verification and will notify you at the time of publication.",
+    published_title: "Congratulations!",
+    published:
+      "Your service is active and available to citizen users of the IO app",
+    unpublish_title: "Service Deactivation",
+    unpublish_message:
+      "If you no longer want to provide this service to citizens, simply select the option to deactivate the service: it will no longer be visible in the app and will return to the compilation state.",
+    publish_error_title: "Warning!",
+    publish_error_message:
+      "Some fields are missing or incorrect, the service cannot be published",
+    publish_error_detail:
+      "We ask to correct any errors then submit a new request review again",
+    publish_review_title: "We're working on it!",
+    publish_review_message:
+      "Your service is under review, we will update you as soon as possible",
+    deactive_service_title: "Deactivating",
+    deactive_service_message:
+      "We are working on it, the service will soon be deactivated ",
+    guide: "guide"
   },
   servers: {
     select: "Select your server (endpoint) of choice",

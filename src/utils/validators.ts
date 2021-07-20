@@ -139,6 +139,9 @@ export const checkValue = (
     case "authorized_cidrs": {
       return ts.readonlyArray(CIDRWithRequiredSubnetMask).decode(value);
     }
+    case "service_name":
+    case "organization_name":
+    case "department_name":
     case "description": {
       return NonEmptyString.decode(value);
     }

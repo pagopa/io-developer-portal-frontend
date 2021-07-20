@@ -1,6 +1,7 @@
 import { Alert, Button } from "design-react-kit";
 import React, { ChangeEvent, Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { Link } from "react-router-dom";
 
 import get from "lodash/get";
 import { getStorage } from "../context/storage";
@@ -12,6 +13,7 @@ import FaEyeSlash from "react-icons/lib/fa/eye-slash";
 
 import { RouteComponentProps } from "react-router";
 import Confirmation from "../components/modal/Confirmation";
+import NewService from "../components/modal/NewService";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 
@@ -21,45 +23,178 @@ import { SubscriptionCollection } from "../../generated/definitions/backend/Subs
 import { SubscriptionContract } from "../../generated/definitions/backend/SubscriptionContract";
 import { UserData } from "../../generated/definitions/backend/UserData";
 
-import { ValidService } from "../utils/service";
+import {
+  getServiceReviewStatus,
+  handleReviewStatus,
+  ReviewStatus,
+  ServiceStatus,
+  ValidService
+} from "../utils/service";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
 
 const SubscriptionService = ({
   service,
-  t
+  t,
+  status,
+  atLeastOneVisible
 }: {
   service: Service;
   t: (key: string) => string;
+  status: string;
+  atLeastOneVisible: boolean;
 }) => {
   return service ? (
     <div>
-      <h5>{service.service_id}</h5>
-      <div>
-        {t("service:name")}: {service.service_name}
+      <h5>
+        <span className="light-text">{t("service:title")}:</span>{" "}
+        <span className="dark-text">{service.service_id}</span>
+      </h5>
+      <div className="my-3">
+        <span className="light-text">{t("service:name")}:</span>{" "}
+        <span className="light-text">{service.service_name}</span>
       </div>
-      <div>
-        {t("service:department")}: {service.department_name}
+      <div className="my-3">
+        <span className="light-text">{t("service:organization")}:</span>{" "}
+        <span className="light-text">{service.organization_name}</span>
       </div>
-      <div>
-        {t("service:organization")}: {service.organization_name}
+      <div className="my-3">
+        <span className="light-text">
+          {t("service:authorized_recipients")}:
+        </span>{" "}
+        <span className="light-text">{service.authorized_recipients}</span>
       </div>
-      <div>
-        {t("service:organization_fiscal_code")}:{" "}
-        {service.organization_fiscal_code}
+      <div className="my-3">
+        <span className="light-text">{t("service:authorized_ips")}:</span>{" "}
+        <span className="light-text">{service.authorized_cidrs}</span>
       </div>
-      <div>
-        {t("service:authorized_recipients")}: {service.authorized_recipients}
+      <div className="my-3">
+        <span className="light-text">
+          {t("service:max_allowed_payment_amount")}:
+        </span>{" "}
+        <span className="light-text">
+          {service.max_allowed_payment_amount} {t("service:eurocents")}
+        </span>
       </div>
-      <div>
-        {t("service:authorized_ips")}: {service.authorized_cidrs}
+      <div className="status-row">
+        <div className="col-md-8">
+          {status === ServiceStatus.DRAFT ||
+          status === ServiceStatus.NOT_FOUND ? (
+            <div className="service-status">
+              <div>
+                <span className="circle" />
+                <div>
+                  <span className="light-text">
+                    {t("service:state")}:&nbsp;
+                  </span>
+                  <span className="dark-text">
+                    {t("profile:service_draft")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+          {status === ServiceStatus.REJECTED ? (
+            <div className="service-status">
+              <div>
+                <span className="circle circle-red" />
+                <div>
+                  <span className="light-text">
+                    {t("service:state")}:&nbsp;
+                  </span>
+                  <span className="dark-text">
+                    {t("profile:service_not_valid")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+          {status === ServiceStatus.REVIEW ? (
+            <div className="service-status">
+              <div>
+                <span className="circle circle-yellow" />
+                <div>
+                  <span className="light-text">
+                    {t("service:state")}:&nbsp;
+                  </span>
+                  <span className="dark-text">
+                    {t("profile:service_review")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+          {status === ServiceStatus.VALID ? (
+            <div className="service-status">
+              <div>
+                <span className="circle circle-green" />
+                <div>
+                  <span className="ligh-text">{t("service:state")}</span>:
+                  &nbsp;
+                  <span className="dark-text">
+                    {t("profile:service_valid")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+          {status === ServiceStatus.DEACTIVE ? (
+            <div className="service-status">
+              <div>
+                <span className="circle circle-green" />
+                <div>
+                  <span className="ligh-text">{t("service:state")}</span>:
+                  &nbsp;
+                  <span className="dark-text">
+                    {t("profile:service_valid")} (
+                    {t("service:deactive_service_title")})
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+          {status === ServiceStatus.LOADING ? (
+            <div className="service-status">
+              <div>
+                <span className="circle circle-black" />
+                <div>
+                  <span className="ligh-text">{t("service:state")}</span>:
+                  &nbsp;
+                  <span className="dark-text">
+                    {t("profile:service_loading")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <div className="col-md-4">
+          <Link
+            className="btn btn-primary"
+            to={{
+              pathname: `/service/${service.service_id}`,
+              state: {
+                isVisible: atLeastOneVisible
+              }
+            }}
+          >
+            {t("service:edit")}
+          </Link>
+        </div>
       </div>
-      <div>
-        {t("service:max_allowed_payment_amount")}:{" "}
-        {service.max_allowed_payment_amount} {t("service:eurocents")}
-      </div>
-      <a href={`/service/${service.service_id}`}>{t("service:edit")}</a>
     </div>
   ) : null;
 };
@@ -96,6 +231,9 @@ type ProfileState = {
   services: { [serviceId: string]: Service };
   isConfirmationOpen: boolean;
   onConfirmOperation: () => void;
+  serviceState: { [serviceId: string]: string };
+  showModal: boolean;
+  atLeastOneVisible: boolean;
 };
 
 class Profile extends Component<Props, ProfileState> {
@@ -103,6 +241,7 @@ class Profile extends Component<Props, ProfileState> {
     userData: {},
     userSubscriptions: {},
     services: {},
+    serviceState: {},
     applicationConfig: {
       audience: "",
       authority: "",
@@ -113,7 +252,9 @@ class Profile extends Component<Props, ProfileState> {
     newSubscription: {},
     keyDisplay: {},
     isConfirmationOpen: false,
-    onConfirmOperation: () => undefined
+    onConfirmOperation: () => undefined,
+    showModal: false,
+    atLeastOneVisible: false
   };
 
   public onAddSubscription = async () => {
@@ -232,6 +373,10 @@ class Profile extends Component<Props, ProfileState> {
       const service: Service = await getFromBackend<Service>({
         path: `services/${subscription.name}`
       });
+      if (service.is_visible) {
+        this.setState({ atLeastOneVisible: true });
+      }
+      this.checkService(service);
       this.setState(prevState => ({
         services: { ...prevState.services, [service.service_id]: service }
       }));
@@ -304,23 +449,38 @@ class Profile extends Component<Props, ProfileState> {
     return (
       <div>
         <h4>{get(this.state, "userData.apimUser.email", t("new_user"))}</h4>
-        {firstName && (
-          <div>
-            {t("name")}: {firstName}
+        <div className="row">
+          <div className="col-md-8">
+            {firstName && (
+              <div>
+                {t("name")}: {firstName}
+              </div>
+            )}
+            {lastName && (
+              <div>
+                {t("surname")}: {lastName}
+              </div>
+            )}
+            {isSameUser && this.state.applicationConfig.changePasswordLink && (
+              <div>
+                <a href={this.state.applicationConfig.changePasswordLink}>
+                  {t("change_password")}
+                </a>
+              </div>
+            )}
           </div>
-        )}
-        {lastName && (
-          <div>
-            {t("surname")}: {lastName}
+          <div className="col-md-4">
+            <button
+              onClick={() => {
+                this.setState({ showModal: true });
+              }}
+              className="btn btn-primary"
+            >
+              {t("create_new_service")}
+            </button>
           </div>
-        )}
-        {isSameUser && this.state.applicationConfig.changePasswordLink && (
-          <div>
-            <a href={this.state.applicationConfig.changePasswordLink}>
-              {t("change_password")}
-            </a>
-          </div>
-        )}
+        </div>
+
         <p
           style={{ maxWidth: "30em", wordWrap: "break-word" }}
           className="mt-4"
@@ -329,7 +489,7 @@ class Profile extends Component<Props, ProfileState> {
         </p>
         <p>
           Limitato:{" "}
-          {userGroups && userGroups.indexOf("ApiMessageWrite") !== -1
+          {userGroups && userGroups.indexOf("apimessagewrite") !== -1
             ? "no"
             : "si"}
         </p>
@@ -337,36 +497,73 @@ class Profile extends Component<Props, ProfileState> {
     );
   }
 
+  private renderServiceStatus(service: Service) {
+    if (service) {
+      return this.state.serviceState[service.service_id];
+    } else {
+      return this.props.t("service_loading");
+    }
+  }
+
   private checkService(service: Service) {
-    const isVisible = service && service.is_visible;
+    const serviceId = service.service_id;
     const errorOrValidService = ValidService.decode(service);
-    return service ? (
-      <div>
-        {isVisible && errorOrValidService.isLeft() ? (
-          <Alert color="danger">{this.props.t("service_not_valid")}</Alert>
-        ) : (
-          ""
+    this.setState({
+      serviceState: {
+        ...this.state.serviceState,
+        [serviceId]: ServiceStatus.LOADING
+      }
+    });
+    if (!service.is_visible) {
+      getServiceReviewStatus(service)
+        .then(res => {
+          this.setState({
+            serviceState: {
+              ...this.state.serviceState,
+              [serviceId]: res.status
+            }
+          });
+        })
+        .catch(_ =>
+          this.setState({
+            serviceState: {
+              ...this.state.serviceState,
+              [serviceId]: ServiceStatus.NOT_FOUND
+            }
+          })
+        );
+    } else if (errorOrValidService.isRight()) {
+      this.setState({
+        serviceState: {
+          ...this.state.serviceState,
+          [serviceId]: ServiceStatus.VALID
+        }
+      });
+    } else {
+      this.setState({
+        serviceState: {
+          ...this.state.serviceState,
+          [serviceId]: ServiceStatus.REJECTED
+        }
+      });
+    }
+  }
+
+  public renderModal() {
+    return (
+      <NewService
+        serviceName={get(this.state, "newSubscription.service_name")}
+        departmentName={get(this.state, "newSubscription.department_name")}
+        organizationName={get(this.state, "newSubscription.organization_name")}
+        organization_fiscal_code={get(
+          this.state,
+          "newSubscription.organization_fiscal_code"
         )}
-        {!isVisible && errorOrValidService.isLeft() ? (
-          <Alert color="warning">{this.props.t("service_draft")}</Alert>
-        ) : (
-          ""
-        )}
-        {isVisible && errorOrValidService.isRight() ? (
-          <Alert color="success">{this.props.t("service_active")}</Alert>
-        ) : (
-          ""
-        )}
-        {!isVisible && errorOrValidService.isRight() ? (
-          <Alert color="info">{this.props.t("service_not_active")}</Alert>
-        ) : (
-          ""
-        )}
-      </div>
-    ) : (
-      <div>
-        <Alert color="info">{this.props.t("service_loading")}</Alert>
-      </div>
+        onChange={this.handleInputChange}
+        onAdd={this.onAddSubscription}
+        onClose={() => this.setState({ showModal: false })}
+        show={this.state.showModal}
+      />
     );
   }
 
@@ -376,8 +573,10 @@ class Profile extends Component<Props, ProfileState> {
     const { t } = this.props;
 
     return (
-      <Fragment>
+      <div className="m-4 p-5">
+        {this.state.showModal && this.renderModal()}
         {this.renderNewUserDiv()}
+
         <div>
           <h4 className="mt-4">{t("services")}</h4>
           {Object.keys(userSubscriptions).reduce<ReadonlyArray<JSX.Element>>(
@@ -389,145 +588,112 @@ class Profile extends Component<Props, ProfileState> {
               const service = services[subscription.name];
               return [
                 ...jsxElementsArray,
-                <div key={subscription.id} className="shadow p-4 my-4">
-                  <SubscriptionService service={service} t={t} />
-                  {this.checkService(service)}
-                  <h6 className="mt-4">
-                    {t("subscription")} ({subscription.state})
-                  </h6>
-                  <div className="my-2">
-                    {t("primary_key")}:{" "}
-                    {this.state.keyDisplay[`p_${subscription.name}`]
-                      ? subscription.primaryKey
-                      : t("key")}
-                    <Button
-                      outline={true}
-                      color="primary"
-                      size="xs"
-                      className="ml-1 mr-1"
-                      onClick={() => this.onToggleKey(`p_${subscription.name}`)}
-                    >
-                      {this.state.keyDisplay[`p_${subscription.name}`] ? (
-                        <FaEyeSlash />
-                      ) : (
-                        <FaEye />
-                      )}
-                    </Button>
-                    <Button
-                      color="danger"
-                      size="xs"
-                      className="mr-1"
-                      disabled={!service || subscription.state !== "active"}
-                      onClick={this.onRegenerateKey(
-                        "primary",
-                        subscription.name
-                      )}
-                    >
-                      {t("regenerate")}
-                    </Button>
-                    <Button
-                      color="primary"
-                      size="xs"
-                      className="mr-1"
-                      disabled={!service || subscription.state !== "active"}
-                      onClick={this.onSetKey(subscription.primaryKey, service)}
-                    >
-                      {t("use")}
-                    </Button>
+                <div className="card-service my-4" key={subscription.id}>
+                  <div className="p-4 mt-4">
+                    <SubscriptionService
+                      service={service}
+                      t={t}
+                      status={this.renderServiceStatus(service)}
+                      atLeastOneVisible={this.state.atLeastOneVisible}
+                    />
                   </div>
-                  <div className="my-2">
-                    {t("secondary_key")}:{" "}
-                    {this.state.keyDisplay[`s_${subscription.name}`]
-                      ? subscription.secondaryKey
-                      : t("key")}
-                    <Button
-                      outline={true}
-                      color="primary"
-                      size="xs"
-                      className="ml-1 mr-1"
-                      onClick={() => this.onToggleKey(`s_${subscription.name}`)}
-                    >
-                      {this.state.keyDisplay[`s_${subscription.name}`] ? (
-                        <FaEyeSlash />
-                      ) : (
-                        <FaEye />
-                      )}
-                    </Button>
-                    <Button
-                      color="danger"
-                      size="xs"
-                      className="mr-1"
-                      disabled={!service || subscription.state !== "active"}
-                      onClick={this.onRegenerateKey(
-                        "secondary",
-                        subscription.name
-                      )}
-                    >
-                      {t("regenerate")}
-                    </Button>
-                    <Button
-                      color="primary"
-                      size="xs"
-                      className="mr-1"
-                      disabled={!service || subscription.state !== "active"}
-                      onClick={this.onSetKey(
-                        subscription.secondaryKey,
-                        service
-                      )}
-                    >
-                      {t("use")}
-                    </Button>
+                  <div className="card-service-key p-4">
+                    <div>
+                      {t("primary_key")}:{" "}
+                      {this.state.keyDisplay[`p_${subscription.name}`]
+                        ? subscription.primaryKey
+                        : t("key")}
+                      <Button
+                        outline={true}
+                        color="primary"
+                        size="xs"
+                        className="ml-1 mr-1"
+                        onClick={() =>
+                          this.onToggleKey(`p_${subscription.name}`)
+                        }
+                      >
+                        {this.state.keyDisplay[`p_${subscription.name}`] ? (
+                          <FaEyeSlash />
+                        ) : (
+                          <FaEye />
+                        )}
+                      </Button>
+                      <Button
+                        color="light"
+                        size="xs"
+                        className="mr-1"
+                        disabled={!service || subscription.state !== "active"}
+                        onClick={this.onRegenerateKey(
+                          "primary",
+                          subscription.name
+                        )}
+                      >
+                        {t("regenerate")}
+                      </Button>
+                      <Button
+                        color="primary"
+                        size="xs"
+                        className="mr-1"
+                        disabled={!service || subscription.state !== "active"}
+                        onClick={this.onSetKey(
+                          subscription.primaryKey,
+                          service
+                        )}
+                      >
+                        {t("use")}
+                      </Button>
+                    </div>
+                    <div className="my-2">
+                      {t("secondary_key")}:{" "}
+                      {this.state.keyDisplay[`s_${subscription.name}`]
+                        ? subscription.secondaryKey
+                        : t("key")}
+                      <Button
+                        outline={true}
+                        color="primary"
+                        size="xs"
+                        className="ml-1 mr-1"
+                        onClick={() =>
+                          this.onToggleKey(`s_${subscription.name}`)
+                        }
+                      >
+                        {this.state.keyDisplay[`s_${subscription.name}`] ? (
+                          <FaEyeSlash />
+                        ) : (
+                          <FaEye />
+                        )}
+                      </Button>
+                      <Button
+                        color="light"
+                        size="xs"
+                        className="mr-1"
+                        disabled={!service || subscription.state !== "active"}
+                        onClick={this.onRegenerateKey(
+                          "secondary",
+                          subscription.name
+                        )}
+                      >
+                        {t("regenerate")}
+                      </Button>
+                      <Button
+                        color="primary"
+                        size="xs"
+                        className="mr-1"
+                        disabled={!service || subscription.state !== "active"}
+                        onClick={this.onSetKey(
+                          subscription.secondaryKey,
+                          service
+                        )}
+                      >
+                        {t("use")}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ];
             },
             []
           )}
-
-          <div className="shadow p-4 mt-5">
-            <label>{t("service:name")}</label>
-            <input
-              name="service_name"
-              type="text"
-              defaultValue={get(this.state, "newSubscription.service_name")}
-              onChange={this.handleInputChange}
-            />
-            <label>{t("service:department")}</label>
-            <input
-              name="department_name"
-              type="text"
-              defaultValue={get(this.state, "newSubscription.department_name")}
-              onChange={this.handleInputChange}
-            />
-            <label>{t("service:organization")}</label>
-            <input
-              name="organization_name"
-              type="text"
-              defaultValue={get(
-                this.state,
-                "newSubscription.organization_name"
-              )}
-              onChange={this.handleInputChange}
-            />
-            <label>{t("service:organization_fiscal_code")}</label>
-            <input
-              name="organization_fiscal_code"
-              type="text"
-              defaultValue={get(
-                this.state,
-                "newSubscription.organization_fiscal_code"
-              )}
-              onChange={this.handleInputChange}
-            />
-
-            <Button
-              className="mt-3"
-              color="primary"
-              onClick={this.onAddSubscription}
-            >
-              {t("add")}
-            </Button>
-          </div>
         </div>
 
         <Confirmation
@@ -535,7 +701,7 @@ class Profile extends Component<Props, ProfileState> {
           onCancel={() => this.setState({ isConfirmationOpen: false })}
           onConfirm={onConfirmOperation}
         />
-      </Fragment>
+      </div>
     );
   }
 }

@@ -217,7 +217,7 @@ class Compose extends Component<Props, ComposeState> {
     ]);
 
     return (
-      <section className="pages--container">
+      <section className="mt-4 mr-4 ml-4 pt-5 pr-5 pl-5 pages--container">
         <SelectedService />
         <ContactAdd
           code={code}

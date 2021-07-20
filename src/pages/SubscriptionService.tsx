@@ -5,20 +5,41 @@ import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions
 import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import * as ts from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
+
 import React, { ChangeEvent, Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RouteComponentProps } from "react-router";
 import { CIDR } from "../../generated/definitions/api/CIDR";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
-import MetadataInput from "../components/input/MetadataInput";
+import ContactInput from "../components/input/ContactInput";
+import LinkFields from "../components/input/LinkFields";
+import MarkdownEditor from "../components/input/MarkdownEditor";
+import SecurityFields from "../components/input/SecurityFields";
+import JiraComments from "../components/jira/JiraComments";
+import JiraStatus from "../components/jira/JiraStatus";
+import DisableService from "../components/modal/DisableService";
+import PublishService from "../components/modal/PublishService";
+
+import Toastr, {
+  ToastItem,
+  ToastType
+} from "../components/notifications/Toastr";
 import UploadLogo from "../components/UploadLogo";
 import { StorageContext } from "../context/storage";
-import { getFromBackend, putToBackend } from "../utils/backend";
+import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
+import { LIMITS } from "../utils/constants";
 import { getBase64OfImage } from "../utils/image";
-import { ValidDraftService, ValidService } from "../utils/service";
+import {
+  handleDisableReview,
+  ReviewStatus,
+  ServiceStatus,
+  ValidDraftService,
+  ValidService
+} from "../utils/service";
 import { checkValue, InputValue } from "../utils/validators";
 
+const { MARKDOWN } = LIMITS;
 const LogoParamsApi = ts.interface({
   logo: NonEmptyString,
   serviceId: ServiceId
@@ -47,23 +68,22 @@ type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
-enum ServiceFormState {
-  "SAVED_OK" = "SAVED_OK", // Succesfull saved to backend
-  "SAVED_ERROR" = "SAVED_ERROR", // Unsuccesfull saved to backend
-  "NOT_SAVE" = "NOT_SAVE" // Not yet saved to backend
-}
-
 type SubscriptionServiceState = {
   errorLogoUpload: boolean;
   service?: Service;
-  isValid?: boolean;
-  formState: ServiceFormState;
   logo?: string;
   logoIsValid: boolean;
   logoUploaded: boolean;
   originalIsVisible?: boolean;
+  checkError: boolean;
   errors: Record<string, string>;
   timestampLogo: number;
+  review: ReviewStatus;
+  status: string;
+  publishService: boolean;
+  disableService: boolean;
+  toastMessage: ToastItem;
+  toastErrorMessage: ToastItem;
 };
 
 function withDefaultSubnet(value: string): CIDR {
@@ -101,14 +121,19 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
     errorLogoUpload: false,
     service: undefined,
-    isValid: true,
-    formState: ServiceFormState.NOT_SAVE,
     logo: undefined,
     logoIsValid: true,
     logoUploaded: true,
     originalIsVisible: undefined,
+    checkError: false,
     errors: {},
-    timestampLogo: Date.now()
+    timestampLogo: Date.now(),
+    status: "",
+    publishService: false,
+    disableService: false,
+    review: {},
+    toastMessage: undefined,
+    toastErrorMessage: undefined
   };
 
   public async componentDidMount() {
@@ -130,6 +155,17 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           }
     };
 
+    // Check field validation after loading service
+    Object.keys(service).forEach(prop =>
+      this.validateServiceField(prop, service[prop])
+    );
+    Object.keys(service.service_metadata).forEach(prop =>
+      this.validateServiceMetadataField(prop, service.service_metadata[prop])
+    );
+
+    // After service load check if there is a review or a reject in progress
+    // this.getServiceReviewStatus(service);
+
     this.setState({
       service,
       originalIsVisible: serviceFromBackend.is_visible
@@ -137,14 +173,21 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   }
 
   private handleError = (name: string) => {
-    this.setState({
-      errors: {
-        ...this.state.errors,
-        [name]: this.props.t("validation:field_error", {
-          field: this.props.t(name)
-        })
-      },
-      isValid: false
+    this.setState(() => {
+      return {
+        errors: {
+          ...this.state.errors,
+          [name]: this.props.t("validation:field_error", {
+            field: this.props.t(name)
+          })
+        },
+        toastErrorMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:errors_form"),
+          description: this.props.t("toasterMessage:errors_description"),
+          type: ToastType.error
+        }
+      };
     });
   };
 
@@ -157,13 +200,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       ...this.state.service,
       [name]: inputValue === "" ? undefined : inputValue
     }).fold(
-      () => this.setState({ isValid: false }),
+      () => void 0,
       service =>
         this.setState(() => ({
           errors,
-          isValid: Object.keys(errors).length === 0,
-          service,
-          formState: ServiceFormState.NOT_SAVE
+          service
         }))
     );
   };
@@ -182,13 +223,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         [name]: inputValue === "" ? undefined : inputValue
       }
     }).fold(
-      () => this.setState({ isValid: false }),
+      () => void 0,
       service =>
         this.setState(() => ({
           errors,
-          isValid: Object.keys(errors).length === 0,
-          service,
-          formState: ServiceFormState.NOT_SAVE
+          service
         }))
     );
   };
@@ -205,19 +244,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     Service.decode({
       ...this.state.service,
       [name]: inputValueMap(name, value)
-    })
-      .map(service =>
-        this.setState({
-          service,
-          formState: ServiceFormState.NOT_SAVE,
-          isValid: true
-        })
-      )
-      .mapLeft(() =>
-        this.setState({
-          isValid: false
-        })
-      );
+    }).map(service =>
+      this.setState({
+        service
+      })
+    );
   };
 
   public handleMetadataChange = (
@@ -237,8 +268,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       }
     }).map(service =>
       this.setState({
-        service,
-        formState: ServiceFormState.NOT_SAVE
+        service
+        // formState: ServiceFormState.NOT_SAVE
       })
     );
   };
@@ -250,7 +281,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const inputValue =
       target.type === "checkbox" ? target.checked : target.value;
     const value = inputValueMap(prop, inputValue);
-
+    this.setState({
+      checkError: false
+    });
     checkValue(prop, value).fold(
       () => this.handleError(prop),
       () => this.setData(this.removeError(prop), prop, value)
@@ -263,8 +296,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     const {
       target: { name, value }
     } = event;
+    this.setState({
+      checkError: false
+    });
     const inputValue = inputValueMap(name, value);
-
     checkValue(prop, inputValue).fold(
       () => this.handleError(prop),
       () => this.setMetadata(this.removeError(name), name, inputValue)
@@ -282,11 +317,64 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       | ValidService
       | ValidDraftService));
     if (decoded.isLeft()) {
-      this.setState({ isValid: false });
+      this.setState({
+        checkError: true,
+        toastErrorMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:errors_form"),
+          description: this.props.t("toasterMessage:errors_description"),
+          type: ToastType.error
+        }
+      });
       throw new Error("Wrong parameters format");
     }
 
     return decoded.value;
+  };
+
+  private validateServiceField = (prop, value) => {
+    switch (prop) {
+      case "organization_name":
+      case "max_allowed_payment_amount":
+      case "organization_fiscal_code":
+      case "department_name":
+      case "service_name": {
+        const inputValue = inputValueMap(prop, value);
+        checkValue(prop, inputValue).fold(
+          () => {
+            return this.handleError(prop);
+          },
+          () => {
+            return this.setData(this.removeError(prop), prop, inputValue);
+          }
+        );
+      }
+    }
+  };
+
+  private validateServiceMetadataField = (prop, value) => {
+    switch (prop) {
+      case "app_android":
+      case "app_ios":
+      case "support_url":
+      case "tos_url":
+      case "web_url":
+      case "authorized_recipients":
+      case "authorized_cidrs":
+      case "description":
+      case "max_allowed_payment_amount":
+      case "organization_fiscal_code":
+      case "pec":
+      case "email":
+      case "phone":
+      case "privacy_url": {
+        const inputValue = inputValueMap(prop, value);
+        checkValue(prop, inputValue).fold(
+          () => this.handleError(prop),
+          () => this.setMetadata(this.removeError(prop), prop, inputValue)
+        );
+      }
+    }
   };
 
   public handleSubmit = async () => {
@@ -301,12 +389,47 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       }
     };
 
-    const service = this.validateServiceData(ValidService, serviceToUpdate);
+    try {
+      const service = this.validateServiceData(ValidService, serviceToUpdate);
 
-    if (Service.is(await this.updateService(service))) {
-      this.setState({ formState: ServiceFormState.SAVED_OK });
-    } else {
-      this.setState({ formState: ServiceFormState.SAVED_ERROR });
+      if (service && !Object.keys(this.state.errors).length) {
+        const id = Math.random();
+        if (Service.is(await this.updateService(service))) {
+          this.setState({
+            toastMessage: {
+              id,
+              title: this.props.t("toasterMessage:save_form"),
+              description: this.props.t("toasterMessage:save_service"),
+              type: ToastType.success
+            }
+          });
+        } else {
+          this.setState({
+            toastMessage: {
+              id,
+              title: this.props.t("toasterMessage:save_form"),
+              description: this.props.t("toasterMessage:save_service_error"),
+              type: ToastType.error
+            }
+          });
+        }
+        const serviceId = this.props.match.params.service_id;
+        await this.handleReviewSubmit(serviceId);
+      } else {
+        this.setState({
+          checkError: true
+        });
+      }
+    } catch (e) {
+      this.setState({
+        checkError: true,
+        toastErrorMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:errors_form"),
+          description: this.props.t("toasterMessage:errors_description"),
+          type: ToastType.error
+        }
+      });
     }
   };
 
@@ -326,11 +449,25 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       ValidDraftService,
       serviceToUpdate
     );
-
+    const id = Math.random();
     if (Service.is(await this.updateService(service))) {
-      this.setState({ formState: ServiceFormState.SAVED_OK });
+      this.setState({
+        toastMessage: {
+          id,
+          title: "Salvataggio Servizio",
+          description: "Servizio salvato correttamente",
+          type: ToastType.success
+        }
+      });
     } else {
-      this.setState({ formState: ServiceFormState.SAVED_ERROR });
+      this.setState({
+        toastMessage: {
+          id,
+          title: "Salvataggio Servizio",
+          description: "Errore nel salvataggio del servizio",
+          type: ToastType.error
+        }
+      });
     }
   };
 
@@ -354,6 +491,21 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         })
       }
     });
+  };
+
+  private handleReviewSubmit = async (serviceId: string) => {
+    return await postToBackend<ReviewStatus>({
+      options: {
+        body: JSON.stringify({})
+      },
+      path: `services/${serviceId}/review`
+    }).then(
+      (res: ReviewStatus) =>
+        res.status === 200 &&
+        this.setState({
+          status: ServiceStatus.REVIEW
+        })
+    );
   };
 
   public handleServiceLogoSubmit = async () => {
@@ -414,209 +566,323 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         });
   };
 
+  public handleDisableService = async () => {
+    if (this.state.service) {
+      return await handleDisableReview(this.state.service.service_id).then(
+        res => {
+          if (res.status === 200) {
+            this.setState({
+              status: ServiceStatus.DEACTIVE
+            });
+          }
+        }
+      );
+    }
+  };
+
   public handleOnErrorImage = () => {
     this.setState({
       logoUploaded: false
     });
   };
 
-  // tslint:disable-next-line: cognitive-complexity no-big-function
+  public renderDisableServiceModal() {
+    if (this.state.service) {
+      return (
+        <DisableService
+          show={this.state.disableService}
+          serviceId={this.state.service.service_id}
+          serviceName={this.state.service.service_name}
+          organizationName={this.state.service.organization_name}
+          onClose={() => this.setState({ disableService: false })}
+          onDisable={this.handleDisableService}
+        />
+      );
+    } else {
+      return null;
+    }
+  }
+
+  private renderPublishServiceModal() {
+    if (this.state.service) {
+      return (
+        <PublishService
+          show={this.state.publishService}
+          serviceId={this.state.service.service_id}
+          serviceName={this.state.service.service_name}
+          organizationName={this.state.service.organization_name}
+          onClose={() => this.setState({ publishService: false })}
+          onPublish={this.handleSubmit}
+        />
+      );
+    } else {
+      return null;
+    }
+  }
+
+  private getToaster(message) {
+    return <Toastr delay={1000} toastMessage={message} />;
+  }
+
+  // tslint:disable-next-line: no-big-function cognitive-complexity
   public render() {
     const {
       errorLogoUpload,
       service,
-      isValid,
-      formState,
+      errors,
+      checkError,
+      toastErrorMessage,
       logo,
       logoIsValid,
       logoUploaded,
-      timestampLogo
+      timestampLogo,
+      status,
+      toastMessage
     } = this.state;
     const { t } = this.props;
-
     return service ? (
       <StorageContext.Consumer>
         {// tslint:disable-next-line: no-big-function
         storage => (
-          <div>
-            <h4>
-              {t("title")} {service.service_id}
-            </h4>
-            <form className="mb-5 mt-1">
-              <div className="shadow p-4">
-                <label className="m-0">{t("name")}*</label>
-                <input
-                  name="service_name"
-                  type="text"
-                  defaultValue={service.service_name}
-                  onBlur={this.getHandleBlur("service_name")}
-                  className="mb-4"
-                />
-                {this.state.errors[`service_name`] && (
-                  <Alert color="danger">
-                    {this.state.errors[`service_name`]}
-                  </Alert>
-                )}
+          <React.Fragment>
+            {toastMessage && this.getToaster(this.state.toastMessage)}
 
-                <label className="m-0">{t("department")}*</label>
-                <input
-                  name="department_name"
-                  type="text"
-                  defaultValue={service.department_name}
-                  onBlur={this.getHandleBlur("department_name")}
-                  className="mb-4"
-                />
-                {this.state.errors[`department_name`] && (
-                  <Alert color="danger">
-                    {this.state.errors[`department_name`]}
-                  </Alert>
-                )}
+            {checkError && this.getToaster(toastErrorMessage)}
 
-                <label className="m-0">{t("organization")}*</label>
-                <input
-                  name="organization_name"
-                  type="text"
-                  defaultValue={service.organization_name}
-                  onBlur={this.getHandleBlur("organization_name")}
-                  className="mb-4"
+            <div className="mt-4 mr-4 ml-4 pt-5 pr-5 pl-5">
+              <h4>
+                {t("title")} {service.service_id}
+              </h4>
+              <div className="row">
+                <JiraStatus
+                  onLoaded={statusService =>
+                    this.setState({
+                      review: statusService.review,
+                      status: statusService.status
+                    })
+                  }
+                  service={this.state.service}
                 />
-                {this.state.errors[`organization_name`] && (
-                  <Alert color="danger">
-                    {this.state.errors[`organization_name`]}
-                  </Alert>
-                )}
+              </div>
 
-                <label className="m-0">{t("organization_fiscal_code")}*</label>
-                <input
-                  name="organization_fiscal_code"
-                  type="text"
-                  defaultValue={service.organization_fiscal_code}
-                  onBlur={this.getHandleBlur("organization_fiscal_code")}
-                  className="mb-4"
-                />
-                {this.state.errors[`organization_fiscal_code`] && (
-                  <Alert color="danger">
-                    {this.state.errors[`organization_fiscal_code`]}
-                  </Alert>
-                )}
-
-                {storage.isApiAdmin && (
+              <form className="my-4">
+                {this.state.checkError && (
                   <div>
-                    <label className="m-0">
-                      {t("max_allowed_payment_amount")}
-                    </label>
-                    <input
-                      name="max_allowed_payment_amount"
-                      type="text"
-                      defaultValue={
-                        service.max_allowed_payment_amount
-                          ? service.max_allowed_payment_amount.toString()
-                          : undefined
-                      }
-                      onBlur={this.getHandleBlur("max_allowed_payment_amount")}
-                      className="mb-4"
-                    />
-                    {this.state.errors[`max_allowed_payment_amount`] && (
-                      <Alert color="danger">
-                        {this.state.errors[`max_allowed_payment_amount`]}
-                      </Alert>
-                    )}
+                    <Alert color="danger">
+                      <span className="dark-text">
+                        {t("publish_error_title")}
+                      </span>
+                      <span>&nbsp; {t("publish_error_message")}</span>
+                    </Alert>
+                    <div className="comments-box p-5 mt-4 mb-4">
+                      <p>{t("publish_error_detail")}:</p>
+                      <ul>
+                        {Object.keys(this.state.errors).map((keyName, i) => (
+                          <li key={i}>
+                            <span className="dark-text">
+                              {this.state.errors[keyName]}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 )}
-
-                <div>
-                  <label className="m-0">{t("authorized_ips")}</label>
-                  <p>
-                    <small>{t("example_authorized_ips")}</small>
-                  </p>
+                <div className="card-service p-4">
+                  <h5 className="my-4">{t("service_description")}</h5>
+                  <label
+                    className={
+                      errors[`service_name`] && checkError
+                        ? "mb0 error-text"
+                        : "mb0"
+                    }
+                  >
+                    {t("name")}*
+                  </label>
                   <input
-                    name="authorized_cidrs"
+                    name="service_name"
                     type="text"
-                    defaultValue={service.authorized_cidrs.join(";")}
-                    onBlur={this.getHandleBlur("authorized_cidrs")}
+                    defaultValue={service.service_name}
+                    onBlur={this.getHandleBlur("service_name")}
+                    className={
+                      errors[`service_name`] && checkError ? "mb4 error" : "mb4"
+                    }
+                  />
+                  <label
+                    className={
+                      errors[`organization_name`] && checkError
+                        ? "mb0 error-text"
+                        : "mb0"
+                    }
+                  >
+                    {t("organization")}*
+                  </label>
+                  <input
+                    name="organization_name"
+                    type="text"
+                    defaultValue={service.organization_name}
+                    onBlur={this.getHandleBlur("organization_name")}
+                    className={
+                      errors[`organization_name`] && checkError
+                        ? "mb4 error"
+                        : "mb4"
+                    }
+                  />
+                  <label
+                    className={
+                      errors[`department_name`] && checkError
+                        ? "mb0 error-text"
+                        : "mb0"
+                    }
+                  >
+                    {t("department")}*
+                  </label>
+                  <input
+                    name="department_name"
+                    type="text"
+                    defaultValue={service.department_name}
+                    onBlur={this.getHandleBlur("department_name")}
+                    className={
+                      errors[`department_name`] && checkError
+                        ? "mb4 error"
+                        : "mb4"
+                    }
+                  />
+                  <label
+                    className={
+                      errors[`organization_fiscal_code`] && checkError
+                        ? "mb0 error-text"
+                        : "mb0"
+                    }
+                  >
+                    {t("organization_fiscal_code")}*
+                  </label>
+                  <input
+                    name="organization_fiscal_code"
+                    type="text"
+                    defaultValue={service.organization_fiscal_code}
+                    onBlur={this.getHandleBlur("organization_fiscal_code")}
+                    className={
+                      errors[`organization_fiscal_code`] && checkError
+                        ? "mb4 error"
+                        : "mb4"
+                    }
+                  />
+                  <label className="m-0">{t("address")}</label>
+                  <input
+                    name={"address"}
+                    type="text"
+                    defaultValue={
+                      service.service_metadata
+                        ? service.service_metadata.address
+                        : ""
+                    }
+                    onBlur={this.getHandleMetadataBlur("address")}
                     className="mb-4"
                   />
-                  {this.state.errors[`authorized_cidrs`] && (
+                  <div>
+                    <label className="m-0">{t("scope")}*</label>
+                    <select
+                      name="scope"
+                      value={
+                        service.service_metadata
+                          ? service.service_metadata.scope
+                          : undefined
+                      }
+                      className="form-control mb-4"
+                      disabled={service.is_visible && !storage.isApiAdmin}
+                      onChange={this.handleMetadataChange}
+                    >
+                      <option
+                        key={ServiceScopeEnum.NATIONAL}
+                        value={ServiceScopeEnum.NATIONAL}
+                      >
+                        {t(ServiceScopeEnum.NATIONAL.toLocaleLowerCase())}
+                      </option>
+                      <option
+                        key={ServiceScopeEnum.LOCAL}
+                        value={ServiceScopeEnum.LOCAL}
+                      >
+                        {t(ServiceScopeEnum.LOCAL.toLocaleLowerCase())}
+                      </option>
+                    </select>
+                  </div>
+                  <MarkdownEditor
+                    markdown={
+                      service.service_metadata &&
+                      service.service_metadata.description
+                        ? service.service_metadata.description
+                        : ""
+                    }
+                    name="description"
+                    markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
+                    isMarkdownValid={true}
+                    onChangeMarkdown={this.handleMetadataChange}
+                    onBlurMarkdown={this.getHandleMetadataBlur("description")}
+                  />
+                  {this.state.errors[`description`] && (
                     <Alert color="danger">
-                      {JSON.stringify(this.state.errors[`authorized_cidrs`])}
+                      {this.state.errors[`description`]}
                     </Alert>
                   )}
                 </div>
+              </form>
 
-                {storage.isApiAdmin && (
-                  <div>
-                    <label className="m-0">{t("authorized_recipients")}*</label>
-                    <input
-                      name="authorized_recipients"
-                      type="text"
-                      defaultValue={service.authorized_recipients.join(";")}
-                      onBlur={this.getHandleBlur("authorized_recipients")}
-                      className="mb-4"
-                    />
-                    {this.state.errors[`authorized_recipients`] && (
-                      <Alert color="danger">
-                        {JSON.stringify(
-                          this.state.errors[`authorized_recipients`]
-                        )}
-                      </Alert>
-                    )}
-                  </div>
-                )}
-
-                <div>
-                  <label className="m-0">{t("scope")}*</label>
-                  <select
-                    name="scope"
-                    value={
-                      service.service_metadata
-                        ? service.service_metadata.scope
-                        : undefined
-                    }
-                    className="form-control mb-4"
-                    disabled={service.is_visible && !storage.isApiAdmin}
+              <form>
+                <div className="card-service p-4 my-4">
+                  <h5 className="my-4">Link Utili</h5>
+                  <LinkFields
                     onChange={this.handleMetadataChange}
-                  >
-                    <option
-                      key={ServiceScopeEnum.NATIONAL}
-                      value={ServiceScopeEnum.NATIONAL}
-                    >
-                      {t(ServiceScopeEnum.NATIONAL.toLocaleLowerCase())}
-                    </option>
-                    <option
-                      key={ServiceScopeEnum.LOCAL}
-                      value={ServiceScopeEnum.LOCAL}
-                    >
-                      {t(ServiceScopeEnum.LOCAL.toLocaleLowerCase())}
-                    </option>
-                  </select>
+                    onBlur={this.getHandleMetadataBlur}
+                    service_metadata={service.service_metadata}
+                    isApiAdmin={storage.isApiAdmin}
+                    checkError={this.state.checkError}
+                    errors={this.state.errors}
+                  />
                 </div>
+              </form>
 
-                {storage.isApiAdmin && (
-                  <div>
-                    <input
-                      name="is_visible"
-                      type="checkbox"
-                      defaultChecked={service.is_visible}
-                      onChange={this.handleInputChange}
-                      className="mb-4 mr-2"
-                    />
-                    <label className="m-0">{t("visible_service")}</label>
+              <form>
+                <div className="card-service p-4 my-4">
+                  <div className="my-4">
+                    <h5>Dati di Contatto</h5>
+                    <small>E' necessario almeno un dato di contatto</small>
                   </div>
-                )}
-              </div>
 
-              <div className="shadow p-4 mt-4 mb-4">
-                <h5>{t("scheda_servizio")}</h5>
-                <MetadataInput
-                  onChange={this.handleMetadataChange}
-                  onBlur={this.getHandleMetadataBlur}
-                  service_metadata={service.service_metadata}
-                  isApiAdmin={storage.isApiAdmin}
-                  errors={this.state.errors}
-                />
-              </div>
+                  <ContactInput
+                    name="contacts"
+                    elem={["phone", "pec", "support_url", "email"]}
+                    errors={this.state.errors}
+                    serviceMetadata={
+                      service.service_metadata
+                        ? {
+                            phone: service.service_metadata.phone,
+                            pec: service.service_metadata.pec,
+                            email: service.service_metadata.email,
+                            support_url: service.service_metadata.support_url
+                          }
+                        : {}
+                    }
+                    onBlur={this.getHandleMetadataBlur}
+                  />
+                </div>
+              </form>
 
-              <div className="shadow p-4 mt-4 mb-4">
+              <form>
+                <div className="card-service p-4 my-4">
+                  <h5 className="my-4">Sicurezza e Permessi</h5>
+                  <SecurityFields
+                    onChange={this.handleInputChange}
+                    onBlur={this.getHandleBlur}
+                    service={service}
+                    isApiAdmin={storage.isApiAdmin}
+                    checkError={this.state.checkError}
+                    errors={this.state.errors}
+                  />
+                </div>
+              </form>
+
+              <div className="card-service p-4 my-4 flex">
                 <h6>{t("service_logo")}</h6>
                 <UploadLogo
                   errorLogoUpload={errorLogoUpload}
@@ -631,59 +897,115 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   onSubmitHandler={this.handleServiceLogoSubmit}
                 />
               </div>
-              <div className="shadow p-4 mt-4 mb-4">
-                <div className="row">
-                  <div className="col-md-6">
-                    <Button
-                      color="primary"
-                      disabled={!isValid}
-                      onClick={this.handleSubmit}
-                    >
-                      {t("save")}
-                    </Button>
-                  </div>
-                  <div className="col-md-6">
-                    {storage.isApiAdmin && (
-                      <Button color="warning" onClick={this.handleSubmitDraft}>
-                        {t("save_draft")}
-                      </Button>
-                    )}
+              <div className="my-5">
+                <Button
+                  color="primary"
+                  disabled={
+                    !storage.isApiAdmin &&
+                    (this.state.status === ServiceStatus.REVIEW ||
+                      this.state.status === ServiceStatus.DEACTIVE)
+                  }
+                  onClick={this.handleSubmitDraft}
+                >
+                  {t("save")}
+                </Button>
+              </div>
+            </div>
+            {this.state.publishService && this.renderPublishServiceModal()}
+            {this.state.disableService && this.renderDisableServiceModal()}
+
+            {status !== ServiceStatus.VALID &&
+            status !== ServiceStatus.DEACTIVE ? (
+              <div className="go-live">
+                <div className="col-md-12">
+                  {status === ServiceStatus.REVIEW && (
+                    <Alert color="warning">
+                      <span className="dark-text">
+                        {t("publish_review_title")}
+                      </span>
+                      <span>&nbsp; {t("publish_review_message")}</span>
+                    </Alert>
+                  )}
+                  {status === ServiceStatus.REJECTED && (
+                    <div>
+                      <Alert color="danger">
+                        <span className="dark-text">
+                          {t("publish_error_title")}
+                        </span>
+                        <span>&nbsp; {t("publish_error_message")}</span>
+                      </Alert>
+                      {this.state.review && this.state.review.comment && (
+                        <JiraComments
+                          comments={this.state.review.comment.comments}
+                        />
+                      )}
+                    </div>
+                  )}
+                  <h4>Go Live!</h4>
+                  <p>{t("publish_message")}</p>
+                  <p>
+                    {t("publish_guide")}
+                    <a href="https://io.italia.it/pubbliche-amministrazioni/">
+                      {" "}
+                      {t("guide")}
+                    </a>
+                  </p>
+                  <Button
+                    color="primary"
+                    disabled={this.state.status === ServiceStatus.REVIEW}
+                    onClick={() => this.setState({ publishService: true })}
+                  >
+                    {t("publish")}
+                  </Button>
+                  <div className="mt-4">
+                    <small>{t("publish_info")}</small>
                   </div>
                 </div>
-                <div className="mt-4 row">
-                  <div className="col-md-12">
-                    {!isValid && <Alert color="danger">Campi non validi</Alert>}
-                    {formState === ServiceFormState.SAVED_OK && (
-                      <Alert color="success">{t("service_saved_ok")}</Alert>
-                    )}
-                    {formState === ServiceFormState.SAVED_ERROR && (
-                      <Alert color="danger">{t("service_saved_error")}</Alert>
-                    )}
+              </div>
+            ) : (
+              ""
+            )}
+
+            {status === ServiceStatus.VALID ||
+            status === ServiceStatus.DEACTIVE ? (
+              <div className="go-live">
+                <div className="col-md-12">
+                  {status === ServiceStatus.VALID && (
+                    <Alert color="success">
+                      <span className="dark-text">{t("published_title")}</span>
+                      <span>&nbsp; {t("published")}</span>
+                    </Alert>
+                  )}
+
+                  {status === ServiceStatus.DEACTIVE && (
+                    <Alert color="info">
+                      <span className="dark-text">
+                        {t("deactive_service_title")}
+                      </span>
+                      <span>&nbsp; - {t("deactive_service_message")}</span>
+                    </Alert>
+                  )}
+                  <h4>{t("unpublish_title")}</h4>
+                  <p>{t("unpublish_message")}</p>
+                  <Button
+                    color="primary"
+                    disabled={
+                      this.state.status === ServiceStatus.REVIEW ||
+                      this.state.status === ServiceStatus.DEACTIVE
+                    }
+                    onClick={() => this.setState({ disableService: true })}
+                  >
+                    {t("unpublish")}
+                  </Button>
+                  <div className="mt-4">
+                    <small>{t("publish_info")}</small>
                   </div>
                 </div>
               </div>
-            </form>
-
-            {service.authorized_recipients.length > 0 && (
-              <div className="mb-3">
-                {t("authorized_recipients")}:{" "}
-                {service.authorized_recipients.join(";")}
-              </div>
+            ) : (
+              ""
             )}
-
-            {service.authorized_cidrs.length > 0 && (
-              <div className="mb-3">
-                {t("authorized_ips")}: {service.authorized_cidrs}
-              </div>
-            )}
-
-            {!storage.isApiAdmin && (
-              <div className="mb-3">
-                {t("max_allowed_payment_amount")}:{" "}
-                {service.max_allowed_payment_amount} {t("eurocents")}
-              </div>
-            )}
-          </div>
+          </React.Fragment>
         )}
       </StorageContext.Consumer>
     ) : null;

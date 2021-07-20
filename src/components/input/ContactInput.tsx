@@ -66,13 +66,15 @@ class ContactInput extends Component<Props> {
     const { elem, errors, serviceMetadata, t } = this.props;
     const { error } = this.state;
     return (
-      <div className="shadow p-5 mt-2 mb-2">
+      <div className="">
         {error.isSome() && <Alert color="warning">{error.value}</Alert>}
         {elem &&
           elem.map((k, i) => {
             return (
               <div key={i}>
-                <label className="m-0">{t(k)}</label>
+                <label className={errors[k] ? "mb0 error-text" : "mb0"}>
+                  {t(k)}
+                </label>
                 <input
                   name={k}
                   type="text"
@@ -80,11 +82,11 @@ class ContactInput extends Component<Props> {
                   onBlur={e => this.handlerOnBlurInputData(e, k)}
                   className={errors[k] ? "mb4 error" : "mb4"}
                 />
-                {errors[k] && (
+                {/*errors[k] && (
                   <Alert color="danger" key={i}>
                     {JSON.stringify(errors[k])}
                   </Alert>
-                )}
+                )*/}
               </div>
             );
           })}

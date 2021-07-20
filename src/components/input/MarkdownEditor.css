@@ -1,4 +1,10 @@
 .editor--message--preview
 {
     overflow-y: auto;
+    background: rgba(229, 229, 229, 0.3);
+}
+
+.markdown-title-preview {
+    font-weight: 400;
+    color: #B3BABF;
 }

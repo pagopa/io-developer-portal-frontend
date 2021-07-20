@@ -132,7 +132,7 @@ class Messages extends Component<Props, MessagesState> {
     );
 
     return (
-      <div>
+      <div className="mt-4 mr-4 ml-4 pt-5 pr-5 pl-5">
         <table className="table mb-0 rounded">
           <thead>
             <tr>
