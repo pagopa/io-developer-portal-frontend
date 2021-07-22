@@ -633,13 +633,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         // Open confirm Modal to publish a service review
         return this.setState({ publishService: true });
       }
-      const id = Math.random();
       this.setState({
         toastMessage: {
-          id,
+          id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
-          type: ToastrType.success
+          type: ToastrType.warning
         }
       });
     } catch (err) {
@@ -665,9 +664,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   private getToaster(message: ToastrItem) {
     return (
       <Toastr
-        delay={1000}
+        delay={3000}
         toastMessage={message}
-        onToastrClose={this.handleToastrClose}
+        onToastrClose={toastrToDelete => this.handleToastrClose(toastrToDelete)}
       />
     );
   }
