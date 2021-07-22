@@ -236,6 +236,15 @@ const en = {
     service_logo: "Upload Logo (PNG)",
     service_logo_upload: "Upload",
     organization_fiscal_code: "Invalid organization fiscal code"
+  },
+  toasterMessage: {
+    save_form: "Service Saving",
+    save_service_error: "Error on saving service",
+    save_service: "Service saved",
+    errors_form: "Errors on forms",
+    errors_description: "There are some errors, check your form!",
+    jira_error_title: "Jira Error",
+    jira_error: "There are some errors with Jira"
   }
 };
 
