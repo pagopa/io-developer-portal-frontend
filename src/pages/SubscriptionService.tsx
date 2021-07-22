@@ -78,12 +78,11 @@ type SubscriptionServiceState = {
   checkError: boolean;
   errors: Record<string, string>;
   timestampLogo: number;
-  review: ReviewStatus;
+  review: ReviewStatus | null;
   status: string;
   publishService: boolean;
   disableService: boolean;
-  toastMessage: ToastItem;
-  toastErrorMessage: ToastItem;
+  toastMessage?: ToastItem;
 };
 
 function withDefaultSubnet(value: string): CIDR {
@@ -131,9 +130,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     status: "",
     publishService: false,
     disableService: false,
-    review: {},
-    toastMessage: undefined,
-    toastErrorMessage: undefined
+    review: null,
+    toastMessage: undefined
   };
 
   public async componentDidMount() {
@@ -155,14 +153,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           }
     };
 
-    // Check field validation after loading service
-    Object.keys(service).forEach(prop =>
-      this.validateServiceField(prop, service[prop])
-    );
-    Object.keys(service.service_metadata).forEach(prop =>
-      this.validateServiceMetadataField(prop, service.service_metadata[prop])
-    );
-
     // After service load check if there is a review or a reject in progress
     // this.getServiceReviewStatus(service);
 
@@ -181,7 +171,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
             field: this.props.t(name)
           })
         },
-        toastErrorMessage: {
+        toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
@@ -269,7 +259,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     }).map(service =>
       this.setState({
         service
-        // formState: ServiceFormState.NOT_SAVE
       })
     );
   };
@@ -319,7 +308,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     if (decoded.isLeft()) {
       this.setState({
         checkError: true,
-        toastErrorMessage: {
+        toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
@@ -332,7 +321,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     return decoded.value;
   };
 
-  private validateServiceField = (prop, value) => {
+  private validateServiceField = (prop: keyof Service, value: InputValue) => {
     switch (prop) {
       case "organization_name":
       case "max_allowed_payment_amount":
@@ -352,18 +341,17 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     }
   };
 
-  private validateServiceMetadataField = (prop, value) => {
+  private validateServiceMetadataField = (
+    prop: keyof ServiceMetadata,
+    value: InputValue
+  ) => {
     switch (prop) {
       case "app_android":
       case "app_ios":
       case "support_url":
       case "tos_url":
       case "web_url":
-      case "authorized_recipients":
-      case "authorized_cidrs":
       case "description":
-      case "max_allowed_payment_amount":
-      case "organization_fiscal_code":
       case "pec":
       case "email":
       case "phone":
@@ -394,6 +382,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
       if (service && !Object.keys(this.state.errors).length) {
         const id = Math.random();
+        // Save service to backend
         if (Service.is(await this.updateService(service))) {
           this.setState({
             toastMessage: {
@@ -414,16 +403,13 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           });
         }
         const serviceId = this.props.match.params.service_id;
+        // Open a service review ticket
         await this.handleReviewSubmit(serviceId);
-      } else {
-        this.setState({
-          checkError: true
-        });
       }
     } catch (e) {
       this.setState({
         checkError: true,
-        toastErrorMessage: {
+        toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
@@ -620,7 +606,57 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     }
   }
 
-  private getToaster(message) {
+  private validateBeforePublish() {
+    // Validazione
+    try {
+      const service = this.validateServiceData(
+        ValidService,
+        this.state.service
+      );
+      Object.keys(service).forEach(prop =>
+        this.validateServiceField(
+          prop as keyof Service,
+          // tslint:disable-next-line: no-any
+          service[prop as keyof Service] as any // TODO: Create a custom type
+        )
+      );
+      Object.keys(service.service_metadata || {}).forEach(
+        prop =>
+          service.service_metadata &&
+          this.validateServiceMetadataField(
+            prop as keyof ServiceMetadata,
+            service.service_metadata[prop as keyof ServiceMetadata]
+          )
+      );
+      // keys su errors
+      if (Object.keys(this.state.errors).length === 0) {
+        // Open confirm Modal to publish a service review
+        return this.setState({ publishService: true });
+      }
+      const id = Math.random();
+      this.setState({
+        toastMessage: {
+          id,
+          title: this.props.t("toasterMessage:errors_form"),
+          description: this.props.t("toasterMessage:errors_description"),
+          type: ToastType.success
+        }
+      });
+    } catch (err) {
+      this.setState({
+        checkError: true,
+        toastMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:errors_form"),
+          description: this.props.t("toasterMessage:errors_description"),
+          type: ToastType.error
+        }
+      });
+    }
+    // Check field validation after loading service
+  }
+
+  private getToaster(message: ToastItem) {
     return <Toastr delay={1000} toastMessage={message} />;
   }
 
@@ -631,7 +667,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       service,
       errors,
       checkError,
-      toastErrorMessage,
       logo,
       logoIsValid,
       logoUploaded,
@@ -645,9 +680,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         {// tslint:disable-next-line: no-big-function
         storage => (
           <React.Fragment>
-            {toastMessage && this.getToaster(this.state.toastMessage)}
-
-            {checkError && this.getToaster(toastErrorMessage)}
+            {toastMessage && this.getToaster(toastMessage)}
 
             <div className="mt-4 mr-4 ml-4 pt-5 pr-5 pl-5">
               <h4>
@@ -661,7 +694,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       status: statusService.status
                     })
                   }
-                  service={this.state.service}
+                  service={service}
                 />
               </div>
 
@@ -953,7 +986,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <Button
                     color="primary"
                     disabled={this.state.status === ServiceStatus.REVIEW}
-                    onClick={() => this.setState({ publishService: true })}
+                    onClick={() => this.validateBeforePublish()}
                   >
                     {t("publish")}
                   </Button>

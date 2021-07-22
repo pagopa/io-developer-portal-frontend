@@ -130,7 +130,14 @@ export const handleDisableReview = async (serviceId: string) => {
   });
 };
 
-export const getServiceReviewStatus = async (service: Service) => {
+export type ServiceReviewStatusResponse = {
+  review: ReviewStatus | null;
+  status: ServiceStatus;
+};
+
+export const getServiceReviewStatus = async (
+  service: Service
+): Promise<ServiceReviewStatusResponse> => {
   const isVisible = service.is_visible;
   const errorOrValidService = ValidService.decode(service);
   const serviceId = service.service_id;
@@ -138,7 +145,8 @@ export const getServiceReviewStatus = async (service: Service) => {
     return await handleReviewStatus(serviceId)
       .then(res => {
         if (res.status === 200) {
-          const isDisableInProgress = res.labels.indexOf("DISATTIVAZIONE") >= 0;
+          const isDisableInProgress =
+            res.labels && res.labels.indexOf("DISATTIVAZIONE") >= 0;
           if (isDisableInProgress) {
             return {
               review: res,

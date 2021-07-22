@@ -112,7 +112,12 @@ export const UrlFromStringV2 = new ts.Type<ValidUrl, string>(
 
 export type UrlFromStringV2 = ts.TypeOf<typeof UrlFromStringV2>;
 
-export type InputValue = string | boolean | number | readonly string[];
+export type InputValue =
+  | string
+  | boolean
+  | number
+  | readonly string[]
+  | undefined;
 
 export const CIDRWithRequiredSubnetMask = PatternString(
   "^([0-9]{1,3}[.]){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))$"
