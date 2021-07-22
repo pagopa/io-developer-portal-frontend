@@ -1,4 +1,4 @@
-import { Alert, Button } from "design-react-kit";
+import { Button } from "design-react-kit";
 import React, { ChangeEvent, Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -25,8 +25,6 @@ import { UserData } from "../../generated/definitions/backend/UserData";
 
 import {
   getServiceReviewStatus,
-  handleReviewStatus,
-  ReviewStatus,
   ServiceStatus,
   ValidService
 } from "../utils/service";

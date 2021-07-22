@@ -61,6 +61,5 @@
   },
   "exclude":  [
     "./node_modules/"
-  ],
-  "include": ["custom.d.ts"]
+  ]
 }

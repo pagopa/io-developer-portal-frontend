@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import successIcon from "../../assets/icon/check.svg";
-import errorIcon from "../../assets/icon/error.svg";
-import infoIcon from "../../assets/icon/info.svg";
-import warningIcon from "../../assets/icon/warning.svg";
+import {
+  FaCheck,
+  FaExclamationCircle,
+  FaExclamationTriangle,
+  FaInfo
+} from "react-icons/lib/fa";
 import "./Toastr.css";
 
 const TIME_TO_SHOW = 5000;
@@ -121,13 +123,13 @@ class Toastr extends Component<Props> {
   private getIcon(type: ToastType) {
     switch (type) {
       case ToastType.error:
-        return errorIcon;
+        return <FaExclamationCircle />;
       case ToastType.info:
-        return infoIcon;
+        return <FaInfo />;
       case ToastType.success:
-        return successIcon;
+        return <FaCheck />;
       case ToastType.warning:
-        return warningIcon;
+        return <FaExclamationTriangle />;
     }
   }
 
@@ -144,7 +146,7 @@ class Toastr extends Component<Props> {
               style={{ backgroundColor: this.getBackgroundColor(toast.type) }}
             >
               <div className="notification-image">
-                <img src={`${this.getIcon(toast.type)}`} alt="ICON" />
+                {this.getIcon(toast.type)}
               </div>
               <div>
                 <p className="notification-title">{toast.title}</p>
