@@ -243,7 +243,8 @@ const it = {
     save_service: "Servizio salvato correttamente",
     errors_form: "Errori nella form",
     errors_description: "Ci sono degli errori, controlla la tua form!",
-    jira_error_title: "Jira Error",
+    jira_title: "Jira",
+    jira_success: "Ticket creato",
     jira_error: "Si è verificato un errore con Jira"
   }
 };

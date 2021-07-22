@@ -404,22 +404,22 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         const serviceId = this.props.match.params.service_id;
         // Open a service review ticket
         await this.handleReviewSubmit(serviceId)
-          .then(res => {
+          .then(() => {
             this.setState({
               toastMessage: {
                 id: Math.random(),
-                title: "Errore Jira",
-                description: JSON.stringify(res, null, 2),
+                title: this.props.t("toasterMessage:jira_title"),
+                description: this.props.t("toasterMessage:jira_success"),
                 type: ToastrType.error
               }
             });
           })
-          .catch(() => {
+          .catch(_ => {
             this.setState({
               toastMessage: {
                 id: Math.random(),
-                title: "Errore Jira",
-                description: "Impossibile creare il ticket",
+                title: this.props.t("toasterMessage:jira_title"),
+                description: this.props.t("toasterMessage:jira_error"),
                 type: ToastrType.error
               }
             });

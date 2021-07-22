@@ -243,7 +243,8 @@ const en = {
     save_service: "Service saved",
     errors_form: "Errors on forms",
     errors_description: "There are some errors, check your form!",
-    jira_error_title: "Jira Error",
+    jira_title: "Jira",
+    jira_success: "Ticket creato",
     jira_error: "There are some errors with Jira"
   }
 };
