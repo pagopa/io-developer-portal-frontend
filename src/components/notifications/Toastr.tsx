@@ -11,26 +11,26 @@ import "./Toastr.css";
 
 const TIME_TO_SHOW = 5000;
 
-export type ToastItem = {
+export type ToastrItem = {
   id: number;
   title: string;
   description: string;
-  type: ToastType;
+  type: ToastrType;
 };
 
-export enum ToastPosition {
+export enum ToastrPosition {
   topRight = "top-right",
   bottomRight = "bottom-right"
 }
 
-export enum ToastType {
+export enum ToastrType {
   success = "success",
   warning = "warning",
   error = "error",
   info = "info"
 }
 
-enum ToastBackground {
+enum ToastrBackground {
   success = "#5cb85c",
   warning = "#f0ad4e",
   error = "#d9534f",
@@ -38,21 +38,21 @@ enum ToastBackground {
 }
 
 type OwnProps = {
-  toastMessage: ToastItem;
-  position?: ToastPosition;
+  toastMessage: ToastrItem;
+  position?: ToastrPosition;
   delay?: number;
 };
 type Props = WithNamespaces & OwnProps;
 
 type ToastrState = {
   intervalId?: NodeJS.Timeout;
-  position: ToastPosition;
-  toastList: ReadonlyArray<ToastItem>;
+  position: ToastrPosition;
+  toastList: ReadonlyArray<ToastrItem>;
 };
 
 class Toastr extends Component<Props, ToastrState> {
   public initialState: ToastrState = {
-    position: ToastPosition.topRight,
+    position: ToastrPosition.topRight,
     toastList: [],
     intervalId: undefined
   };
@@ -61,7 +61,7 @@ class Toastr extends Component<Props, ToastrState> {
     toastList: [],
     position: this.props.position
       ? this.props.position
-      : ToastPosition.topRight,
+      : ToastrPosition.topRight,
     intervalId: undefined
   };
 
@@ -115,28 +115,28 @@ class Toastr extends Component<Props, ToastrState> {
     }
   };
 
-  private getBackgroundColor(type: ToastType) {
+  private getBackgroundColor(type: ToastrType) {
     switch (type) {
-      case ToastType.error:
-        return ToastBackground.error;
-      case ToastType.info:
-        return ToastBackground.info;
-      case ToastType.success:
-        return ToastBackground.success;
-      case ToastType.warning:
-        return ToastBackground.warning;
+      case ToastrType.error:
+        return ToastrBackground.error;
+      case ToastrType.info:
+        return ToastrBackground.info;
+      case ToastrType.success:
+        return ToastrBackground.success;
+      case ToastrType.warning:
+        return ToastrBackground.warning;
     }
   }
 
-  private getIcon(type: ToastType) {
+  private getIcon(type: ToastrType) {
     switch (type) {
-      case ToastType.error:
+      case ToastrType.error:
         return <FaExclamationCircle />;
-      case ToastType.info:
+      case ToastrType.info:
         return <FaInfo />;
-      case ToastType.success:
+      case ToastrType.success:
         return <FaCheck />;
-      case ToastType.warning:
+      case ToastrType.warning:
         return <FaExclamationTriangle />;
     }
   }

@@ -21,8 +21,8 @@ import DisableService from "../components/modal/DisableService";
 import PublishService from "../components/modal/PublishService";
 
 import Toastr, {
-  ToastItem,
-  ToastType
+  ToastrItem,
+  ToastrType
 } from "../components/notifications/Toastr";
 import UploadLogo from "../components/UploadLogo";
 import { StorageContext } from "../context/storage";
@@ -82,7 +82,7 @@ type SubscriptionServiceState = {
   status: string;
   publishService: boolean;
   disableService: boolean;
-  toastMessage?: ToastItem;
+  toastMessage?: ToastrItem;
 };
 
 function withDefaultSubnet(value: string): CIDR {
@@ -175,7 +175,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
-          type: ToastType.error
+          type: ToastrType.error
         }
       };
     });
@@ -312,7 +312,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
-          type: ToastType.error
+          type: ToastrType.error
         }
       });
       throw new Error("Wrong parameters format");
@@ -389,7 +389,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               id,
               title: this.props.t("toasterMessage:save_form"),
               description: this.props.t("toasterMessage:save_service"),
-              type: ToastType.success
+              type: ToastrType.success
             }
           });
         } else {
@@ -398,7 +398,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               id,
               title: this.props.t("toasterMessage:save_form"),
               description: this.props.t("toasterMessage:save_service_error"),
-              type: ToastType.error
+              type: ToastrType.error
             }
           });
         }
@@ -413,7 +413,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
-          type: ToastType.error
+          type: ToastrType.error
         }
       });
     }
@@ -442,7 +442,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           id,
           title: "Salvataggio Servizio",
           description: "Servizio salvato correttamente",
-          type: ToastType.success
+          type: ToastrType.success
         }
       });
     } else {
@@ -451,7 +451,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           id,
           title: "Salvataggio Servizio",
           description: "Errore nel salvataggio del servizio",
-          type: ToastType.error
+          type: ToastrType.error
         }
       });
     }
@@ -639,7 +639,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           id,
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
-          type: ToastType.success
+          type: ToastrType.success
         }
       });
     } catch (err) {
@@ -649,14 +649,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
-          type: ToastType.error
+          type: ToastrType.error
         }
       });
     }
     // Check field validation after loading service
   }
 
-  private getToaster(message: ToastItem) {
+  private getToaster(message: ToastrItem) {
     return <Toastr delay={1000} toastMessage={message} />;
   }
 
