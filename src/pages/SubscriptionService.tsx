@@ -405,7 +405,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         // Open a service review ticket
         await this.handleReviewSubmit(serviceId)
           .then(res => {
-            console.log("asd");
             this.setState({
               toastMessage: {
                 id: Math.random(),
@@ -416,7 +415,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
             });
           })
           .catch(() => {
-            console.log("asd2");
             this.setState({
               toastMessage: {
                 id: Math.random(),
