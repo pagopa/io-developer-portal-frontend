@@ -656,8 +656,20 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     // Check field validation after loading service
   }
 
+  private handleToastrClose(toastToDelete?: ToastrItem) {
+    this.setState({
+      toastMessage: undefined
+    });
+  }
+
   private getToaster(message: ToastrItem) {
-    return <Toastr delay={1000} toastMessage={message} />;
+    return (
+      <Toastr
+        delay={1000}
+        toastMessage={message}
+        onToastrClose={this.handleToastrClose}
+      />
+    );
   }
 
   // tslint:disable-next-line: no-big-function cognitive-complexity

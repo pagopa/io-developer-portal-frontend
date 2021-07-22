@@ -41,6 +41,7 @@ type OwnProps = {
   toastMessage: ToastrItem;
   position?: ToastrPosition;
   delay?: number;
+  onToastrClose: (event: ToastrItem) => void;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -106,12 +107,13 @@ class Toastr extends Component<Props, ToastrState> {
   }
 
   private deleteToast = () => {
-    const [, ...rest] = this.state.toastList;
+    const [deletedToast, ...rest] = this.state.toastList;
     this.setState({
       toastList: rest
     });
     if (this.state.toastList.length <= 0 && this.state.intervalId) {
       clearInterval(this.state.intervalId);
+      this.props.onToastrClose(deletedToast);
     }
   };
 
