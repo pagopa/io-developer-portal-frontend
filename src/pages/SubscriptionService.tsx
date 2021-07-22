@@ -381,12 +381,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       const service = this.validateServiceData(ValidService, serviceToUpdate);
 
       if (service && !Object.keys(this.state.errors).length) {
-        const id = Math.random();
         // Save service to backend
         if (Service.is(await this.updateService(service))) {
           this.setState({
             toastMessage: {
-              id,
+              id: Math.random(),
               title: this.props.t("toasterMessage:save_form"),
               description: this.props.t("toasterMessage:save_service"),
               type: ToastrType.success
@@ -395,7 +394,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         } else {
           this.setState({
             toastMessage: {
-              id,
+              id: Math.random(),
               title: this.props.t("toasterMessage:save_form"),
               description: this.props.t("toasterMessage:save_service_error"),
               type: ToastrType.error
@@ -404,7 +403,29 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         }
         const serviceId = this.props.match.params.service_id;
         // Open a service review ticket
-        await this.handleReviewSubmit(serviceId);
+        await this.handleReviewSubmit(serviceId)
+          .then(res => {
+            console.log("asd");
+            this.setState({
+              toastMessage: {
+                id: Math.random(),
+                title: "Errore Jira",
+                description: JSON.stringify(res, null, 2),
+                type: ToastrType.error
+              }
+            });
+          })
+          .catch(() => {
+            console.log("asd2");
+            this.setState({
+              toastMessage: {
+                id: Math.random(),
+                title: "Errore Jira",
+                description: "Impossibile creare il ticket",
+                type: ToastrType.error
+              }
+            });
+          });
       }
     } catch (e) {
       this.setState({
@@ -664,7 +685,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   private getToaster(message: ToastrItem) {
     return (
       <Toastr
-        delay={3000}
+        delay={2000}
         toastMessage={message}
         onToastrClose={toastrToDelete => this.handleToastrClose(toastrToDelete)}
       />
