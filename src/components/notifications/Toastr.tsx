@@ -44,14 +44,20 @@ type OwnProps = {
 };
 type Props = WithNamespaces & OwnProps;
 
-class Toastr extends Component<Props> {
-  public initialState = {
+type ToastrState = {
+  intervalId?: NodeJS.Timeout;
+  position: ToastPosition;
+  toastList: ReadonlyArray<ToastItem>;
+};
+
+class Toastr extends Component<Props, ToastrState> {
+  public initialState: ToastrState = {
     position: ToastPosition.topRight,
     toastList: [],
     intervalId: undefined
   };
 
-  public state = {
+  public state: ToastrState = {
     toastList: [],
     position: this.props.position
       ? this.props.position
@@ -59,7 +65,7 @@ class Toastr extends Component<Props> {
     intervalId: undefined
   };
 
-  public constructor(props) {
+  public constructor(props: Props) {
     super(props);
     this.state = this.initialState;
   }
@@ -77,12 +83,13 @@ class Toastr extends Component<Props> {
     });
   }
 
-  public componentDidUpdate(prevProps) {
+  public componentDidUpdate(prevProps: Props) {
     if (prevProps.toastMessage.id !== this.props.toastMessage.id) {
       this.setState({
         toastList: [...this.state.toastList, this.props.toastMessage]
       });
-      clearInterval(this.state.intervalId);
+      // tslint:disable-next-line: no-unused-expression
+      this.state.intervalId && clearInterval(this.state.intervalId);
       const intervalId = setInterval(
         this.deleteToast,
         this.props.delay || TIME_TO_SHOW
@@ -94,7 +101,8 @@ class Toastr extends Component<Props> {
   }
 
   public componentWillUnmount() {
-    clearInterval(this.state.intervalId);
+    // tslint:disable-next-line: no-unused-expression
+    this.state.intervalId && clearInterval(this.state.intervalId);
   }
 
   private deleteToast = () => {
@@ -102,7 +110,7 @@ class Toastr extends Component<Props> {
     this.setState({
       toastList: rest
     });
-    if (this.state.toastList.length <= 0) {
+    if (this.state.toastList.length <= 0 && this.state.intervalId) {
       clearInterval(this.state.intervalId);
     }
   };
