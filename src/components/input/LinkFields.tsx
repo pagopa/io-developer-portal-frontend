@@ -8,7 +8,7 @@ import { Alert } from "reactstrap";
 type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;
-  checkError: boolean;
+  showError: boolean;
   errors: Record<string, string>;
   onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
   onBlur: (
@@ -36,7 +36,7 @@ const LinkFields = ({
   service_metadata,
   onChange,
   onBlur,
-  checkError,
+  showError,
   errors,
   t
 }: Props) => {
@@ -54,7 +54,7 @@ const LinkFields = ({
     return fields.map((k, i) => {
       return (
         <div key={i}>
-          <label className={errors[k] && checkError ? "mb0 error-text" : "mb0"}>
+          <label className={errors[k] && showError ? "mb0 error-text" : "mb0"}>
             {t(k)}
           </label>
           <input
@@ -63,10 +63,10 @@ const LinkFields = ({
             defaultValue={service_metadata && service_metadata[k]}
             onChange={onChange}
             onBlur={onBlur(k)}
-            className={errors[k] && checkError ? "mb4 error" : "mb4"}
+            className={errors[k] && showError ? "mb4 error" : "mb4"}
             {...more}
           />
-          {/*errors[k] && checkError && (
+          {/*errors[k] && showError && (
             <Alert color="danger" key={i}>
               {JSON.stringify(errors[k])}
             </Alert>

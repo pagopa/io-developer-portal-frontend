@@ -75,7 +75,7 @@ type SubscriptionServiceState = {
   logoIsValid: boolean;
   logoUploaded: boolean;
   originalIsVisible?: boolean;
-  checkError: boolean;
+  showError: boolean;
   errors: Record<string, string>;
   timestampLogo: number;
   review: ReviewStatus | null;
@@ -124,7 +124,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     logoIsValid: true,
     logoUploaded: true,
     originalIsVisible: undefined,
-    checkError: false,
+    showError: false,
     errors: {},
     timestampLogo: Date.now(),
     status: "",
@@ -271,7 +271,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       target.type === "checkbox" ? target.checked : target.value;
     const value = inputValueMap(prop, inputValue);
     this.setState({
-      checkError: false
+      showError: false
     });
     checkValue(prop, value).fold(
       () => this.handleError(prop),
@@ -286,7 +286,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       target: { name, value }
     } = event;
     this.setState({
-      checkError: false
+      showError: false
     });
     const inputValue = inputValueMap(name, value);
     checkValue(prop, inputValue).fold(
@@ -307,7 +307,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       | ValidDraftService));
     if (decoded.isLeft()) {
       this.setState({
-        checkError: true,
+        showError: true,
         toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
@@ -427,7 +427,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       }
     } catch (e) {
       this.setState({
-        checkError: true,
+        showError: true,
         toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
@@ -661,7 +661,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       });
     } catch (err) {
       this.setState({
-        checkError: true,
+        showError: true,
         toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
@@ -695,7 +695,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       errorLogoUpload,
       service,
       errors,
-      checkError,
+      showError,
       logo,
       logoIsValid,
       logoUploaded,
@@ -728,7 +728,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               </div>
 
               <form className="my-4">
-                {this.state.checkError && (
+                {showError && (
                   <div>
                     <Alert color="danger">
                       <span className="dark-text">
@@ -754,7 +754,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <h5 className="my-4">{t("service_description")}</h5>
                   <label
                     className={
-                      errors[`service_name`] && checkError
+                      errors[`service_name`] && showError
                         ? "mb0 error-text"
                         : "mb0"
                     }
@@ -767,12 +767,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     defaultValue={service.service_name}
                     onBlur={this.getHandleBlur("service_name")}
                     className={
-                      errors[`service_name`] && checkError ? "mb4 error" : "mb4"
+                      errors[`service_name`] && showError ? "mb4 error" : "mb4"
                     }
                   />
                   <label
                     className={
-                      errors[`organization_name`] && checkError
+                      errors[`organization_name`] && showError
                         ? "mb0 error-text"
                         : "mb0"
                     }
@@ -785,14 +785,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     defaultValue={service.organization_name}
                     onBlur={this.getHandleBlur("organization_name")}
                     className={
-                      errors[`organization_name`] && checkError
+                      errors[`organization_name`] && showError
                         ? "mb4 error"
                         : "mb4"
                     }
                   />
                   <label
                     className={
-                      errors[`department_name`] && checkError
+                      errors[`department_name`] && showError
                         ? "mb0 error-text"
                         : "mb0"
                     }
@@ -805,14 +805,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     defaultValue={service.department_name}
                     onBlur={this.getHandleBlur("department_name")}
                     className={
-                      errors[`department_name`] && checkError
+                      errors[`department_name`] && showError
                         ? "mb4 error"
                         : "mb4"
                     }
                   />
                   <label
                     className={
-                      errors[`organization_fiscal_code`] && checkError
+                      errors[`organization_fiscal_code`] && showError
                         ? "mb0 error-text"
                         : "mb0"
                     }
@@ -825,7 +825,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     defaultValue={service.organization_fiscal_code}
                     onBlur={this.getHandleBlur("organization_fiscal_code")}
                     className={
-                      errors[`organization_fiscal_code`] && checkError
+                      errors[`organization_fiscal_code`] && showError
                         ? "mb4 error"
                         : "mb4"
                     }
@@ -898,7 +898,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onBlur={this.getHandleMetadataBlur}
                     service_metadata={service.service_metadata}
                     isApiAdmin={storage.isApiAdmin}
-                    checkError={this.state.checkError}
+                    showError={showError}
                     errors={this.state.errors}
                   />
                 </div>
@@ -938,7 +938,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onBlur={this.getHandleBlur}
                     service={service}
                     isApiAdmin={storage.isApiAdmin}
-                    checkError={this.state.checkError}
+                    showError={showError}
                     errors={this.state.errors}
                   />
                 </div>
