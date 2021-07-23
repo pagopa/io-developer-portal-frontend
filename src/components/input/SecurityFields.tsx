@@ -21,7 +21,6 @@ const SecurityFields = ({
   onChange,
   onBlur,
   isApiAdmin,
-  showError,
   errors,
   t
 }: Props) => {

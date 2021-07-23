@@ -34,7 +34,6 @@ const LinkFields = ({
   service_metadata,
   onChange,
   onBlur,
-  showError,
   errors,
   t
 }: Props) => {
