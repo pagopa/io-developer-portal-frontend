@@ -30,9 +30,7 @@ const SecurityFields = ({
       <React.Fragment>
         <div>
           <label
-            className={
-              errors[`authorized_cidrs`] && showError ? "mb0 error-text" : "mb0"
-            }
+            className={errors[`authorized_cidrs`] ? "mb0 error-text" : "mb0"}
           >
             {t("authorized_ips")}
           </label>
@@ -44,18 +42,14 @@ const SecurityFields = ({
             type="text"
             defaultValue={service.authorized_cidrs.join(";")}
             onBlur={onBlur("authorized_cidrs")}
-            className={
-              errors[`authorized_cidrs`] && showError ? "mb4 error" : "mb4"
-            }
+            className={errors[`authorized_cidrs`] ? "mb4 error" : "mb4"}
           />
         </div>
         {isApiAdmin && (
           <div>
             <label
               className={
-                errors[`authorized_recipients`] && showError
-                  ? "mb0 error-text"
-                  : "mb0"
+                errors[`authorized_recipients`] ? "mb0 error-text" : "mb0"
               }
             >
               {t("authorized_recipients")}*
@@ -65,11 +59,7 @@ const SecurityFields = ({
               type="text"
               defaultValue={service.authorized_recipients.join(";")}
               onBlur={onBlur("authorized_recipients")}
-              className={
-                errors[`authorized_recipients`] && showError
-                  ? "mb4 error"
-                  : "mb4"
-              }
+              className={errors[`authorized_recipients`] ? "mb4 error" : "mb4"}
             />
           </div>
         )}
@@ -77,9 +67,7 @@ const SecurityFields = ({
           <div>
             <label
               className={
-                errors[`max_allowed_payment_amount`] && showError
-                  ? "mb0 error-text"
-                  : "mb0"
+                errors[`max_allowed_payment_amount`] ? "mb0 error-text" : "mb0"
               }
             >
               {t("max_allowed_payment_amount")}
@@ -94,9 +82,7 @@ const SecurityFields = ({
               }
               onBlur={onBlur("max_allowed_payment_amount")}
               className={
-                errors[`max_allowed_payment_amount`] && showError
-                  ? "mb4 error"
-                  : "mb4"
+                errors[`max_allowed_payment_amount`] ? "mb4 error" : "mb4"
               }
             />
           </div>

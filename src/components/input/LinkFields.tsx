@@ -52,16 +52,14 @@ const LinkFields = ({
     return fields.map((k, i) => {
       return (
         <div key={i}>
-          <label className={errors[k] && showError ? "mb0 error-text" : "mb0"}>
-            {t(k)}
-          </label>
+          <label className={errors[k] ? "mb0 error-text" : "mb0"}>{t(k)}</label>
           <input
             name={k}
             type="text"
             defaultValue={service_metadata && service_metadata[k]}
             onChange={onChange}
             onBlur={onBlur(k)}
-            className={errors[k] && showError ? "mb4 error" : "mb4"}
+            className={errors[k] ? "mb4 error" : "mb4"}
             {...more}
           />
         </div>

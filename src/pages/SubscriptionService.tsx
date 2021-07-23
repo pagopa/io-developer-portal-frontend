@@ -162,7 +162,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     });
   }
 
-  private handleError = (name: string) => {
+  private handleError = (name: string, showErrorMessage: boolean = false) => {
     this.setState(() => {
       return {
         errors: {
@@ -171,12 +171,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
             field: this.props.t(name)
           })
         },
-        toastMessage: {
-          id: Math.random(),
-          title: this.props.t("toasterMessage:errors_form"),
-          description: this.props.t("toasterMessage:errors_description"),
-          type: ToastrType.error
-        }
+        toastMessage: showErrorMessage
+          ? {
+              id: Math.random(),
+              title: this.props.t("toasterMessage:errors_form"),
+              description: this.props.t("toasterMessage:errors_description"),
+              type: ToastrType.error
+            }
+          : undefined
       };
     });
   };
@@ -755,9 +757,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <h5 className="my-4">{t("service_description")}</h5>
                   <label
                     className={
-                      errors[`service_name`] && showError
-                        ? "mb0 error-text"
-                        : "mb0"
+                      errors[`service_name`] ? "mb0 error-text" : "mb0"
                     }
                   >
                     {t("name")}*
@@ -767,15 +767,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     type="text"
                     defaultValue={service.service_name}
                     onBlur={this.getHandleBlur("service_name")}
-                    className={
-                      errors[`service_name`] && showError ? "mb4 error" : "mb4"
-                    }
+                    className={errors[`service_name`] ? "mb4 error" : "mb4"}
                   />
                   <label
                     className={
-                      errors[`organization_name`] && showError
-                        ? "mb0 error-text"
-                        : "mb0"
+                      errors[`organization_name`] ? "mb0 error-text" : "mb0"
                     }
                   >
                     {t("organization")}*
@@ -786,16 +782,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     defaultValue={service.organization_name}
                     onBlur={this.getHandleBlur("organization_name")}
                     className={
-                      errors[`organization_name`] && showError
-                        ? "mb4 error"
-                        : "mb4"
+                      errors[`organization_name`] ? "mb4 error" : "mb4"
                     }
                   />
                   <label
                     className={
-                      errors[`department_name`] && showError
-                        ? "mb0 error-text"
-                        : "mb0"
+                      errors[`department_name`] ? "mb0 error-text" : "mb0"
                     }
                   >
                     {t("department")}*
@@ -805,15 +797,11 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     type="text"
                     defaultValue={service.department_name}
                     onBlur={this.getHandleBlur("department_name")}
-                    className={
-                      errors[`department_name`] && showError
-                        ? "mb4 error"
-                        : "mb4"
-                    }
+                    className={errors[`department_name`] ? "mb4 error" : "mb4"}
                   />
                   <label
                     className={
-                      errors[`organization_fiscal_code`] && showError
+                      errors[`organization_fiscal_code`]
                         ? "mb0 error-text"
                         : "mb0"
                     }
@@ -826,9 +814,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     defaultValue={service.organization_fiscal_code}
                     onBlur={this.getHandleBlur("organization_fiscal_code")}
                     className={
-                      errors[`organization_fiscal_code`] && showError
-                        ? "mb4 error"
-                        : "mb4"
+                      errors[`organization_fiscal_code`] ? "mb4 error" : "mb4"
                     }
                   />
                   <label className="m-0">{t("address")}</label>
