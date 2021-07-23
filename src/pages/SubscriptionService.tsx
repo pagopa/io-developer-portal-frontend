@@ -456,15 +456,27 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       ValidDraftService,
       serviceToUpdate
     );
-    if (Service.is(await this.updateService(service))) {
-      this.setState({
-        toastMessage: {
-          id: Math.random(),
-          title: this.props.t("toasterMessage:save_form"),
-          description: this.props.t("toasterMessage:save_service"),
-          type: ToastrType.success
-        }
-      });
+
+    if (service && !Object.keys(this.state.errors).length) {
+      if (Service.is(await this.updateService(service))) {
+        this.setState({
+          toastMessage: {
+            id: Math.random(),
+            title: this.props.t("toasterMessage:save_form"),
+            description: this.props.t("toasterMessage:save_service"),
+            type: ToastrType.success
+          }
+        });
+      } else {
+        this.setState({
+          toastMessage: {
+            id: Math.random(),
+            title: this.props.t("toasterMessage:save_form"),
+            description: this.props.t("toasterMessage:save_service_error"),
+            type: ToastrType.error
+          }
+        });
+      }
     } else {
       this.setState({
         toastMessage: {
