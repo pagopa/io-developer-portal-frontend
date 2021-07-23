@@ -403,27 +403,27 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         }
         const serviceId = this.props.match.params.service_id;
         // Open a service review ticket
-        await this.handleReviewSubmit(serviceId)
+        const toastMessage = await this.handleReviewSubmit(serviceId)
           .then(() => {
-            this.setState({
-              toastMessage: {
-                id: Math.random(),
-                title: this.props.t("toasterMessage:jira_title"),
-                description: this.props.t("toasterMessage:jira_success"),
-                type: ToastrType.error
-              }
-            });
+            return {
+              id: Math.random(),
+              title: this.props.t("toasterMessage:jira_title"),
+              description: this.props.t("toasterMessage:jira_success"),
+              type: ToastrType.error
+            };
           })
-          .catch(_ => {
-            this.setState({
-              toastMessage: {
-                id: Math.random(),
-                title: this.props.t("toasterMessage:jira_title"),
-                description: this.props.t("toasterMessage:jira_error"),
-                type: ToastrType.error
-              }
-            });
+          // tslint:disable-next-line: no-identical-functions
+          .catch(() => {
+            return {
+              id: Math.random(),
+              title: this.props.t("toasterMessage:jira_title"),
+              description: this.props.t("toasterMessage:jira_error"),
+              type: ToastrType.error
+            };
           });
+        this.setState({
+          toastMessage
+        });
       }
     } catch (e) {
       this.setState({
@@ -673,7 +673,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     // Check field validation after loading service
   }
 
-  private handleToastrClose(toastToDelete?: ToastrItem) {
+  private handleToastrClose(_?: ToastrItem) {
     this.setState({
       toastMessage: undefined
     });

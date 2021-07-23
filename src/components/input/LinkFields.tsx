@@ -3,8 +3,6 @@ import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions
 import React, { ChangeEvent, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
-import { Alert } from "reactstrap";
-
 type OwnProps = {
   service_metadata?: ServiceMetadata;
   isApiAdmin: boolean;

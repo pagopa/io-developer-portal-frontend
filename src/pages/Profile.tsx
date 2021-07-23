@@ -1,5 +1,5 @@
 import { Button } from "design-react-kit";
-import React, { ChangeEvent, Component, Fragment } from "react";
+import React, { ChangeEvent, Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Link } from "react-router-dom";
 

@@ -21,11 +21,6 @@ export enum ServiceStatus {
   "LOADING" = "LOADING"
 }
 
-/*export enum DelegateStatus {
-  "DELEGATO_VISIBILE" = "DELEGATO_VISIBILE",
-  "DELEGATO_NON_VISIBILE" = "DELEGATO_NON_VISIBILE"
-}*/
-
 export const ReviewStatus = ts.partial({
   comment: ts.interface({
     comments: ts.readonlyArray(
