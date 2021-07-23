@@ -8,6 +8,7 @@ import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import React, { ChangeEvent, Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RouteComponentProps } from "react-router";
+import { CIDR } from "../../generated/definitions/api/CIDR";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
 import MetadataInput from "../components/input/MetadataInput";
 import UploadLogo from "../components/UploadLogo";
@@ -15,7 +16,7 @@ import { StorageContext } from "../context/storage";
 import { getFromBackend, putToBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
 import { getBase64OfImage } from "../utils/image";
-import { ValidService } from "../utils/service";
+import { ValidDraftService, ValidService } from "../utils/service";
 import { checkValue, InputValue } from "../utils/validators";
 
 const LogoParamsApi = ts.interface({
@@ -46,11 +47,17 @@ type Props = RouteComponentProps<{ service_id: string }> &
   WithNamespaces &
   OwnProps;
 
+enum ServiceFormState {
+  "SAVED_OK" = "SAVED_OK", // Succesfull saved to backend
+  "SAVED_ERROR" = "SAVED_ERROR", // Unsuccesfull saved to backend
+  "NOT_SAVE" = "NOT_SAVE" // Not yet saved to backend
+}
+
 type SubscriptionServiceState = {
   errorLogoUpload: boolean;
   service?: Service;
   isValid?: boolean;
-  isSaved: boolean;
+  formState: ServiceFormState;
   logo?: string;
   logoIsValid: boolean;
   logoUploaded: boolean;
@@ -59,12 +66,25 @@ type SubscriptionServiceState = {
   timestampLogo: number;
 };
 
+function withDefaultSubnet(value: string): CIDR {
+  return value.lastIndexOf("/") === -1
+    ? (`${value}/32` as CIDR)
+    : (value as CIDR);
+}
+
 function inputValueMap(name: string, value: InputValue) {
   switch (name) {
     case "max_allowed_payment_amount":
       return Number(value);
-
-    case "authorized_cidrs":
+    case "authorized_cidrs": {
+      if (typeof value === "string") {
+        return value
+          .replace(/\s/g, "") // Remove all whitespaces
+          .replace(/\;$/, "") // Remove last semicolon to avoid empty string on last
+          .split(";");
+      }
+      return [];
+    }
     case "authorized_recipients": {
       if (typeof value === "string") {
         return value.split(";");
@@ -82,7 +102,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     errorLogoUpload: false,
     service: undefined,
     isValid: true,
-    isSaved: false,
+    formState: ServiceFormState.NOT_SAVE,
     logo: undefined,
     logoIsValid: true,
     logoUploaded: true,
@@ -100,6 +120,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
     const service = {
       ...serviceFromBackend,
+      authorized_cidrs: serviceFromBackend.authorized_cidrs.map(
+        withDefaultSubnet
+      ),
       service_metadata: serviceFromBackend.service_metadata
         ? serviceFromBackend.service_metadata
         : {
@@ -140,7 +163,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           errors,
           isValid: Object.keys(errors).length === 0,
           service,
-          isSaved: false
+          formState: ServiceFormState.NOT_SAVE
         }))
     );
   };
@@ -165,7 +188,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           errors,
           isValid: Object.keys(errors).length === 0,
           service,
-          isSaved: false
+          formState: ServiceFormState.NOT_SAVE
         }))
     );
   };
@@ -183,10 +206,15 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       ...this.state.service,
       [name]: inputValueMap(name, value)
     })
-      .map(service => this.setState({ service, isValid: true }))
+      .map(service =>
+        this.setState({
+          service,
+          formState: ServiceFormState.NOT_SAVE,
+          isValid: true
+        })
+      )
       .mapLeft(() =>
         this.setState({
-          isSaved: false,
           isValid: false
         })
       );
@@ -207,7 +235,12 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           : undefined),
         [name]: inputValue === "" ? undefined : inputValue
       }
-    }).map(service => this.setState({ service, isSaved: false }));
+    }).map(service =>
+      this.setState({
+        service,
+        formState: ServiceFormState.NOT_SAVE
+      })
+    );
   };
 
   public getHandleBlur = (prop: keyof ServiceMetadata | keyof Service) => (
@@ -236,8 +269,24 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       () => this.handleError(prop),
       () => this.setMetadata(this.removeError(name), name, inputValue)
     );
+  };
 
-    // : this.setMetadata(this.removeError(name), name, inputValue);
+  private validateServiceData = (
+    validator: ts.Decoder<
+      ValidService | ValidDraftService,
+      ValidService | ValidDraftService
+    >,
+    data: unknown
+  ) => {
+    const decoded = validator.decode(data as (
+      | ValidService
+      | ValidDraftService));
+    if (decoded.isLeft()) {
+      this.setState({ isValid: false });
+      throw new Error("Wrong parameters format");
+    }
+
+    return decoded.value;
   };
 
   public handleSubmit = async () => {
@@ -252,15 +301,43 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       }
     };
 
-    const serviceDecoding = ValidService.decode(serviceToUpdate);
-    if (serviceDecoding.isLeft()) {
-      this.setState({ isValid: false });
-      throw new Error("Wrong parameters format");
+    const service = this.validateServiceData(ValidService, serviceToUpdate);
+
+    if (Service.is(await this.updateService(service))) {
+      this.setState({ formState: ServiceFormState.SAVED_OK });
+    } else {
+      this.setState({ formState: ServiceFormState.SAVED_ERROR });
     }
+  };
 
-    const service = serviceDecoding.value;
+  public handleSubmitDraft = async () => {
+    const serviceToUpdate = {
+      ...this.state.service,
+      service_metadata: {
+        ...(this.state.service && this.state.service.service_metadata),
+        scope:
+          this.state.service && this.state.service.service_metadata
+            ? this.state.service.service_metadata.scope
+            : "LOCAL"
+      }
+    };
 
-    const updateServiceResponse = await putToBackend<{ statusCode: number }>({
+    const service = this.validateServiceData(
+      ValidDraftService,
+      serviceToUpdate
+    );
+
+    if (Service.is(await this.updateService(service))) {
+      this.setState({ formState: ServiceFormState.SAVED_OK });
+    } else {
+      this.setState({ formState: ServiceFormState.SAVED_ERROR });
+    }
+  };
+
+  private updateService = async (service: ValidService | ValidDraftService) => {
+    return await putToBackend<{
+      statusCode: number;
+    }>({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -277,10 +354,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         })
       }
     });
-
-    if (Service.is(updateServiceResponse)) {
-      this.setState({ isSaved: true });
-    }
   };
 
   public handleServiceLogoSubmit = async () => {
@@ -353,7 +426,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       errorLogoUpload,
       service,
       isValid,
-      isSaved,
+      formState,
       logo,
       logoIsValid,
       logoUploaded,
@@ -453,6 +526,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
                 <div>
                   <label className="m-0">{t("authorized_ips")}</label>
+                  <p>
+                    <small>{t("example_authorized_ips")}</small>
+                  </p>
                   <input
                     name="authorized_cidrs"
                     type="text"
@@ -474,9 +550,16 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       name="authorized_recipients"
                       type="text"
                       defaultValue={service.authorized_recipients.join(";")}
-                      onChange={this.handleInputChange}
+                      onBlur={this.getHandleBlur("authorized_recipients")}
                       className="mb-4"
                     />
+                    {this.state.errors[`authorized_recipients`] && (
+                      <Alert color="danger">
+                        {JSON.stringify(
+                          this.state.errors[`authorized_recipients`]
+                        )}
+                      </Alert>
+                    )}
                   </div>
                 )}
 
@@ -548,16 +631,37 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   onSubmitHandler={this.handleServiceLogoSubmit}
                 />
               </div>
-
-              <Button
-                color="primary"
-                disabled={!isValid}
-                onClick={this.handleSubmit}
-              >
-                {t("save")}
-              </Button>
-              {!isValid && <Alert color="danger">Campi non validi</Alert>}
-              {isSaved && <Alert color="success">Dati salvati</Alert>}
+              <div className="shadow p-4 mt-4 mb-4">
+                <div className="row">
+                  <div className="col-md-6">
+                    <Button
+                      color="primary"
+                      disabled={!isValid}
+                      onClick={this.handleSubmit}
+                    >
+                      {t("save")}
+                    </Button>
+                  </div>
+                  <div className="col-md-6">
+                    {storage.isApiAdmin && (
+                      <Button color="warning" onClick={this.handleSubmitDraft}>
+                        {t("save_draft")}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-4 row">
+                  <div className="col-md-12">
+                    {!isValid && <Alert color="danger">Campi non validi</Alert>}
+                    {formState === ServiceFormState.SAVED_OK && (
+                      <Alert color="success">{t("service_saved_ok")}</Alert>
+                    )}
+                    {formState === ServiceFormState.SAVED_ERROR && (
+                      <Alert color="danger">{t("service_saved_error")}</Alert>
+                    )}
+                  </div>
+                </div>
+              </div>
             </form>
 
             {service.authorized_recipients.length > 0 && (

@@ -1,4 +1,5 @@
 import { right } from "fp-ts/lib/Either";
+import { FiscalCode, PatternString } from "italia-ts-commons/lib/strings";
 
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
@@ -6,17 +7,12 @@ import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions
 import * as ts from "io-ts";
 
 import { WithinRangeInteger } from "italia-ts-commons/lib/numbers";
-import {
-  EmailString,
-  IPatternStringTag,
-  NonEmptyString
-} from "italia-ts-commons/lib/strings";
+import { EmailString, NonEmptyString } from "italia-ts-commons/lib/strings";
 import { ValidUrl } from "italia-ts-commons/lib/url";
 
 import toPairs from "lodash/toPairs";
 import { conformToMask } from "react-text-mask";
 
-import { CIDR } from "../../generated/definitions/api/CIDR";
 import { OrganizationFiscalCode } from "../../generated/definitions/backend/OrganizationFiscalCode";
 import { CONSTANTS, LIMITS } from "./constants";
 
@@ -118,21 +114,17 @@ export type UrlFromStringV2 = ts.TypeOf<typeof UrlFromStringV2>;
 
 export type InputValue = string | boolean | number | readonly string[];
 
+export const CIDRWithRequiredSubnetMask = PatternString(
+  "^([0-9]{1,3}[.]){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))$"
+);
+export type CIDRWithRequiredSubnetMask = ts.TypeOf<
+  typeof CIDRWithRequiredSubnetMask
+>;
+
 export const checkValue = (
   prop: keyof ServiceMetadata | keyof Service,
   value: InputValue
-): ts.Validation<
-  // tslint:disable-next-line: max-union-size
-  | InputValue
-  | string
-  | ValidUrl
-  | ReadonlyArray<
-      string &
-        IPatternStringTag<
-          "^([0-9]{1,3}[.]){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$"
-        >
-    >
-> => {
+): ts.Validation<InputValue | string | ValidUrl> => {
   switch (prop) {
     case "app_android":
     case "app_ios":
@@ -141,8 +133,14 @@ export const checkValue = (
     case "web_url": {
       return value ? UrlFromStringV2.decode(value) : right(value);
     }
+    case "authorized_recipients": {
+      return ts.readonlyArray(FiscalCode).decode(value);
+    }
     case "authorized_cidrs": {
-      return ts.readonlyArray(CIDR).decode(value);
+      return ts.readonlyArray(CIDRWithRequiredSubnetMask).decode(value);
+    }
+    case "description": {
+      return NonEmptyString.decode(value);
     }
     case "max_allowed_payment_amount": {
       return WithinRangeInteger(0, 10000000000).decode(value);

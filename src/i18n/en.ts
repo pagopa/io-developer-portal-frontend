@@ -102,13 +102,15 @@ const en = {
     organization_fiscal_code: "Fiscal Code for Organization",
     authorized_recipients: "Authorized recipients (Fiscal Codes)",
     authorized_ips: "Authorized IPs*",
+    example_authorized_ips: "(i.e. 192.168.200.25/32;192.168.200.26/32)",
     max_allowed_payment_amount: "Maximum allowd payment amount",
     visible_service: "Visible in service list",
     eurocents: "eurocents",
     edit: "Edit service's details",
     save: "Save service's details",
+    save_draft: "Save draft service",
     title: "Service",
-    description: "Descrizione",
+    description: "Description*",
     web_url: "Web Url",
     app_ios: "App IOS",
     app_android: "App Android",
@@ -130,7 +132,9 @@ const en = {
     contact_fields_message:
       "You need at least one contact point to citizen assistance",
     national: "National",
-    local: "Local"
+    local: "Local",
+    service_saved_ok: "Service succesfully saved.",
+    service_saved_error: "Error on save Service"
   },
   servers: {
     select: "Select your server (endpoint) of choice",

@@ -101,14 +101,16 @@ const it = {
     organization: "Ente",
     organization_fiscal_code: "Codice fiscale ente",
     authorized_recipients: "Codici fiscali destinatari autorizzati",
-    authorized_ips: "IP di origine autorizzati*",
+    authorized_ips: "Lista IP di origine autorizzati*",
+    example_authorized_ips: "(esempio 192.168.200.25/32;192.168.200.26/32)",
     max_allowed_payment_amount: "Importo massimo autorizzato",
     visible_service: "Visibile nella lista servizi",
     eurocents: "eurocents",
     edit: "Modifica i dati del servizio",
     save: "Salva i dati del servizio",
+    save_draft: "Salva i dati in bozza",
     title: "Servizio",
-    description: "Descrizione",
+    description: "Descrizione*",
     web_url: "Web Url",
     app_ios: "App IOS",
     app_android: "App Android",
@@ -130,7 +132,9 @@ const it = {
     contact_fields_message:
       "È obbligatorio almeno un campo di contatto per assistenza al cittadino",
     national: "Nazionale",
-    local: "Locale"
+    local: "Locale",
+    service_saved_ok: "Scheda Servizio salvata correttamente",
+    service_saved_error: "Errore nel salvataggio della Scheda Servizio"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",

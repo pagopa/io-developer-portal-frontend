@@ -125,18 +125,26 @@ const MetadataInput = ({
 
   const descriptionField = () => {
     return (
-      <MarkdownEditor
-        markdown={
-          service_metadata && service_metadata.description
-            ? service_metadata.description
-            : ""
-        }
-        name="description"
-        markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
-        isMarkdownValid={true}
-        onChangeMarkdown={onChange}
-        key={SortedMetadata.indexOf("description")}
-      />
+      <>
+        <MarkdownEditor
+          markdown={
+            service_metadata && service_metadata.description
+              ? service_metadata.description
+              : ""
+          }
+          name="description"
+          markdownLength={[MARKDOWN.MIN, MARKDOWN.MAX]}
+          isMarkdownValid={true}
+          onChangeMarkdown={onChange}
+          onBlurMarkdown={onBlur("description")}
+          key={SortedMetadata.indexOf("description")}
+        />
+        {errors[`description`] && (
+          <Alert color="danger" key="description">
+            {JSON.stringify(errors[`description`])}
+          </Alert>
+        )}
+      </>
     );
   };
 

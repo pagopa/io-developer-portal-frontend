@@ -66,4 +66,13 @@ export const ValidService = ts.intersection([
   })
 ]);
 
-export type ValidService = ts.TypeOf<typeof ValidService>;
+export type ValidService = ts.TypeOf<typeof ValidDraftService>;
+
+export const ValidDraftService = ts.intersection([
+  Service,
+  ts.interface({
+    service_metadata: ServiceMetadata
+  })
+]);
+
+export type ValidDraftService = ts.TypeOf<typeof ValidDraftService>;
