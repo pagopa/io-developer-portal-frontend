@@ -324,6 +324,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   };
 
   private validateServiceField = (prop: keyof Service, value: InputValue) => {
+    // tslint:disable-next-line: no-let
+    let errorsArray: ReadonlyArray<keyof Service> = [];
     switch (prop) {
       case "organization_name":
       case "max_allowed_payment_amount":
@@ -333,7 +335,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         const inputValue = inputValueMap(prop, value);
         checkValue(prop, inputValue).fold(
           () => {
-            return this.handleError(prop);
+            errorsArray = [...errorsArray, prop];
+            return this.handleError(prop, true);
           },
           () => {
             return this.setData(this.removeError(prop), prop, inputValue);
@@ -341,12 +344,15 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         );
       }
     }
+    return errorsArray;
   };
 
   private validateServiceMetadataField = (
     prop: keyof ServiceMetadata,
     value: InputValue
   ) => {
+    // tslint:disable-next-line: no-let
+    let errorsArray: ReadonlyArray<keyof ServiceMetadata> = [];
     switch (prop) {
       case "app_android":
       case "app_ios":
@@ -360,11 +366,17 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       case "privacy_url": {
         const inputValue = inputValueMap(prop, value);
         checkValue(prop, inputValue).fold(
-          () => this.handleError(prop),
-          () => this.setMetadata(this.removeError(prop), prop, inputValue)
+          () => {
+            errorsArray = [...errorsArray, prop];
+            return this.handleError(prop, true);
+          },
+          () => {
+            return this.setMetadata(this.removeError(prop), prop, inputValue);
+          }
         );
       }
     }
+    return errorsArray;
   };
 
   public handleSubmit = async () => {
@@ -411,7 +423,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               id: Math.random(),
               title: this.props.t("toasterMessage:jira_title"),
               description: this.props.t("toasterMessage:jira_success"),
-              type: ToastrType.error
+              type: ToastrType.info
             };
           })
           // tslint:disable-next-line: no-identical-functions
@@ -516,7 +528,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       options: {
         body: JSON.stringify({})
       },
-      path: `services/${serviceId}/review`
+      path: `services/${serviceId}/review`,
+      url: `http://localhost:3999`
     }).then(
       (res: ReviewStatus) =>
         res.status === 200 &&
@@ -639,38 +652,49 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   }
 
   private validateBeforePublish() {
-    // Validazione
+    // Validation
     try {
       const service = this.validateServiceData(
         ValidService,
         this.state.service
       );
-      Object.keys(service).forEach(prop =>
-        this.validateServiceField(
+      // tslint:disable-next-line: no-let
+      let arrayServiceErrors: ReadonlyArray<keyof Service> = [];
+      Object.keys(service).forEach(prop => {
+        arrayServiceErrors = this.validateServiceField(
           prop as keyof Service,
           // tslint:disable-next-line: no-any
           service[prop as keyof Service] as any // TODO: Create a custom type
-        )
-      );
-      Object.keys(service.service_metadata || {}).forEach(
-        prop =>
+        );
+      });
+      // tslint:disable-next-line: no-let
+      let arrayServiceMetadataErrors: ReadonlyArray<keyof ServiceMetadata> = [];
+      Object.keys(service.service_metadata || {}).forEach(prop => {
+        arrayServiceMetadataErrors =
           service.service_metadata &&
           this.validateServiceMetadataField(
             prop as keyof ServiceMetadata,
             service.service_metadata[prop as keyof ServiceMetadata]
-          )
-      );
+          );
+      });
+
       // keys su errors
-      if (Object.keys(this.state.errors).length === 0) {
+      if (
+        Object.keys(this.state.errors).length === 0 &&
+        arrayServiceErrors.length === 0 &&
+        arrayServiceMetadataErrors.length === 0
+      ) {
         // Open confirm Modal to publish a service review
         return this.setState({ publishService: true });
       }
+
       this.setState({
+        showError: true,
         toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:errors_form"),
           description: this.props.t("toasterMessage:errors_description"),
-          type: ToastrType.warning
+          type: ToastrType.error
         }
       });
     } catch (err) {
