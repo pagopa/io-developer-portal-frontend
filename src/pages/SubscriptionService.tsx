@@ -906,8 +906,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               <form>
                 <div className="card-service p-4 my-4">
                   <div className="my-4">
-                    <h5>Dati di Contatto</h5>
-                    <small>E' necessario almeno un dato di contatto</small>
+                    <h5>{t("contact_fields")}</h5>
+                    <small>{t("contact_fields_message")}</small>
                   </div>
 
                   <ContactInput
@@ -931,7 +931,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
               <form>
                 <div className="card-service p-4 my-4">
-                  <h5 className="my-4">Sicurezza e Permessi</h5>
+                  <h5 className="my-4">{t("security_fields")}</h5>
                   <SecurityFields
                     onChange={this.handleInputChange}
                     onBlur={this.getHandleBlur}

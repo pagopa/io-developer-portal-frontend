@@ -154,6 +154,7 @@ const en = {
     service_logo: "Service Logo (PNG)",
     service_logo_upload: "Upload",
     scheda_servizio: "Service Details",
+    security_fields: "Security and Permissions",
     contact_fields: "Contact Fields",
     contact_fields_message:
       "You need at least one contact point to citizen assistance",

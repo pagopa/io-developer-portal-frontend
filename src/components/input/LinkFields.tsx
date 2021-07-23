@@ -66,11 +66,6 @@ const LinkFields = ({
             className={errors[k] && showError ? "mb4 error" : "mb4"}
             {...more}
           />
-          {/*errors[k] && showError && (
-            <Alert color="danger" key={i}>
-              {JSON.stringify(errors[k])}
-            </Alert>
-          )*/}
         </div>
       );
     });

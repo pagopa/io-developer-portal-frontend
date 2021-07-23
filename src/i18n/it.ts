@@ -154,9 +154,9 @@ const it = {
     service_logo: "Logo del Servizio (PNG)",
     service_logo_upload: "Upload",
     scheda_servizio: "Scheda Servizio",
-    contact_fields: "Campi di contatto",
-    contact_fields_message:
-      "È obbligatorio almeno un campo di contatto per assistenza al cittadino",
+    security_fields: "Sicurezza e Permessi",
+    contact_fields: "Dati di contatto",
+    contact_fields_message: "È necessario almeno un dato di contatto",
     national: "Nazionale",
     local: "Locale",
     service_saved_ok: "Scheda Servizio salvata correttamente",
