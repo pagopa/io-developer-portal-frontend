@@ -701,7 +701,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       logoUploaded,
       timestampLogo,
       status,
-      toastMessage
+      toastMessage,
+      review,
+      publishService,
+      disableService
     } = this.state;
     const { t } = this.props;
     return service ? (
@@ -741,9 +744,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       <ul>
                         {Object.keys(this.state.errors).map((keyName, i) => (
                           <li key={i}>
-                            <span className="dark-text">
-                              {this.state.errors[keyName]}
-                            </span>
+                            <span className="dark-text">{errors[keyName]}</span>
                           </li>
                         ))}
                       </ul>
@@ -882,10 +883,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onChangeMarkdown={this.handleMetadataChange}
                     onBlurMarkdown={this.getHandleMetadataBlur("description")}
                   />
-                  {this.state.errors[`description`] && (
-                    <Alert color="danger">
-                      {this.state.errors[`description`]}
-                    </Alert>
+                  {errors[`description`] && (
+                    <Alert color="danger">{errors[`description`]}</Alert>
                   )}
                 </div>
               </form>
@@ -899,7 +898,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     service_metadata={service.service_metadata}
                     isApiAdmin={storage.isApiAdmin}
                     showError={showError}
-                    errors={this.state.errors}
+                    errors={errors}
                   />
                 </div>
               </form>
@@ -914,7 +913,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <ContactInput
                     name="contacts"
                     elem={["phone", "pec", "support_url", "email"]}
-                    errors={this.state.errors}
+                    errors={errors}
                     serviceMetadata={
                       service.service_metadata
                         ? {
@@ -939,7 +938,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     service={service}
                     isApiAdmin={storage.isApiAdmin}
                     showError={showError}
-                    errors={this.state.errors}
+                    errors={errors}
                   />
                 </div>
               </form>
@@ -964,8 +963,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   color="primary"
                   disabled={
                     !storage.isApiAdmin &&
-                    (this.state.status === ServiceStatus.REVIEW ||
-                      this.state.status === ServiceStatus.DEACTIVE)
+                    (status === ServiceStatus.REVIEW ||
+                      status === ServiceStatus.DEACTIVE)
                   }
                   onClick={this.handleSubmitDraft}
                 >
@@ -973,8 +972,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 </Button>
               </div>
             </div>
-            {this.state.publishService && this.renderPublishServiceModal()}
-            {this.state.disableService && this.renderDisableServiceModal()}
+            {publishService && this.renderPublishServiceModal()}
+            {disableService && this.renderDisableServiceModal()}
 
             {status !== ServiceStatus.VALID &&
             status !== ServiceStatus.DEACTIVE ? (
@@ -996,10 +995,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                         </span>
                         <span>&nbsp; {t("publish_error_message")}</span>
                       </Alert>
-                      {this.state.review && this.state.review.comment && (
-                        <JiraComments
-                          comments={this.state.review.comment.comments}
-                        />
+                      {review && review.comment && (
+                        <JiraComments comments={review.comment.comments} />
                       )}
                     </div>
                   )}
@@ -1014,7 +1011,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   </p>
                   <Button
                     color="primary"
-                    disabled={this.state.status === ServiceStatus.REVIEW}
+                    disabled={status === ServiceStatus.REVIEW}
                     onClick={() => this.validateBeforePublish()}
                   >
                     {t("publish")}
@@ -1051,10 +1048,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <p>{t("unpublish_message")}</p>
                   <Button
                     color="primary"
-                    disabled={
-                      this.state.status === ServiceStatus.REVIEW ||
-                      this.state.status === ServiceStatus.DEACTIVE
-                    }
+                    disabled={status === ServiceStatus.DEACTIVE}
                     onClick={() => this.setState({ disableService: true })}
                   >
                     {t("unpublish")}
