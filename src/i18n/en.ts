@@ -246,7 +246,9 @@ const en = {
     errors_description: "There are some errors, check your form!",
     jira_title: "Jira",
     jira_success: "Ticket creato",
-    jira_error: "There are some errors with Jira"
+    jira_error: "There are some errors with Jira",
+    jira_ticket_moved: "Ticket moved",
+    jira_ticket_openend: "Ticket already opened"
   }
 };
 

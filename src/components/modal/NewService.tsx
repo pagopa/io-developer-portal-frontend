@@ -78,7 +78,10 @@ class NewService extends Component<Props> {
               <Button
                 className="mt-3"
                 color="primary"
-                onClick={this.props.onAdd}
+                onClick={e => {
+                  this.props.onClose(e);
+                  this.props.onAdd(e);
+                }}
               >
                 {this.props.t("add")}
               </Button>

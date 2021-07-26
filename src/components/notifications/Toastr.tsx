@@ -42,6 +42,7 @@ type OwnProps = {
   position?: ToastrPosition;
   delay?: number;
   onToastrClose: (event: ToastrItem) => void;
+  onErrorDetail: () => void;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -161,6 +162,14 @@ class Toastr extends Component<Props, ToastrState> {
               <div>
                 <p className="notification-title">{toast.title}</p>
                 <p className="notification-message">{toast.description}</p>
+                {toast.type === ToastrType.error && (
+                  <p
+                    className="notification-errors-detail"
+                    onClick={() => this.props.onErrorDetail()}
+                  >
+                    Vedi elenco errori
+                  </p>
+                )}
               </div>
             </div>
           ))}

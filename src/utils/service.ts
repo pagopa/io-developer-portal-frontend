@@ -114,14 +114,12 @@ export type ValidDraftService = ts.TypeOf<typeof ValidDraftService>;
 
 export const handleReviewStatus = async (serviceId: string) => {
   return await getFromBackend<ReviewStatus>({
-    url: `http://localhost:3999`,
     path: `services/${serviceId}/review`
   });
 };
 
 export const handleDisableReview = async (serviceId: string) => {
   return await putToBackend<ReviewStatus>({
-    url: `http://localhost:3999`,
     path: `services/${serviceId}/disable`,
     options: {}
   });

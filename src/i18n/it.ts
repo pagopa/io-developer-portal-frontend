@@ -245,7 +245,9 @@ const it = {
     errors_description: "Ci sono degli errori, controlla la tua form!",
     jira_title: "Jira",
     jira_success: "Ticket creato",
-    jira_error: "Si è verificato un errore con Jira"
+    jira_error: "Si è verificato un errore con Jira",
+    jira_ticket_moved: "Ticket spostato",
+    jira_ticket_openend: "Ticket già esistente"
   }
 };
 

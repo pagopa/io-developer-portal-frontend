@@ -52,7 +52,9 @@ class JiraStatus extends Component<Props> {
                   <span className="light-text">
                     {t("service:state")}:&nbsp;
                   </span>
-                  <span className="dark-text">RETRIEVING DATA...</span>
+                  <span className="dark-text">
+                    {t("profile:service_loading")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -109,11 +111,8 @@ class JiraStatus extends Component<Props> {
               </div>
 
               <Alert color="warning">
-                <span className="dark-text">Ci stiamo lavorando!</span>
-                <span>
-                  &nbsp; Il tuo servizio è in corso di revisione, ti
-                  aggiorneremo al più presto
-                </span>
+                <span className="dark-text">{t("publish_review_title")}</span>
+                <span>&nbsp; {t("publish_review_message")}</span>
               </Alert>
             </div>
           ) : (

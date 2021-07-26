@@ -2,7 +2,8 @@
 	font-size: 14px;
 	box-sizing: border-box;
 	position: fixed;
-	z-index: 999999
+	z-index: 999999;
+	height: 100px;
 }
 
 .top-right {
@@ -43,7 +44,6 @@
 	padding: 30px;
 	margin-bottom: 15px;
 	width: 300px;
-	max-height: 100px;
 	border-radius: 3px 3px 3px 3px;
 	box-shadow: 0 0 10px #999;
 	color: #000;
@@ -114,6 +114,16 @@
 	cursor: pointer;
 	background: 0 0;
 	border: 0
+}
+
+.notification-errors-detail {
+	margin-top: 10px;
+	font-weight: 800;
+	text-decoration: underline;
+}
+
+.notification-errors-detail:hover {
+	cursor: pointer;
 }
 
 .success {

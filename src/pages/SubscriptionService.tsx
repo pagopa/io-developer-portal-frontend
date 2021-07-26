@@ -418,13 +418,38 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         const serviceId = this.props.match.params.service_id;
         // Open a service review ticket
         const toastMessage = await this.handleReviewSubmit(serviceId)
-          .then(() => {
-            return {
-              id: Math.random(),
-              title: this.props.t("toasterMessage:jira_title"),
-              description: this.props.t("toasterMessage:jira_success"),
-              type: ToastrType.info
-            };
+          .then(res => {
+            switch (res.status) {
+              case 200:
+                this.setState({
+                  status: ServiceStatus.REVIEW
+                });
+                return {
+                  id: Math.random(),
+                  title: this.props.t("toasterMessage:jira_title"),
+                  description: this.props.t("toasterMessage:jira_ticket_moved"),
+                  type: ToastrType.info
+                };
+              case 201:
+                this.setState({
+                  status: ServiceStatus.REVIEW
+                });
+                return {
+                  id: Math.random(),
+                  title: this.props.t("toasterMessage:jira_title"),
+                  description: this.props.t("toasterMessage:jira_success"),
+                  type: ToastrType.success
+                };
+              case 409:
+                return {
+                  id: Math.random(),
+                  title: this.props.t("toasterMessage:jira_title"),
+                  description: this.props.t(
+                    "toasterMessage:jira_ticket_already_openend"
+                  ),
+                  type: ToastrType.warning
+                };
+            }
           })
           // tslint:disable-next-line: no-identical-functions
           .catch(() => {
@@ -472,6 +497,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     if (service && !Object.keys(this.state.errors).length) {
       if (Service.is(await this.updateService(service))) {
         this.setState({
+          showError: false,
           toastMessage: {
             id: Math.random(),
             title: this.props.t("toasterMessage:save_form"),
@@ -481,6 +507,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         });
       } else {
         this.setState({
+          showError: true,
           toastMessage: {
             id: Math.random(),
             title: this.props.t("toasterMessage:save_form"),
@@ -491,6 +518,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       }
     } else {
       this.setState({
+        showError: true,
         toastMessage: {
           id: Math.random(),
           title: this.props.t("toasterMessage:save_form"),
@@ -528,15 +556,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       options: {
         body: JSON.stringify({})
       },
-      path: `services/${serviceId}/review`,
-      url: `http://localhost:3999`
-    }).then(
-      (res: ReviewStatus) =>
-        res.status === 200 &&
-        this.setState({
-          status: ServiceStatus.REVIEW
-        })
-    );
+      path: `services/${serviceId}/review`
+    }).then((res: ReviewStatus) => {
+      return res;
+    });
   };
 
   public handleServiceLogoSubmit = async () => {
@@ -720,9 +743,10 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   private getToaster(message: ToastrItem) {
     return (
       <Toastr
-        delay={2000}
+        delay={5000}
         toastMessage={message}
         onToastrClose={toastrToDelete => this.handleToastrClose(toastrToDelete)}
+        onErrorDetail={() => window.scrollTo(0, 0)}
       />
     );
   }
@@ -790,7 +814,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   </div>
                 )}
                 <div className="card-service p-4">
-                  <h5 className="my-4">{t("service_description")}</h5>
+                  <h5 className="my-4">{t("description_service")}</h5>
                   <label
                     className={
                       errors[`service_name`] ? "mb0 error-text" : "mb0"
