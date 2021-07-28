@@ -323,62 +323,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     return decoded.value;
   };
 
-  private validateServiceField = (prop: keyof Service, value: InputValue) => {
-    // tslint:disable-next-line: no-let
-    let errorsArray: ReadonlyArray<keyof Service> = [];
-    switch (prop) {
-      case "organization_name":
-      case "max_allowed_payment_amount":
-      case "organization_fiscal_code":
-      case "department_name":
-      case "service_name": {
-        const inputValue = inputValueMap(prop, value);
-        checkValue(prop, inputValue).fold(
-          () => {
-            errorsArray = [...errorsArray, prop];
-            return this.handleError(prop, true);
-          },
-          () => {
-            return this.setData(this.removeError(prop), prop, inputValue);
-          }
-        );
-      }
-    }
-    return errorsArray;
-  };
-
-  private validateServiceMetadataField = (
-    prop: keyof ServiceMetadata,
-    value: InputValue
-  ) => {
-    // tslint:disable-next-line: no-let
-    let errorsArray: ReadonlyArray<keyof ServiceMetadata> = [];
-    switch (prop) {
-      case "app_android":
-      case "app_ios":
-      case "support_url":
-      case "tos_url":
-      case "web_url":
-      case "description":
-      case "pec":
-      case "email":
-      case "phone":
-      case "privacy_url": {
-        const inputValue = inputValueMap(prop, value);
-        checkValue(prop, inputValue).fold(
-          () => {
-            errorsArray = [...errorsArray, prop];
-            return this.handleError(prop, true);
-          },
-          () => {
-            return this.setMetadata(this.removeError(prop), prop, inputValue);
-          }
-        );
-      }
-    }
-    return errorsArray;
-  };
-
   public handleSubmit = async () => {
     const serviceToUpdate = {
       ...this.state.service,
@@ -675,38 +619,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   }
 
   private validateBeforePublish() {
-    // Validation
     try {
       const service = this.validateServiceData(
         ValidService,
         this.state.service
       );
-      // tslint:disable-next-line: no-let
-      let arrayServiceErrors: ReadonlyArray<keyof Service> = [];
-      Object.keys(service).forEach(prop => {
-        arrayServiceErrors = this.validateServiceField(
-          prop as keyof Service,
-          // tslint:disable-next-line: no-any
-          service[prop as keyof Service] as any // TODO: Create a custom type
-        );
-      });
-      // tslint:disable-next-line: no-let
-      let arrayServiceMetadataErrors: ReadonlyArray<keyof ServiceMetadata> = [];
-      Object.keys(service.service_metadata || {}).forEach(prop => {
-        arrayServiceMetadataErrors =
-          service.service_metadata &&
-          this.validateServiceMetadataField(
-            prop as keyof ServiceMetadata,
-            service.service_metadata[prop as keyof ServiceMetadata]
-          );
-      });
 
-      // keys su errors
-      if (
-        Object.keys(this.state.errors).length === 0 &&
-        arrayServiceErrors.length === 0 &&
-        arrayServiceMetadataErrors.length === 0
-      ) {
+      // Check if there is any errors and service is valid
+      if (Object.keys(this.state.errors).length === 0 && service) {
         // Open confirm Modal to publish a service review
         return this.setState({ publishService: true });
       }
