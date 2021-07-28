@@ -1,3 +1,4 @@
+import { taskEither } from "fp-ts/lib/TaskEither";
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import React, { Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -24,18 +25,21 @@ class JiraStatus extends Component<Props> {
   };
 
   public componentDidMount() {
+    // tslint:disable-next-line: no-floating-promises
     getServiceReviewStatus(this.props.service)
-      .then(res => {
-        this.props.onLoaded(res);
-        this.setState({
-          status: res.status
-        });
-      })
-      .catch(() => {
-        this.setState({
-          status: ServiceStatus.NOT_FOUND
-        });
-      });
+      .fold(
+        _ =>
+          this.setState({
+            status: _.status
+          }),
+        res => {
+          this.props.onLoaded(res);
+          this.setState({
+            status: res.status
+          });
+        }
+      )
+      .run();
   }
 
   public render() {

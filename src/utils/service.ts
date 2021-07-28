@@ -1,3 +1,5 @@
+import { toError } from "fp-ts/lib/Either";
+import { fromPredicate, tryCatch } from "fp-ts/lib/TaskEither";
 import { CIDR } from "io-functions-commons/dist/generated/definitions/CIDR";
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
@@ -130,77 +132,97 @@ export type ServiceReviewStatusResponse = {
   status: ServiceStatus;
 };
 
-export const getServiceReviewStatus = async (
-  service: Service
-): Promise<ServiceReviewStatusResponse> => {
+type ServiceReviewStatus = {
+  comment?: {
+    comments: ReadonlyArray<{
+      body: string;
+      created: string;
+    }>;
+  };
+  labels?: readonly string[];
+  key?: string;
+  status?: number;
+  detail?: string;
+  title?: string;
+};
+
+export const getServiceReviewStatus = (service: Service) => {
+  const serviceId = service.service_id;
   const isVisible = service.is_visible;
   const errorOrValidService = ValidService.decode(service);
-  const serviceId = service.service_id;
-  if (serviceId) {
-    return await handleReviewStatus(serviceId)
-      .then(res => {
-        if (res.status === 200) {
-          const isDisableInProgress =
-            res.labels && res.labels.indexOf("DISATTIVAZIONE") >= 0;
-          if (isDisableInProgress) {
-            return {
-              review: res,
-              status: ServiceStatus.DEACTIVE
-            };
-          }
-          switch (res.detail) {
-            case "NEW":
-            case "REVIEW":
-              return {
-                review: res,
-                status: ServiceStatus.REVIEW
-              };
-            case "REJECTED":
-              return {
-                review: res,
-                status: ServiceStatus.REJECTED // errors on fields
-              };
-            default: {
-              if (isVisible && errorOrValidService.isRight()) {
-                return {
-                  review: res,
-                  status: ServiceStatus.VALID
-                };
-              } else {
-                return {
-                  review: res,
-                  status: ServiceStatus.DRAFT // new service in draft
-                };
-              }
-            }
-          }
-        } else {
-          if (isVisible && errorOrValidService.isRight()) {
-            return {
-              review: res,
-              status: ServiceStatus.VALID
-            };
-          } else if (isVisible && errorOrValidService.isLeft()) {
-            return {
-              review: res,
-              status: ServiceStatus.REJECTED // missing some fields
-            };
-          } else {
-            return {
-              review: res,
-              status: ServiceStatus.DRAFT
-            };
-          }
-        }
-      })
-      .catch(_ => ({
+  return fromPredicate<ServiceReviewStatusResponse, Service>(
+    s => s.service_id !== undefined,
+    _ => {
+      return {
         review: null,
         status: ServiceStatus.NOT_FOUND
-      }));
-  } else {
-    return {
-      review: null,
-      status: ServiceStatus.NOT_FOUND
-    };
-  }
+      };
+    }
+  )(service)
+    .chain(s =>
+      tryCatch(
+        () => {
+          return handleReviewStatus(serviceId);
+        },
+        () => ({
+          review: null,
+          status: ServiceStatus.NOT_FOUND
+        })
+      )
+    )
+    .map(res => {
+      if (res.status === 200) {
+        const isDisableInProgress =
+          res.labels && res.labels.indexOf("DISATTIVAZIONE") >= 0;
+        if (isDisableInProgress) {
+          return {
+            review: res,
+            status: ServiceStatus.DEACTIVE
+          };
+        }
+        switch (res.detail) {
+          case "NEW":
+          case "REVIEW":
+            return {
+              review: res,
+              status: ServiceStatus.REVIEW
+            };
+          case "REJECTED":
+            return {
+              review: res,
+              status: ServiceStatus.REJECTED // errors on fields
+            };
+          default: {
+            if (isVisible && errorOrValidService.isRight()) {
+              return {
+                review: res,
+                status: ServiceStatus.VALID
+              };
+            } else {
+              return {
+                review: res,
+                status: ServiceStatus.DRAFT // new service in draft
+              };
+            }
+          }
+        }
+      } else {
+        if (isVisible && errorOrValidService.isRight()) {
+          return {
+            review: res,
+            status: ServiceStatus.VALID
+          };
+        } else if (isVisible && errorOrValidService.isLeft()) {
+          return {
+            review: res,
+            status: ServiceStatus.REJECTED // missing some fields
+          };
+        } else {
+          return {
+            review: res,
+            status: ServiceStatus.DRAFT
+          };
+        }
+      }
+    });
 };
