@@ -211,3 +211,36 @@ export const getServiceReviewStatus = (service: Service) => {
       }
     });
 };
+
+export const getColorClass = (status: ServiceStatus) => {
+  switch (status) {
+    case ServiceStatus.REJECTED:
+      return "circle-red";
+    case ServiceStatus.REVIEW:
+      return "circle-yellow";
+    case ServiceStatus.VALID:
+    case ServiceStatus.DEACTIVE:
+      return "circle-green";
+    default:
+      return "";
+  }
+};
+
+export const getText = (status: ServiceStatus) => {
+  switch (status) {
+    case ServiceStatus.LOADING:
+      return "profile:service_loading";
+    case ServiceStatus.DRAFT:
+    case ServiceStatus.NOT_FOUND:
+      return "profile:service_draft";
+    case ServiceStatus.REJECTED:
+      return "profile:service_not_valid";
+    case ServiceStatus.REVIEW:
+      return "profile:service_review";
+    case ServiceStatus.VALID:
+    case ServiceStatus.DEACTIVE:
+      return "profile:service_valid";
+    default:
+      return "";
+  }
+};

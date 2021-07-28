@@ -3,7 +3,9 @@ import React, { Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Alert } from "reactstrap";
 import {
+  getColorClass,
   getServiceReviewStatus,
+  getText,
   ServiceReviewStatusResponse,
   ServiceStatus
 } from "../../utils/service";
@@ -41,39 +43,6 @@ class JiraStatus extends Component<Props> {
       .run();
   }
 
-  private getColorClass(status: ServiceStatus) {
-    switch (status) {
-      case "REJECTED":
-        return "circle-red";
-      case "REVIEW":
-        return "circle-yellow";
-      case "VALID":
-      case "DEACTIVE":
-        return "circle-green";
-      default:
-        return "";
-    }
-  }
-
-  private getText(status: ServiceStatus) {
-    switch (status) {
-      case "LOADING":
-        return "profile:service_loading";
-      case "DRAFT":
-      case "NOT_FOUND":
-        return "profile:service_draft";
-      case "REJECTED":
-        return "profile:service_not_valid";
-      case "REVIEW":
-        return "profile:service_review";
-      case "VALID":
-      case "DEACTIVE":
-        return "profile:service_valid";
-      default:
-        return "";
-    }
-  }
-
   public render() {
     const { t } = this.props;
     const { status } = this.state;
@@ -82,10 +51,10 @@ class JiraStatus extends Component<Props> {
         <div className="col-12">
           <div className="service-status">
             <div>
-              <span className={`circle ${this.getColorClass(status)}`} />
+              <span className={`circle ${getColorClass(status)}`} />
               <div>
                 <span className="light-text">{t("service:state")}:&nbsp;</span>
-                <span className="dark-text">{t(this.getText(status))}</span>
+                <span className="dark-text">{t(getText(status))}</span>
               </div>
               {status === ServiceStatus.REVIEW ? (
                 <Alert color="warning">

@@ -24,46 +24,15 @@ import { SubscriptionContract } from "../../generated/definitions/backend/Subscr
 import { UserData } from "../../generated/definitions/backend/UserData";
 
 import {
+  getColorClass,
   getServiceReviewStatus,
+  getText,
   ServiceStatus,
   ValidService
 } from "../utils/service";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
-
-const getColorClass = (status: ServiceStatus) => {
-  switch (status) {
-    case "REJECTED":
-      return "circle-red";
-    case "REVIEW":
-      return "circle-yellow";
-    case "VALID":
-    case "DEACTIVE":
-      return "circle-green";
-    default:
-      return "";
-  }
-};
-
-const getText = (status: ServiceStatus) => {
-  switch (status) {
-    case "LOADING":
-      return "profile:service_loading";
-    case "DRAFT":
-    case "NOT_FOUND":
-      return "profile:service_draft";
-    case "REJECTED":
-      return "profile:service_not_valid";
-    case "REVIEW":
-      return "profile:service_review";
-    case "VALID":
-    case "DEACTIVE":
-      return "profile:service_valid";
-    default:
-      return "";
-  }
-};
 
 const SubscriptionService = ({
   service,
