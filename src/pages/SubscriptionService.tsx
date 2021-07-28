@@ -734,7 +734,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     // Check field validation after loading service
   }
 
-  private handleToastrClose(_?: ToastrItem) {
+  private handleToastrClose() {
     this.setState({
       toastMessage: undefined
     });
@@ -745,7 +745,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       <Toastr
         delay={5000}
         toastMessage={message}
-        onToastrClose={toastrToDelete => this.handleToastrClose(toastrToDelete)}
+        onToastrClose={_ => this.handleToastrClose()}
         onErrorDetail={() => window.scrollTo(0, 0)}
       />
     );
