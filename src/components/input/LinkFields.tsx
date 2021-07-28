@@ -16,8 +16,6 @@ type OwnProps = {
 
 type Props = WithNamespaces & OwnProps;
 
-type ValidFields = keyof ServiceMetadata;
-
 /**
  * Array containing all keys of ServiceMetadata, and for each of them an input is created inside the form.
  * See https://github.com/pagopa/io-developer-portal-frontend/pull/139
@@ -46,8 +44,7 @@ const LinkFields = ({
       elem === "privacy_url"
   );
 
-  const renderFields = (fields: readonly ValidFields[], option?: {}) => {
-    const more = option ? option : {};
+  const renderFields = (fields: ReadonlyArray<keyof ServiceMetadata>) => {
     return fields.map((k, i) => {
       return (
         <div key={i}>
@@ -59,7 +56,6 @@ const LinkFields = ({
             onChange={onChange}
             onBlur={onBlur(k)}
             className={errors[k] ? "mb4 error" : "mb4"}
-            {...more}
           />
         </div>
       );
