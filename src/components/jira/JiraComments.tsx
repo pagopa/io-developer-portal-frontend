@@ -7,6 +7,7 @@ type JiraComment = {
 };
 
 type OwnProps = {
+  t: (key: string) => string;
   comments: ReadonlyArray<JiraComment>;
 };
 
@@ -30,12 +31,10 @@ class JiraComments extends Component<Props> {
   }
 
   public render() {
+    const { t } = this.props;
     return (
       <div className="comments-box p-5 mt-4 mb-4">
-        <p>
-          Ti invitiamo a correggere gli errori segnalati e reinviare una nuova
-          richiesta di review:
-        </p>
+        <p>{t("publish_error_detail")}</p>
         <ul>
           {this.props.comments.map((comment, index) => {
             return (
