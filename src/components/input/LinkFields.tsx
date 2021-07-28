@@ -1,5 +1,6 @@
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 
+import * as ts from "io-ts";
 import React, { ChangeEvent, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -35,16 +36,20 @@ const LinkFields = ({
   errors,
   t
 }: Props) => {
-  const linkFields = MetadataKeys.filter(
-    elem =>
-      elem === "app_ios" ||
-      elem === "app_android" ||
-      elem === "web_url" ||
-      elem === "tos_url" ||
-      elem === "privacy_url"
+  const ServiceMetadataUrls = ts.keyof({
+    app_ios: null,
+    app_android: null,
+    web_url: null,
+    tos_url: null,
+    privacy_url: null
+  });
+  type ServiceMetadataUrls = ts.TypeOf<typeof ServiceMetadataUrls>;
+  const linkFields: ReadonlyArray<ServiceMetadataUrls> = MetadataKeys.reduce(
+    (prev, elem) => (ServiceMetadataUrls.is(elem) ? [...prev, elem] : prev),
+    [] as ReadonlyArray<ServiceMetadataUrls>
   );
 
-  const renderFields = (fields: ReadonlyArray<keyof ServiceMetadata>) => {
+  const renderFields = (fields: ReadonlyArray<ServiceMetadataUrls>) => {
     return fields.map((k, i) => {
       return (
         <div key={i}>
