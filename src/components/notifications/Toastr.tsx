@@ -1,3 +1,4 @@
+import { fromNullable } from "fp-ts/lib/Option";
 import React, { Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -38,6 +39,7 @@ enum ToastrBackground {
 }
 
 type OwnProps = {
+  t: (key: string) => string;
   toastMessage: ToastrItem;
   position?: ToastrPosition;
   delay?: number;
@@ -78,7 +80,7 @@ class Toastr extends Component<Props, ToastrState> {
     });
     const intervalId = setInterval(
       this.deleteToast,
-      this.props.delay || TIME_TO_SHOW
+      fromNullable(this.props.delay).getOrElse(TIME_TO_SHOW)
     );
     this.setState({
       intervalId
@@ -94,7 +96,7 @@ class Toastr extends Component<Props, ToastrState> {
       this.state.intervalId && clearInterval(this.state.intervalId);
       const intervalId = setInterval(
         this.deleteToast,
-        this.props.delay || TIME_TO_SHOW
+        fromNullable(this.props.delay).getOrElse(TIME_TO_SHOW)
       );
       this.setState({
         intervalId
@@ -146,7 +148,6 @@ class Toastr extends Component<Props, ToastrState> {
 
   public render() {
     const { toastList, position } = this.state;
-
     return (
       <>
         <div className={`notification-container ${position}`}>
@@ -167,7 +168,7 @@ class Toastr extends Component<Props, ToastrState> {
                     className="notification-errors-detail"
                     onClick={() => this.props.onErrorDetail()}
                   >
-                    Vedi elenco errori
+                    {this.props.t("list_errors")}
                   </p>
                 )}
               </div>
@@ -179,4 +180,4 @@ class Toastr extends Component<Props, ToastrState> {
   }
 }
 
-export default withNamespaces("notification")(Toastr);
+export default withNamespaces("toasterMessage")(Toastr);

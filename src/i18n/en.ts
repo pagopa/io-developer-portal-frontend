@@ -248,7 +248,8 @@ const en = {
     jira_success: "Ticket creato",
     jira_error: "There are some errors with Jira",
     jira_ticket_moved: "Ticket moved",
-    jira_ticket_openend: "Ticket already opened"
+    jira_ticket_openend: "Ticket already opened",
+    list_errors: "Show errors details"
   }
 };
 
