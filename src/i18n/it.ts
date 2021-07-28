@@ -107,7 +107,7 @@ const it = {
       "Confermi di voler procedere alla richiesta di disattivazione per il servizio",
     deactive_details:
       "Una volta inserita la richiesta, il team PagoPA procederà alla disattivazione, da quel momento il servizio non sarà più visibile in app e non sarà possibile utilizzarlo per la comunicazione ai cittadini.",
-    add: "Aggiungi sottoscrizione",
+    add_subscription: "Aggiungi sottoscrizione",
     close: "Chiudi",
     cancel: "Annulla",
     confirm: "Conferma"
@@ -247,7 +247,8 @@ const it = {
     jira_success: "Ticket creato",
     jira_error: "Si è verificato un errore con Jira",
     jira_ticket_moved: "Ticket spostato",
-    jira_ticket_openend: "Ticket già esistente"
+    jira_ticket_openend: "Ticket già esistente",
+    list_errors: "Vedi elenco errori"
   }
 };
 

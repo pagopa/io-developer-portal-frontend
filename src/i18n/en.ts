@@ -107,7 +107,7 @@ const en = {
       "You confirm that you wish to proceed with the deactivation request for the service",
     deactive_details:
       "Once the request has been entered, the PagoPA team will proceed with the deactivation, from that moment the service will no longer be visible in the app and it will not be possible to use it for communication to citizens",
-    add: "Add subscription",
+    add_subscription: "Add subscription",
     close: "Close",
     cancel: "Cancel",
     confirm: "Confirm"

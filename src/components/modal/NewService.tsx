@@ -83,7 +83,7 @@ class NewService extends Component<Props> {
                   this.props.onAdd(e);
                 }}
               >
-                {this.props.t("add")}
+                {this.props.t("add_subscription")}
               </Button>
             </div>
           </div>
