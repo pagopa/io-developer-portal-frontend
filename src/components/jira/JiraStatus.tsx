@@ -27,9 +27,9 @@ class JiraStatus extends Component<Props> {
     // tslint:disable-next-line: no-floating-promises
     getServiceReviewStatus(this.props.service)
       .fold(
-        _ =>
+        ({ status }) =>
           this.setState({
-            status: _.status
+            status
           }),
         res => {
           this.props.onLoaded(res);
