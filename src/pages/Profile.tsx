@@ -32,16 +32,47 @@ import {
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
 
+const getColorClass = (status: ServiceStatus) => {
+  switch (status) {
+    case "REJECTED":
+      return "circle-red";
+    case "REVIEW":
+      return "circle-yellow";
+    case "VALID":
+    case "DEACTIVE":
+      return "circle-green";
+    default:
+      return "";
+  }
+};
+
+const getText = (status: ServiceStatus) => {
+  switch (status) {
+    case "LOADING":
+      return "profile:service_loading";
+    case "DRAFT":
+    case "NOT_FOUND":
+      return "profile:service_draft";
+    case "REJECTED":
+      return "profile:service_not_valid";
+    case "REVIEW":
+      return "profile:service_review";
+    case "VALID":
+    case "DEACTIVE":
+      return "profile:service_valid";
+    default:
+      return "";
+  }
+};
+
 const SubscriptionService = ({
   service,
   t,
-  status,
-  atLeastOneVisible
+  status
 }: {
   service: Service;
   t: (key: string) => string;
   status: string;
-  atLeastOneVisible: boolean;
 }) => {
   return service ? (
     <div>
@@ -77,107 +108,19 @@ const SubscriptionService = ({
       </div>
       <div className="status-row">
         <div className="col-md-8">
-          {status === ServiceStatus.DRAFT ||
-          status === ServiceStatus.NOT_FOUND ? (
-            <div className="service-status">
+          <div className="service-status">
+            <div>
+              <span
+                className={`circle ${getColorClass(status as ServiceStatus)}`}
+              />
               <div>
-                <span className="circle" />
-                <div>
-                  <span className="light-text">
-                    {t("service:state")}:&nbsp;
-                  </span>
-                  <span className="dark-text">
-                    {t("profile:service_draft")}
-                  </span>
-                </div>
+                <span className="light-text">{t("service:state")}:&nbsp;</span>
+                <span className="dark-text">
+                  {t(getText(status as ServiceStatus))}
+                </span>
               </div>
             </div>
-          ) : (
-            ""
-          )}
-          {status === ServiceStatus.REJECTED ? (
-            <div className="service-status">
-              <div>
-                <span className="circle circle-red" />
-                <div>
-                  <span className="light-text">
-                    {t("service:state")}:&nbsp;
-                  </span>
-                  <span className="dark-text">
-                    {t("profile:service_not_valid")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
-          {status === ServiceStatus.REVIEW ? (
-            <div className="service-status">
-              <div>
-                <span className="circle circle-yellow" />
-                <div>
-                  <span className="light-text">
-                    {t("service:state")}:&nbsp;
-                  </span>
-                  <span className="dark-text">
-                    {t("profile:service_review")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
-          {status === ServiceStatus.VALID ? (
-            <div className="service-status">
-              <div>
-                <span className="circle circle-green" />
-                <div>
-                  <span className="ligh-text">{t("service:state")}</span>:
-                  &nbsp;
-                  <span className="dark-text">
-                    {t("profile:service_valid")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
-          {status === ServiceStatus.DEACTIVE ? (
-            <div className="service-status">
-              <div>
-                <span className="circle circle-green" />
-                <div>
-                  <span className="ligh-text">{t("service:state")}</span>:
-                  &nbsp;
-                  <span className="dark-text">
-                    {t("profile:service_valid")} (
-                    {t("service:deactive_service_title")})
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
-          {status === ServiceStatus.LOADING ? (
-            <div className="service-status">
-              <div>
-                <span className="circle circle-black" />
-                <div>
-                  <span className="ligh-text">{t("service:state")}</span>:
-                  &nbsp;
-                  <span className="dark-text">
-                    {t("profile:service_loading")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
+          </div>
         </div>
         <div className="col-md-4">
           <Link
@@ -185,7 +128,7 @@ const SubscriptionService = ({
             to={{
               pathname: `/service/${service.service_id}`,
               state: {
-                isVisible: atLeastOneVisible
+                isVisible: !!service.is_visible
               }
             }}
           >
@@ -231,7 +174,6 @@ type ProfileState = {
   onConfirmOperation: () => void;
   serviceState: { [serviceId: string]: string };
   showModal: boolean;
-  atLeastOneVisible: boolean;
 };
 
 class Profile extends Component<Props, ProfileState> {
@@ -251,8 +193,7 @@ class Profile extends Component<Props, ProfileState> {
     keyDisplay: {},
     isConfirmationOpen: false,
     onConfirmOperation: () => undefined,
-    showModal: false,
-    atLeastOneVisible: false
+    showModal: false
   };
 
   public onAddSubscription = async () => {
@@ -371,9 +312,6 @@ class Profile extends Component<Props, ProfileState> {
       const service: Service = await getFromBackend<Service>({
         path: `services/${subscription.name}`
       });
-      if (service.is_visible) {
-        this.setState({ atLeastOneVisible: true });
-      }
       this.checkService(service);
       this.setState(prevState => ({
         services: { ...prevState.services, [service.service_id]: service }
@@ -513,23 +451,26 @@ class Profile extends Component<Props, ProfileState> {
       }
     });
     if (!service.is_visible) {
+      // tslint:disable-next-line: no-floating-promises
       getServiceReviewStatus(service)
-        .then(res => {
-          this.setState({
-            serviceState: {
-              ...this.state.serviceState,
-              [serviceId]: res.status
-            }
-          });
-        })
-        .catch(_ =>
-          this.setState({
-            serviceState: {
-              ...this.state.serviceState,
-              [serviceId]: ServiceStatus.NOT_FOUND
-            }
-          })
-        );
+        .fold(
+          _ =>
+            this.setState({
+              serviceState: {
+                ...this.state.serviceState,
+                [serviceId]: ServiceStatus.NOT_FOUND
+              }
+            }),
+          res => {
+            this.setState({
+              serviceState: {
+                ...this.state.serviceState,
+                [serviceId]: res.status
+              }
+            });
+          }
+        )
+        .run();
     } else if (errorOrValidService.isRight()) {
       this.setState({
         serviceState: {
@@ -592,7 +533,6 @@ class Profile extends Component<Props, ProfileState> {
                       service={service}
                       t={t}
                       status={this.renderServiceStatus(service)}
-                      atLeastOneVisible={this.state.atLeastOneVisible}
                     />
                   </div>
                   <div className="card-service-key p-4">
