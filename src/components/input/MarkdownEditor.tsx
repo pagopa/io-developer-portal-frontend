@@ -75,7 +75,6 @@ class MarkdownEditor extends Component<Props, never> {
             <div className="p-4 editor--message--preview h-100 flex-1">
               <p className="markdown-title-preview">Come comparirà in app:</p>
               <ReactMarkdown
-                className=""
                 source={markdown}
                 unwrapDisallowed={true}
                 allowedTypes={allowedTypes}
