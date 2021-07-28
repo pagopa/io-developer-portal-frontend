@@ -1,4 +1,3 @@
-import { toError } from "fp-ts/lib/Either";
 import { fromPredicate, tryCatch } from "fp-ts/lib/TaskEither";
 import { CIDR } from "io-functions-commons/dist/generated/definitions/CIDR";
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
@@ -132,20 +131,6 @@ export type ServiceReviewStatusResponse = {
   status: ServiceStatus;
 };
 
-type ServiceReviewStatus = {
-  comment?: {
-    comments: ReadonlyArray<{
-      body: string;
-      created: string;
-    }>;
-  };
-  labels?: readonly string[];
-  key?: string;
-  status?: number;
-  detail?: string;
-  title?: string;
-};
-
 export const getServiceReviewStatus = (service: Service) => {
   const serviceId = service.service_id;
   const isVisible = service.is_visible;
@@ -159,7 +144,7 @@ export const getServiceReviewStatus = (service: Service) => {
       };
     }
   )(service)
-    .chain(s =>
+    .chain(_ =>
       tryCatch(
         () => {
           return handleReviewStatus(serviceId);
