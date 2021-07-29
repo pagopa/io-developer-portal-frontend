@@ -56,30 +56,28 @@ class JiraStatus extends Component<Props> {
                 <span className="light-text">{t("service:state")}:&nbsp;</span>
                 <span className="dark-text">{t(getText(status))}</span>
               </div>
-              {status === ServiceStatus.REVIEW ? (
-                <Alert color="warning">
-                  <span className="dark-text">{t("publish_review_title")}</span>
-                  <span>&nbsp; {t("publish_review_message")}</span>
-                </Alert>
-              ) : (
-                ""
-              )}
-              {status === ServiceStatus.VALID && (
-                <Alert color="success">
-                  <span className="dark-text">{t("published_title")}</span>
-                  <span>&nbsp; {t("published")}</span>
-                </Alert>
-              )}
-
-              {status === ServiceStatus.DEACTIVE && (
-                <Alert color="info">
-                  <span className="dark-text">
-                    {t("deactive_service_title")}
-                  </span>
-                  <span>&nbsp; - {t("deactive_service_message")}</span>
-                </Alert>
-              )}
             </div>
+            {status === ServiceStatus.REVIEW ? (
+              <Alert color="warning">
+                <span className="dark-text">{t("publish_review_title")}</span>
+                <span>&nbsp; {t("publish_review_message")}</span>
+              </Alert>
+            ) : (
+              ""
+            )}
+            {status === ServiceStatus.VALID && (
+              <Alert color="success">
+                <span className="dark-text">{t("published_title")}</span>
+                <span>&nbsp; {t("published")}</span>
+              </Alert>
+            )}
+
+            {status === ServiceStatus.DEACTIVE && (
+              <Alert color="info">
+                <span className="dark-text">{t("deactive_service_title")}</span>
+                <span>&nbsp; - {t("deactive_service_message")}</span>
+              </Alert>
+            )}
           </div>
         </div>
       </Fragment>
