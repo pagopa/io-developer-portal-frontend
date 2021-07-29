@@ -1,8 +1,44 @@
+import { fromPredicate, tryCatch } from "fp-ts/lib/TaskEither";
 import { CIDR } from "io-functions-commons/dist/generated/definitions/CIDR";
 import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import * as ts from "io-ts";
 import { NotEmptyString } from "../../generated/definitions/backend/NotEmptyString";
+import { getFromBackend, putToBackend } from "./backend";
+
+export enum ServiceFormState {
+  "SAVED_OK" = "SAVED_OK", // Succesfull saved to backend
+  "SAVED_ERROR" = "SAVED_ERROR", // Unsuccesfull saved to backend
+  "NOT_SAVE" = "NOT_SAVE" // Not yet saved to backend
+}
+
+export enum ServiceStatus {
+  "DRAFT" = "DRAFT", // Service in Draft
+  "REJECTED" = "REJECTED", // Service with some errors on fields or rejected
+  "REVIEW" = "REVIEW", // Service in review
+  "VALID" = "VALID", // Service valid
+  "DEACTIVE" = "DEACTIVE", // Service in deactivation
+  "NOT_FOUND" = "NOT_FOUND", // Service not found
+  "LOADING" = "LOADING"
+}
+
+export const ReviewStatus = ts.partial({
+  comment: ts.interface({
+    comments: ts.readonlyArray(
+      ts.interface({
+        body: ts.string,
+        created: ts.string
+      })
+    )
+  }),
+  labels: ts.readonlyArray(ts.string),
+  key: ts.string,
+  status: ts.number,
+  detail: ts.string,
+  title: ts.string
+});
+
+export type ReviewStatus = ts.TypeOf<typeof ReviewStatus>;
 
 export const RequiredMetadata = ts.intersection([
   ServiceMetadata,
@@ -76,3 +112,135 @@ export const ValidDraftService = ts.intersection([
 ]);
 
 export type ValidDraftService = ts.TypeOf<typeof ValidDraftService>;
+
+export const handleReviewStatus = async (serviceId: string) => {
+  return await getFromBackend<ReviewStatus>({
+    path: `services/${serviceId}/review`
+  });
+};
+
+export const handleDisableReview = async (serviceId: string) => {
+  return await putToBackend<ReviewStatus>({
+    path: `services/${serviceId}/disable`,
+    options: {}
+  });
+};
+
+export type ServiceReviewStatusResponse = {
+  review: ReviewStatus | null;
+  status: ServiceStatus;
+};
+
+export const getServiceReviewStatus = (service: Service) => {
+  const serviceId = service.service_id;
+  const isVisible = service.is_visible;
+  const errorOrValidService = ValidService.decode(service);
+  return fromPredicate<ServiceReviewStatusResponse, Service>(
+    s => s.service_id !== undefined,
+    _ => {
+      return {
+        review: null,
+        status: ServiceStatus.NOT_FOUND
+      };
+    }
+  )(service)
+    .chain(_ =>
+      tryCatch(
+        () => {
+          return handleReviewStatus(serviceId);
+        },
+        () => ({
+          review: null,
+          status: ServiceStatus.NOT_FOUND
+        })
+      )
+    )
+    .map(res => {
+      if (res.status === 200) {
+        const isDisableInProgress =
+          res.labels && res.labels.indexOf("DISATTIVAZIONE") >= 0;
+        if (isDisableInProgress) {
+          return {
+            review: res,
+            status: ServiceStatus.DEACTIVE
+          };
+        }
+        switch (res.detail) {
+          case "NEW":
+          case "REVIEW":
+            return {
+              review: res,
+              status: ServiceStatus.REVIEW
+            };
+          case "REJECTED":
+            return {
+              review: res,
+              status: ServiceStatus.REJECTED // errors on fields
+            };
+          default: {
+            if (isVisible && errorOrValidService.isRight()) {
+              return {
+                review: res,
+                status: ServiceStatus.VALID
+              };
+            } else {
+              return {
+                review: res,
+                status: ServiceStatus.DRAFT // new service in draft
+              };
+            }
+          }
+        }
+      } else {
+        if (isVisible && errorOrValidService.isRight()) {
+          return {
+            review: res,
+            status: ServiceStatus.VALID
+          };
+        } else if (isVisible && errorOrValidService.isLeft()) {
+          return {
+            review: res,
+            status: ServiceStatus.REJECTED // missing some fields
+          };
+        } else {
+          return {
+            review: res,
+            status: ServiceStatus.DRAFT
+          };
+        }
+      }
+    });
+};
+
+export const getColorClass = (status: ServiceStatus) => {
+  switch (status) {
+    case ServiceStatus.REJECTED:
+      return "circle-red";
+    case ServiceStatus.REVIEW:
+      return "circle-yellow";
+    case ServiceStatus.VALID:
+    case ServiceStatus.DEACTIVE:
+      return "circle-green";
+    default:
+      return "";
+  }
+};
+
+export const getText = (status: ServiceStatus) => {
+  switch (status) {
+    case ServiceStatus.LOADING:
+      return "profile:service_loading";
+    case ServiceStatus.DRAFT:
+    case ServiceStatus.NOT_FOUND:
+      return "profile:service_draft";
+    case ServiceStatus.REJECTED:
+      return "profile:service_not_valid";
+    case ServiceStatus.REVIEW:
+      return "profile:service_review";
+    case ServiceStatus.VALID:
+    case ServiceStatus.DEACTIVE:
+      return "profile:service_valid";
+    default:
+      return "";
+  }
+};

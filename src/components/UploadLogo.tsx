@@ -34,43 +34,47 @@ const Logo = ({
   t
 }: Props) => {
   return (
-    <div>
-      <div className="form-group">
-        <div className="input-group">
-          <Input
-            className="form-control"
-            id={nameInput}
-            name={nameInput}
-            type="file"
-            invalid={!isValid}
-            onChangeCapture={onChangeHandler}
-            accept=".png"
-          />
-          <div className="input-group-append">
-            <button
-              className="btn"
-              disabled={!isSubmitEnabled}
-              type="button"
-              id={nameButton}
-              onClick={onSubmitHandler}
-            >
-              {t(nameButton)}
-            </button>
+    <div className="row">
+      <div className="col-md-4">
+        {logoUploaded && (
+          <div>
+            <a href={logoPath} target="_blank">
+              <img src={logoPath} alt="logo_image" onError={onError} />
+            </a>
+          </div>
+        )}
+        {errorLogoUpload && (
+          <div className="invalid-feedback d-block">
+            {t("errors:upload_logo")}
+          </div>
+        )}
+      </div>
+      <div className="col-md-8">
+        <div className="form-group">
+          <div className="input-group">
+            <Input
+              className="form-control"
+              id={nameInput}
+              name={nameInput}
+              type="file"
+              invalid={!isValid}
+              onChangeCapture={onChangeHandler}
+              accept=".png"
+            />
+            <div className="input-group-append">
+              <button
+                className="btn"
+                disabled={!isSubmitEnabled}
+                type="button"
+                id={nameButton}
+                onClick={onSubmitHandler}
+              >
+                {t(nameButton)}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      {logoUploaded && (
-        <div>
-          <a href={logoPath} target="_blank">
-            <img src={logoPath} alt="logo_image" onError={onError} />
-          </a>
-        </div>
-      )}
-      {errorLogoUpload && (
-        <div className="invalid-feedback d-block">
-          {t("errors:upload_logo")}
-        </div>
-      )}
     </div>
   );
 };

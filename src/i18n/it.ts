@@ -70,6 +70,7 @@ const it = {
     }
   },
   profile: {
+    new_service: "Nuovo Servizio",
     new_user: "Nuovo utente",
     key: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     name: "Nome",
@@ -83,13 +84,36 @@ const it = {
     regenerate: "Rigenera",
     use: "Usa questa chiave",
     add: "Aggiungi sottoscrizione",
-    service_draft: "Servizio in bozza",
-    service_not_active: "Servizio non attivo",
-    service_not_valid: "Campi non validi, il servizio non è attivo",
-    service_active: "Servizio attivo",
-    service_loading: "Recupero dati servizio"
+    close: "Chiudi",
+    service_draft: "bozza",
+    service_review: "in review",
+    service_not_valid: "dati incompleti o incorretti",
+    service_valid: "attivo",
+    service_loading: "Recupero dati servizio",
+    create_new_service: "Crea un nuovo servizio"
+  },
+  modal: {
+    important: "Importante!",
+    new_service: "Nuovo Servizio",
+    publish_service: "Go Live!",
+    publish_confirmation:
+      "Confermi di voler procedere alla richiesta di pubblicazione per il servizio",
+    publish_warning:
+      "Il servizio potrà essere pubblicato solo se l’account che l’ha creato corrisponde al Delegato indicato nel contratto di adesione. Ti invitiamo a verificare questa corrispondenza prima di procedere.",
+    publish_details:
+      "Una volta inviata la richiesta il servizio non sarà più modificabile, fino al momento della pubblicazione. Il team PagoPA procederà a una verifica e ti avvertirà al momento dell’avvenuta pubblicazione, o ti fornirà istruzioni in caso di esito negativo della richiesta.",
+    deactive_service: "Disattiva il servizio",
+    deactive_confirmation:
+      "Confermi di voler procedere alla richiesta di disattivazione per il servizio",
+    deactive_details:
+      "Una volta inserita la richiesta, il team PagoPA procederà alla disattivazione, da quel momento il servizio non sarà più visibile in app e non sarà possibile utilizzarlo per la comunicazione ai cittadini.",
+    add_subscription: "Aggiungi sottoscrizione",
+    close: "Chiudi",
+    cancel: "Annulla",
+    confirm: "Conferma"
   },
   service: {
+    description_service: "Descrizione del servizio",
     service_name: "Nome Servizio",
     department_name: "Nome Dipartimento",
     organization_name: "Nome Ente",
@@ -108,13 +132,15 @@ const it = {
     eurocents: "eurocents",
     edit: "Modifica i dati del servizio",
     save: "Salva i dati del servizio",
+    publish: "Pubblica servizio",
+    unpublish: "Disattiva il servizio",
     save_draft: "Salva i dati in bozza",
     title: "Servizio",
     description: "Descrizione*",
     web_url: "Web Url",
-    app_ios: "App IOS",
-    app_android: "App Android",
-    tos_url: "Tos Url",
+    app_ios: "App IOS Url",
+    app_android: "App Android Url",
+    tos_url: "Termini e Condizioni (TOS) Url",
     privacy_url: "Privacy Url*",
     address: "Indirizzo",
     phone: "Telefono",
@@ -125,16 +151,41 @@ const it = {
     support_url: "Url di Supporto",
     scope: "Area di competenza",
     metadata: "Metadati",
-    service_logo: "Upload Logo (PNG)",
+    service_logo: "Logo del Servizio (PNG)",
     service_logo_upload: "Upload",
     scheda_servizio: "Scheda Servizio",
-    contact_fields: "Campi di contatto",
-    contact_fields_message:
-      "È obbligatorio almeno un campo di contatto per assistenza al cittadino",
+    security_fields: "Sicurezza e Permessi",
+    contact_fields: "Dati di contatto",
+    contact_fields_message: "È necessario almeno un dato di contatto",
     national: "Nazionale",
     local: "Locale",
     service_saved_ok: "Scheda Servizio salvata correttamente",
-    service_saved_error: "Errore nel salvataggio della Scheda Servizio"
+    service_saved_error: "Errore nel salvataggio della Scheda Servizio",
+    state: "Stato Servizio",
+    publish_message:
+      "Una volta completata la scheda servizio, puoi procedere alla pubblicazione in app.",
+    publish_guide:
+      "Per maggiori informazioni sui campi obbligatori per la pubblicazione, consulta la nostra",
+    publish_info:
+      "Una volta inviata la richiesta, il team PagoPA procederà a una verifica e ti avvertirà al momento dell’avvenuta pubblicazione.",
+    published_title: "Congratulazioni!",
+    published:
+      "Il tuo servizio è attivo e disponibile ai cittadini utenti di app IO",
+    unpublish_title: "Disattivazione del servizio",
+    unpublish_message:
+      "Se non vuoi più erogare questo servizio ai cittadini è sufficiente selezionare l’opzione di disattivazione del servizio: non sarà più visibile in app e tornerà in stato di compilazione.",
+    publish_error_title: "Attenzione!",
+    publish_error_message:
+      "Alcuni campi risultano mancanti o incorretti, il servizio non può essere pubblicato",
+    publish_error_detail:
+      "Ti invitiamo a correggere gli errori segnalati e reinviare una nuova richiesta di review",
+    publish_review_title: "Ci Stiamo lavorando!",
+    publish_review_message:
+      "Il tuo servizio è in corso di revisione, ti aggiorneremo al più presto",
+    deactive_service_title: "In corso di disattivazione",
+    deactive_service_message:
+      "Ci stiamo lavorando, il servizio verrà presto disattivato",
+    guide: "guida"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",
@@ -185,6 +236,19 @@ const it = {
     service_logo: "Upload Logo (PNG)",
     service_logo_upload: "Upload",
     organization_fiscal_code: "Codice Fiscale dell'organizzazione"
+  },
+  toasterMessage: {
+    save_form: "Salvataggio del Servizio",
+    save_service_error: "Errore nel salvataggio del servizio",
+    save_service: "Servizio salvato correttamente",
+    errors_form: "Errori nella form",
+    errors_description: "Ci sono degli errori, controlla la tua form!",
+    jira_title: "Jira",
+    jira_success: "Ticket creato",
+    jira_error: "Si è verificato un errore con Jira",
+    jira_ticket_moved: "Ticket spostato",
+    jira_ticket_openend: "Ticket già esistente",
+    list_errors: "Vedi elenco errori"
   }
 };
 

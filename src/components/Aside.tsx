@@ -25,7 +25,7 @@ class Aside extends Component<WithNamespaces, never> {
     const { t } = this.props;
 
     return (
-      <aside>
+      <aside className="shadow">
         <StorageContext.Consumer>
           {storage => (
             <LinkList>
