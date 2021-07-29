@@ -977,7 +977,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   </p>
                   <Button
                     color="primary"
-                    disabled={status === ServiceStatus.REVIEW}
+                    disabled={
+                      status === ServiceStatus.REVIEW || storage.isApiAdmin
+                    }
                     onClick={() => this.validateBeforePublish()}
                   >
                     {t("publish")}
