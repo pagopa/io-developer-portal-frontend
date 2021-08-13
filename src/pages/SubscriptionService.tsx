@@ -11,6 +11,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RouteComponentProps } from "react-router";
 import { CIDR } from "../../generated/definitions/api/CIDR";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
+import AdminFields from "../components/input/AdminFields";
 import ContactInput from "../components/input/ContactInput";
 import LinkFields from "../components/input/LinkFields";
 import MarkdownEditor from "../components/input/MarkdownEditor";
@@ -809,33 +810,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onBlur={this.getHandleMetadataBlur("address")}
                     className="mb-4"
                   />
-                  <div>
-                    <label className="m-0">{t("scope")}*</label>
-                    <select
-                      name="scope"
-                      value={
-                        service.service_metadata
-                          ? service.service_metadata.scope
-                          : undefined
-                      }
-                      className="form-control mb-4"
-                      disabled={service.is_visible && !storage.isApiAdmin}
-                      onChange={this.handleMetadataChange}
-                    >
-                      <option
-                        key={ServiceScopeEnum.NATIONAL}
-                        value={ServiceScopeEnum.NATIONAL}
-                      >
-                        {t(ServiceScopeEnum.NATIONAL.toLocaleLowerCase())}
-                      </option>
-                      <option
-                        key={ServiceScopeEnum.LOCAL}
-                        value={ServiceScopeEnum.LOCAL}
-                      >
-                        {t(ServiceScopeEnum.LOCAL.toLocaleLowerCase())}
-                      </option>
-                    </select>
-                  </div>
+
                   <MarkdownEditor
                     markdown={
                       service.service_metadata &&
@@ -857,7 +832,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
               <form>
                 <div className="card-service p-4 my-4">
-                  <h5 className="my-4">Link Utili</h5>
+                  <h5 className="my-4">{t("useful_links")}</h5>
                   <LinkFields
                     onChange={this.handleMetadataChange}
                     onBlur={this.getHandleMetadataBlur}
@@ -899,8 +874,21 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 <div className="card-service p-4 my-4">
                   <h5 className="my-4">{t("security_fields")}</h5>
                   <SecurityFields
-                    onChange={this.handleInputChange}
                     onBlur={this.getHandleBlur}
+                    service={service}
+                    isApiAdmin={storage.isApiAdmin}
+                    showError={showError}
+                    errors={errors}
+                  />
+                </div>
+              </form>
+
+              <form>
+                <div className="card-service p-4 my-4">
+                  <h5 className="my-4">{t("admin_properties")}</h5>
+                  <AdminFields
+                    onChange={this.handleMetadataChange}
+                    onBlur={this.getHandleMetadataBlur}
                     service={service}
                     isApiAdmin={storage.isApiAdmin}
                     showError={showError}
