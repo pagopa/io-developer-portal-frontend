@@ -187,7 +187,9 @@ const it = {
       "Ci stiamo lavorando, il servizio verrà presto disattivato",
     guide: "guida",
     admin_properties: "Proprietà Admin",
-    useful_links: "Links Utili"
+    useful_links: "Links Utili",
+    national_service_warn:
+      "ATTENZIONE: il servizio corrente ha il valore di scope impostato a NATIONAL"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",

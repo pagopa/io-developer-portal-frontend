@@ -188,7 +188,9 @@ const en = {
       "We are working on it, the service will soon be deactivated ",
     guide: "guide",
     admin_properties: "Admin Properties",
-    useful_links: "Useful Links"
+    useful_links: "Useful Links",
+    national_service_warn:
+      "ATTENTION: the current service has the scope value equals to NATIONAL"
   },
   servers: {
     select: "Select your server (endpoint) of choice",

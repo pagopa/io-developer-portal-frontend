@@ -811,6 +811,43 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     className="mb-4"
                   />
 
+                  <div>
+                    <label className="m-0">{t("scope")}*</label>
+                    <select
+                      name="scope"
+                      value={
+                        service.service_metadata
+                          ? service.service_metadata.scope
+                          : undefined
+                      }
+                      className="form-control mb-4"
+                      disabled={service.is_visible && !storage.isApiAdmin}
+                      onChange={this.handleMetadataChange}
+                    >
+                      <option
+                        key={ServiceScopeEnum.NATIONAL}
+                        value={ServiceScopeEnum.NATIONAL}
+                      >
+                        {t(ServiceScopeEnum.NATIONAL.toLocaleLowerCase())}
+                      </option>
+                      <option
+                        key={ServiceScopeEnum.LOCAL}
+                        value={ServiceScopeEnum.LOCAL}
+                      >
+                        {t(ServiceScopeEnum.LOCAL.toLocaleLowerCase())}
+                      </option>
+                    </select>
+                    <label
+                      className="mb0 error-text"
+                      hidden={
+                        service.service_metadata &&
+                        service.service_metadata.scope &&
+                        service.service_metadata.scope !== "NATIONAL"
+                      }
+                    >
+                      {t("national_service_warn")}
+                    </label>
+                  </div>
                   <MarkdownEditor
                     markdown={
                       service.service_metadata &&
@@ -883,20 +920,18 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 </div>
               </form>
 
-              <form>
+              {storage.isApiAdmin && (
                 <div className="card-service p-4 my-4">
                   <h5 className="my-4">{t("admin_properties")}</h5>
                   <AdminFields
                     onChange={this.handleMetadataChange}
                     onBlur={this.getHandleMetadataBlur}
                     service={service}
-                    isApiAdmin={storage.isApiAdmin}
                     showError={showError}
                     errors={errors}
                   />
                 </div>
-              </form>
-
+              )}
               <div className="card-service p-4 my-4 flex">
                 <h6>{t("service_logo")}</h6>
                 <UploadLogo
