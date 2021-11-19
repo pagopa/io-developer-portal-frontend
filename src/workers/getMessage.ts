@@ -7,8 +7,8 @@ import Batch from "batch";
 import { get } from "../utils/api";
 import { upsert } from "../utils/db";
 
-import { MessageResponseWithContent } from "../../generated/definitions/api/MessageResponseWithContent";
-import { ProblemJson } from "../../generated/definitions/api/ProblemJson";
+import { MessageResponseWithContent } from "../../generated/definitions/commons/MessageResponseWithContent";
+import { ProblemJson } from "../../generated/definitions/commons/ProblemJson";
 import { MessageDocument } from "../utils/operations";
 
 interface DataType {

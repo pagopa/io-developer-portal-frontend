@@ -1,9 +1,9 @@
 import { fromPredicate, tryCatch } from "fp-ts/lib/TaskEither";
-import { CIDR } from "io-functions-commons/dist/generated/definitions/CIDR";
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
-import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import * as ts from "io-ts";
 import { NotEmptyString } from "../../generated/definitions/backend/NotEmptyString";
+import { CIDR } from "../../generated/definitions/commons/CIDR";
+import { Service } from "../../generated/definitions/commons/Service";
+import { ServiceMetadata } from "../../generated/definitions/commons/ServiceMetadata";
 import { getFromBackend, putToBackend } from "./backend";
 
 export enum ServiceFormState {

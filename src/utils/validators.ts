@@ -14,6 +14,8 @@ import toPairs from "lodash/toPairs";
 import { conformToMask } from "react-text-mask";
 
 import { OrganizationFiscalCode } from "../../generated/definitions/backend/OrganizationFiscalCode";
+import { ServiceCategory } from "../../generated/definitions/commons/ServiceCategory";
+import { SpecialServiceMetadata } from "../../generated/definitions/commons/SpecialServiceMetadata";
 import { CONSTANTS, LIMITS } from "./constants";
 
 const { CSV, CSV_HEADERS } = CONSTANTS;
@@ -127,7 +129,7 @@ export type CIDRWithRequiredSubnetMask = ts.TypeOf<
 >;
 
 export const checkValue = (
-  prop: keyof ServiceMetadata | keyof Service,
+  prop: keyof ServiceMetadata | keyof Service | keyof SpecialServiceMetadata,
   value: InputValue
 ): ts.Validation<InputValue | string | ValidUrl> => {
   switch (prop) {
@@ -165,6 +167,9 @@ export const checkValue = (
     }
     case "privacy_url": {
       return UrlFromStringV2.decode(value);
+    }
+    case "category": {
+      return ServiceCategory.decode(value);
     }
     default: {
       // All other fields are optional as NonEmptyString

@@ -6,7 +6,7 @@ import Batch from "batch";
 
 import { profileGetAndPersist } from "../utils/operations";
 
-import { Profile } from "../../generated/definitions/api/Profile";
+import { Profile } from "../../generated/definitions/commons/Profile";
 
 interface DataType {
   dbName: string;

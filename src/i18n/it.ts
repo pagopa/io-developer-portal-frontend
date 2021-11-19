@@ -113,6 +113,10 @@ const it = {
     confirm: "Conferma"
   },
   service: {
+    custom_special_flow: "Nome del flusso Speciale custom",
+    category: "Categoria del servizio",
+    STANDARD: "Standard",
+    SPECIAL: "Speciale",
     description_service: "Descrizione del servizio",
     service_name: "Nome Servizio",
     department_name: "Nome Dipartimento",

@@ -1,7 +1,7 @@
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
 import React, { Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Alert } from "reactstrap";
+import { Service } from "../../../generated/definitions/commons/Service";
 import {
   getColorClass,
   getServiceReviewStatus,

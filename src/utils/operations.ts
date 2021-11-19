@@ -8,14 +8,14 @@ import { get, post } from "./api";
 import { CONSTANTS } from "./constants";
 import { upsert } from "./db";
 
-import { MessageBodyMarkdown } from "../../generated/definitions/api/MessageBodyMarkdown";
-import { MessageContent } from "../../generated/definitions/api/MessageContent";
-import { MessageResponseWithContent } from "../../generated/definitions/api/MessageResponseWithContent";
-import { MessageSubject } from "../../generated/definitions/api/MessageSubject";
-import { PaymentData } from "../../generated/definitions/api/PaymentData";
-import { ProblemJson } from "../../generated/definitions/api/ProblemJson";
-import { Profile } from "../../generated/definitions/api/Profile";
-import { Timestamp } from "../../generated/definitions/api/Timestamp";
+import { MessageBodyMarkdown } from "../../generated/definitions/commons/MessageBodyMarkdown";
+import { MessageContent } from "../../generated/definitions/commons/MessageContent";
+import { MessageResponseWithContent } from "../../generated/definitions/commons/MessageResponseWithContent";
+import { MessageSubject } from "../../generated/definitions/commons/MessageSubject";
+import { PaymentData } from "../../generated/definitions/commons/PaymentData";
+import { ProblemJson } from "../../generated/definitions/commons/ProblemJson";
+import { Profile } from "../../generated/definitions/commons/Profile";
+import { Timestamp } from "../../generated/definitions/commons/Timestamp";
 
 import Database = PouchDB.Database;
 import { ContactDocument } from "../workers/getProfile";

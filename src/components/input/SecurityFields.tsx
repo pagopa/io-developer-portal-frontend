@@ -1,4 +1,4 @@
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import { Service } from "../../../generated/definitions/commons/Service";
 
 import React, { FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
