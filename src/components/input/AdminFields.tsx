@@ -7,7 +7,7 @@ type OwnProps = {
   service: Service;
   showError: boolean;
   errors: Record<string, string>;
-  onChange: (event: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onBlur: (
     prop: keyof Service
   ) => (event: FocusEvent<HTMLInputElement>) => void;

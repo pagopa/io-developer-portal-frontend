@@ -924,8 +924,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                 <div className="card-service p-4 my-4">
                   <h5 className="my-4">{t("admin_properties")}</h5>
                   <AdminFields
-                    onChange={this.handleMetadataChange}
-                    onBlur={this.getHandleMetadataBlur}
+                    onChange={this.handleInputChange}
+                    onBlur={this.getHandleBlur}
                     service={service}
                     showError={showError}
                     errors={errors}
