@@ -12,6 +12,9 @@ type OwnProps = {
   showError: boolean;
   errors: Record<string, string>;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChangeMetadata: (
+    event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) => void;
   onBlur: (
     prop: keyof Service | keyof SpecialServiceMetadata
   ) => (event: FocusEvent<HTMLInputElement>) => void;
@@ -19,7 +22,14 @@ type OwnProps = {
 
 type Props = WithNamespaces & OwnProps;
 
-const AdminFields = ({ service, onChange, onBlur, errors, t }: Props) => {
+const AdminFields = ({
+  service,
+  onChange,
+  onChangeMetadata,
+  onBlur,
+  errors,
+  t
+}: Props) => {
   const renderFields = () => {
     return (
       <React.Fragment>
@@ -57,7 +67,7 @@ const AdminFields = ({ service, onChange, onBlur, errors, t }: Props) => {
                 : StandardServiceCategoryEnum.STANDARD
             }
             className="form-control mb-4"
-            onChange={onChange}
+            onChange={onChangeMetadata}
           >
             <option
               key={StandardServiceCategoryEnum.STANDARD}

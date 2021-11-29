@@ -267,9 +267,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     );
   };
 
-  public getHandleBlur = (prop: keyof ServiceMetadata | keyof Service) => (
-    event: FocusEvent<HTMLInputElement>
-  ) => {
+  public getHandleBlur = (
+    prop: keyof ServiceMetadata | keyof Service | keyof SpecialServiceMetadata
+  ) => (event: FocusEvent<HTMLInputElement>) => {
     const target = event.target;
     const inputValue =
       target.type === "checkbox" ? target.checked : target.value;
@@ -284,7 +284,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   };
 
   public getHandleMetadataBlur = (
-    prop: keyof ServiceMetadata | keyof Service | keyof SpecialServiceMetadata
+    prop: keyof ServiceMetadata | keyof Service
   ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => {
     const {
       target: { name, value }
@@ -926,6 +926,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <h5 className="my-4">{t("admin_properties")}</h5>
                   <AdminFields
                     onChange={this.handleInputChange}
+                    onChangeMetadata={this.handleMetadataChange}
                     onBlur={this.getHandleBlur}
                     service={service}
                     showError={showError}
