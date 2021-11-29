@@ -1,16 +1,17 @@
 import { Alert, Button } from "design-react-kit";
 
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
-import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
-import { ServiceScopeEnum } from "io-functions-commons/dist/generated/definitions/ServiceScope";
 import * as ts from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
+import { Service } from "../../generated/definitions/commons/Service";
+import { ServiceMetadata } from "../../generated/definitions/commons/ServiceMetadata";
+import { ServiceScopeEnum } from "../../generated/definitions/commons/ServiceScope";
 
 import React, { ChangeEvent, Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RouteComponentProps } from "react-router";
 import { CIDR } from "../../generated/definitions/api/CIDR";
 import { ServiceId } from "../../generated/definitions/api/ServiceId";
+import { SpecialServiceMetadata } from "../../generated/definitions/commons/SpecialServiceMetadata";
 import AdminFields from "../components/input/AdminFields";
 import ContactInput from "../components/input/ContactInput";
 import LinkFields from "../components/input/LinkFields";
@@ -266,9 +267,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     );
   };
 
-  public getHandleBlur = (prop: keyof ServiceMetadata | keyof Service) => (
-    event: FocusEvent<HTMLInputElement>
-  ) => {
+  public getHandleBlur = (
+    prop: keyof ServiceMetadata | keyof Service | keyof SpecialServiceMetadata
+  ) => (event: FocusEvent<HTMLInputElement>) => {
     const target = event.target;
     const inputValue =
       target.type === "checkbox" ? target.checked : target.value;
@@ -925,6 +926,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   <h5 className="my-4">{t("admin_properties")}</h5>
                   <AdminFields
                     onChange={this.handleInputChange}
+                    onChangeMetadata={this.handleMetadataChange}
                     onBlur={this.getHandleBlur}
                     service={service}
                     showError={showError}

@@ -1,9 +1,9 @@
 import { Alert } from "design-react-kit";
 import { none, Option } from "fp-ts/lib/Option";
 import { fromPredicate } from "fp-ts/lib/Option";
-import { ServiceMetadata } from "io-functions-commons/dist/generated/definitions/ServiceMetadata";
 import React, { Component, FocusEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { ServiceMetadata } from "../../../generated/definitions/commons/ServiceMetadata";
 
 type OwnProps = {
   name: string;

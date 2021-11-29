@@ -17,7 +17,7 @@ import NewService from "../components/modal/NewService";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 
-import { Service } from "io-functions-commons/dist/generated/definitions/Service";
+import { Service } from "../../generated/definitions/commons/Service";
 
 import { SubscriptionCollection } from "../../generated/definitions/backend/SubscriptionCollection";
 import { SubscriptionContract } from "../../generated/definitions/backend/SubscriptionContract";

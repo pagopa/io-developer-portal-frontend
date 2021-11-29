@@ -113,6 +113,10 @@ const en = {
     confirm: "Confirm"
   },
   service: {
+    custom_special_flow: "Custom Special flow Name",
+    category: "Service Category",
+    STANDARD: "Standard",
+    SPECIAL: "Special",
     description_service: "Service Description",
     service_name: "Service Name",
     department_name: "Department Name",
