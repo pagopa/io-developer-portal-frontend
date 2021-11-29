@@ -185,7 +185,11 @@ const it = {
     deactive_service_title: "In corso di disattivazione",
     deactive_service_message:
       "Ci stiamo lavorando, il servizio verrà presto disattivato",
-    guide: "guida"
+    guide: "guida",
+    admin_properties: "Proprietà Admin",
+    useful_links: "Links Utili",
+    national_service_warn:
+      "ATTENZIONE: il servizio corrente ha il valore di scope impostato a NATIONAL"
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",
