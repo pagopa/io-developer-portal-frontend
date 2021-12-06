@@ -7,7 +7,7 @@ import { Alert } from "design-react-kit";
 const { sessionStorage } = window;
 
 import { getFromBackend } from "../utils/backend";
-import { getUserTokenOrRedirect } from "../utils/msal";
+import { getUserTokenOrRedirect } from "../utils/session/msal";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { UserData } from "../../generated/definitions/backend/UserData";

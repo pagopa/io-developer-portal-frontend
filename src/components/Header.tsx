@@ -13,7 +13,7 @@ import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { StorageContext } from "../context/storage";
 import { getFromBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
-import { getUserAgentApplication } from "../utils/msal";
+import { getUserAgentApplication } from "../utils/session/msal";
 
 class Header extends Component<RouteComponentProps, never> {
   public onSignOut = async () => {
