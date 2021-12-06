@@ -7,7 +7,7 @@ import { Alert } from "design-react-kit";
 const { sessionStorage } = window;
 
 import { getFromBackend } from "../utils/backend";
-import { getUserTokenOrRedirect } from "../utils/session/msal";
+import { getSessionOrLogin } from "../utils/session";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { UserData } from "../../generated/definitions/backend/UserData";
@@ -20,7 +20,7 @@ class Login extends Component<WithNamespaces, never> {
       const configuration = await getFromBackend<MsalConfig>({
         path: "configuration"
       });
-      const tokenAndAccount = await getUserTokenOrRedirect(configuration);
+      const tokenAndAccount = await getSessionOrLogin(configuration);
 
       if (tokenAndAccount) {
         console.debug(
@@ -33,7 +33,7 @@ class Login extends Component<WithNamespaces, never> {
         // profile data (email, name, ...)
         sessionStorage.setItem(
           "userData",
-          JSON.stringify(tokenAndAccount.account.idToken)
+          JSON.stringify(tokenAndAccount.userData)
         );
 
         const apimUser = await getFromBackend<UserData>({ path: "user" });
