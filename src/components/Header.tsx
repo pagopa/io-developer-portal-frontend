@@ -21,8 +21,8 @@ class Header extends Component<RouteComponentProps, never> {
     const configuration = await getFromBackend<MsalConfig>({
       path: "configuration"
     });
-    
-    session.logout(configuration)
+
+    session.logout(configuration);
   };
 
   public goHome = () => {

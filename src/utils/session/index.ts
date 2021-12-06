@@ -11,7 +11,7 @@ export type LoggedUserData = {};
 /**
  * Clear and invalidates current session data
  *
- * @param configuration 
+ * @param configuration
  * @returns
  */
 export const logout = (configuration: SessionConfig): void => {
