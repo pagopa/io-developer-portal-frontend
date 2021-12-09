@@ -1,5 +1,6 @@
 import { MsalConfig } from "../../../generated/definitions/backend/MsalConfig";
 import { getUserAgentApplication, getUserTokenOrRedirect } from "./msal";
+import { some, none, Option } from "fp-ts/lib/Option";
 
 /**
  * The shape of configuration for the current session strategy
@@ -27,14 +28,14 @@ export const logout = (configuration: SessionConfig): void => {
  */
 export const getSessionOrLogin = async (
   configuration: SessionConfig
-): Promise<undefined | { token: string; userData: LoggedUserData }> => {
+): Promise<Option<{ token: string; userData: LoggedUserData }>> => {
   const tokenAndAccount = await getUserTokenOrRedirect(configuration);
 
   if (tokenAndAccount) {
-    return {
+    return some({
       token: tokenAndAccount.token,
       userData: tokenAndAccount.account.idToken
-    };
+    });
   }
-  return undefined;
+  return none;
 };

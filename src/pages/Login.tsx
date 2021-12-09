@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { isSome } from "fp-ts/lib/Option";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -20,20 +21,20 @@ class Login extends Component<WithNamespaces, never> {
       const configuration = await getFromBackend<MsalConfig>({
         path: "configuration"
       });
-      const tokenAndAccount = await getSessionOrLogin(configuration);
+      const maybeTokenAndAccount = await getSessionOrLogin(configuration);
 
-      if (tokenAndAccount) {
+      if (isSome(maybeTokenAndAccount)) {
         console.debug(
           "Login::getUserTokenOrRedirect::tokenAndAccount",
-          tokenAndAccount
+          maybeTokenAndAccount
         );
 
         // bearer token to call backend api
-        sessionStorage.setItem("userToken", tokenAndAccount.token);
+        sessionStorage.setItem("userToken", maybeTokenAndAccount.value.token);
         // profile data (email, name, ...)
         sessionStorage.setItem(
           "userData",
-          JSON.stringify(tokenAndAccount.userData)
+          JSON.stringify(maybeTokenAndAccount.value.userData)
         );
 
         const apimUser = await getFromBackend<UserData>({ path: "user" });
