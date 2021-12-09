@@ -1,6 +1,6 @@
+import { none, Option, some } from "fp-ts/lib/Option";
 import { MsalConfig } from "../../../generated/definitions/backend/MsalConfig";
 import { getUserAgentApplication, getUserTokenOrRedirect } from "./msal";
-import { some, none, Option } from "fp-ts/lib/Option";
 
 /**
  * The shape of configuration for the current session strategy

@@ -1,5 +1,5 @@
-import React, { Component } from "react";
 import { isSome } from "fp-ts/lib/Option";
+import React, { Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
