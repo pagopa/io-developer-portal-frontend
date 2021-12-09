@@ -6,18 +6,17 @@ export type SelfCareSessionConfig = t.TypeOf<typeof SelfCareSessionConfig>;
 export const SelfCareSessionConfig = SelfCareConfig;
 
 const redirectToSSO = (configuration: SelfCareSessionConfig): void => {
+  // tslint:disable-next-line:no-object-mutation
   window.location.href = configuration.login_url;
 };
 
 const parseJwt = (token: string) => {
-  let base64Url = token.split(".")[1];
-  let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  let jsonPayload = decodeURIComponent(
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
-      .map(function(c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
+      .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
       .join("")
   );
 
