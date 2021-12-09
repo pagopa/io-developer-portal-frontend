@@ -13,16 +13,16 @@ import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { StorageContext } from "../context/storage";
 import { getFromBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
-import { getUserAgentApplication } from "../utils/msal";
+
+import * as session from "../utils/session";
 
 class Header extends Component<RouteComponentProps, never> {
   public onSignOut = async () => {
     const configuration = await getFromBackend<MsalConfig>({
       path: "configuration"
     });
-    const userAgentApplication = getUserAgentApplication(configuration);
-    sessionStorage.clear();
-    userAgentApplication.logout();
+
+    session.logout(configuration);
   };
 
   public goHome = () => {

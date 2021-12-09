@@ -6,7 +6,7 @@
  * Needs a promise polyfill for old browsers.
  */
 import { UserAgentApplication } from "msal";
-import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
+import { MsalConfig } from "../../../generated/definitions/backend/MsalConfig";
 
 export function getUserAgentApplication(configuration: MsalConfig) {
   return new UserAgentApplication({

@@ -1,3 +1,4 @@
+import { isSome } from "fp-ts/lib/Option";
 import React, { Component } from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -7,7 +8,7 @@ import { Alert } from "design-react-kit";
 const { sessionStorage } = window;
 
 import { getFromBackend } from "../utils/backend";
-import { getUserTokenOrRedirect } from "../utils/msal";
+import { getSessionOrLogin } from "../utils/session";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { UserData } from "../../generated/definitions/backend/UserData";
@@ -20,20 +21,20 @@ class Login extends Component<WithNamespaces, never> {
       const configuration = await getFromBackend<MsalConfig>({
         path: "configuration"
       });
-      const tokenAndAccount = await getUserTokenOrRedirect(configuration);
+      const maybeTokenAndAccount = await getSessionOrLogin(configuration);
 
-      if (tokenAndAccount) {
+      if (isSome(maybeTokenAndAccount)) {
         console.debug(
           "Login::getUserTokenOrRedirect::tokenAndAccount",
-          tokenAndAccount
+          maybeTokenAndAccount
         );
 
         // bearer token to call backend api
-        sessionStorage.setItem("userToken", tokenAndAccount.token);
+        sessionStorage.setItem("userToken", maybeTokenAndAccount.value.token);
         // profile data (email, name, ...)
         sessionStorage.setItem(
           "userData",
-          JSON.stringify(tokenAndAccount.account.idToken)
+          JSON.stringify(maybeTokenAndAccount.value.userData)
         );
 
         const apimUser = await getFromBackend<UserData>({ path: "user" });
