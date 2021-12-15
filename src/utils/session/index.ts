@@ -1,13 +1,18 @@
 import { none, Option, some } from "fp-ts/lib/Option";
 import { MsalConfig } from "../../../generated/definitions/backend/MsalConfig";
-import { getUserAgentApplication, getUserTokenOrRedirect } from "./msal";
+import { PublicConfig } from "../../../generated/definitions/backend/PublicConfig";
+import {
+  getUserAgentApplication,
+  getUserTokenOrRedirect as getUserTokenOrRedirectMSAL
+} from "./msal";
+import { getUserTokenOrRedirect as getUserTokenOrRedirectSC } from "./selfcare";
 
 /**
  * The shape of configuration for the current session strategy
  */
-export type SessionConfig = MsalConfig; // will include more kinds in the future
+export type SessionConfig = PublicConfig;
 
-export type LoggedUserData = {};
+export type LoggedUserData = Record<string, unknown>;
 
 /**
  * Clear and invalidates current session data
@@ -17,7 +22,10 @@ export type LoggedUserData = {};
  */
 export const logout = (configuration: SessionConfig): void => {
   sessionStorage.clear();
-  return getUserAgentApplication(configuration).logout();
+  if (MsalConfig.is(configuration)) {
+    return getUserAgentApplication(configuration).logout();
+  }
+  return;
 };
 
 /**
@@ -29,13 +37,23 @@ export const logout = (configuration: SessionConfig): void => {
 export const getSessionOrLogin = async (
   configuration: SessionConfig
 ): Promise<Option<{ token: string; userData: LoggedUserData }>> => {
-  const tokenAndAccount = await getUserTokenOrRedirect(configuration);
-
-  if (tokenAndAccount) {
-    return some({
-      token: tokenAndAccount.token,
-      userData: tokenAndAccount.account.idToken
-    });
+  if (MsalConfig.is(configuration)) {
+    const tokenAndAccount = await getUserTokenOrRedirectMSAL(configuration);
+    if (tokenAndAccount) {
+      return some({
+        token: tokenAndAccount.token,
+        userData: tokenAndAccount.account.idToken
+      });
+    }
+  } else {
+    const tokenAndAccount = await getUserTokenOrRedirectSC(configuration);
+    if (tokenAndAccount) {
+      return some({
+        token: tokenAndAccount.token,
+        userData: tokenAndAccount.payload
+      });
+    }
   }
+
   return none;
 };
