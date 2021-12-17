@@ -48,9 +48,35 @@ const verifyToken = (): Either<
   }
 };
 
+// search for an id token in the url hash
+// if found, the token is stored in the session storage and removed from hash
+const readTokenFromHash = (): void => {
+  // we expect a hash in the shape
+  // #key1=value1&key2=value2
+  const idToken = window.location.hash
+    .slice(1 /* remove '#' char */)
+    .split("&")
+    .map(e => e.split("="))
+    .filter(([k]) => k === "id_token")
+    .map(([, value]) => value)[0];
+
+  if (idToken) {
+    sessionStorage.setItem("userToken", idToken);
+    // redirect to same page without hash
+    // tslint:disable-next-line:no-object-mutation
+    window.location.href = window.location.href.replace(
+      window.location.hash,
+      ""
+    );
+  }
+};
+
 export const getUserTokenOrRedirect = async (
   configuration: SelfCareSessionConfig
 ): Promise<void | { token: string; payload: Record<string, unknown> }> => {
+  // check if an id token is passed
+  // if so, it means we're coming from a login process, thus we store incoming token into session storage
+  readTokenFromHash();
   const errorOrToken = verifyToken();
 
   if (isLeft(errorOrToken)) {
