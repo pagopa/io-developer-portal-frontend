@@ -33,11 +33,18 @@ parameters:
 variables:
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
   AZURE_SUBSCRIPTION: $(PROD_AZURE_SUBSCRIPTION)
+  # DevPortal
   STORAGE_ACCOUNT_NAME: $(PROD_STORAGE_ACCOUNT_NAME)
   PROFILE_CDN_NAME: $(PROD_PROFILE_CDN_NAME)
   ENDPOINT_NAME: $(PROD_ENDPOINT_NAME)
   RESOURCE_GROUP_NAME: $(PROD_RESOURCE_GROUP_NAME)
   BACKEND_URL: $(PROD_BACKEND_URL)
+  # SelfCare IO  
+  SELFCARE_STORAGE_ACCOUNT_NAME: $(PROD_STORAGE_ACCOUNT_NAME)
+  SELFCARE_PROFILE_CDN_NAME: $(PROD_PROFILE_CDN_NAME)
+  SELFCARE_ENDPOINT_NAME: $(PROD_ENDPOINT_NAME)
+  SELFCARE_RESOURCE_GROUP_NAME: $(PROD_RESOURCE_GROUP_NAME)
+  SELFCARE_BACKEND_URL: $(PROD_BACKEND_URL)
 
 resources:
   repositories:
@@ -110,8 +117,8 @@ stages:
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle
  
-  # Deploy 
-  - stage: 'Deploy_to_${{ parameters.environment }}'
+  # Deploy DevPortal
+  - stage: 'Deploy_DevPortal'
     dependsOn:
       - Prepare_artifact
     pool:
@@ -139,3 +146,30 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g $(RESOURCE_GROUP_NAME) -n $(ENDPOINT_NAME) --profile-name $(PROFILE_CDN_NAME) --content-paths "/*"
+
+  - stage: 'Deploy_SelfCareIO'
+    dependsOn:
+      - Prepare_artifact
+    jobs:
+      - job: 'deploy_to_container'
+        steps:
+          - checkout: none
+
+          - download: current
+            artifact: Bundle
+
+          - task: AzureCLI@1
+            displayName: 'Sync Storage'
+            inputs:
+              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              scriptLocation: inlineScript
+              inlineScript: |
+                call az storage blob sync --container $(SELFCARE_BLOB_CONTAINER_NAME) --account-name $(SELFCARE_STORAGE_ACCOUNT_NAME) -s "$(Pipeline.Workspace)\Bundle"
+
+          - task: AzureCLI@1
+            displayName: 'Purge CDN'
+            inputs:
+              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              scriptLocation: inlineScript
+              inlineScript: |
+                call az cdn endpoint purge -g $(SELFCARE_RESOURCE_GROUP_NAME) -n $(SELFCARE_ENDPOINT_NAME) --profile-name $(SELFCARE_PROFILE_CDN_NAME) --content-paths "/*"
