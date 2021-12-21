@@ -93,7 +93,7 @@ stages:
             displayName: 'Skip release bundle'
 
   # Prepare Artifact with application bundle
-  - stage: Prepare_artifact
+  - stage: Prepare_artifact_DevPortal
     dependsOn:
       - Release
     pool:
@@ -119,7 +119,7 @@ stages:
   # Deploy DevPortal
   - stage: 'Deploy_DevPortal'
     dependsOn:
-      - Prepare_artifact
+      - Prepare_artifact_DevPortal
     pool:
       vmImage: 'windows-2019'
     jobs:
@@ -146,9 +146,36 @@ stages:
               inlineScript: |
                 call az cdn endpoint purge -g $(RESOURCE_GROUP_NAME) -n $(ENDPOINT_NAME) --profile-name $(PROFILE_CDN_NAME) --content-paths "/*"
 
+
+
+  # Prepare Artifact with application bundle
+  - stage: Prepare_artifact_SelfCareIO
+    dependsOn:
+      - Release
+    pool:
+      vmImage: 'ubuntu-latest'  
+    jobs:
+      - job: 'make_build'
+        steps:
+          # Build application
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+            parameters:
+              # On the assumption that this stage is executed only when Relase stage is,
+              #  with this parameter we set the reference the deploy script must pull changes from.
+              # The branch/tag name is calculated from the source branch
+              #  ex: Build.SourceBranch=refs/heads/master --> master
+              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
+              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+
+          - template: azure-templates/make-build.yml
+
+          - publish: $(System.DefaultWorkingDirectory)/dist
+            artifact: Bundle
+ 
+
   - stage: 'Deploy_SelfCareIO'
     dependsOn:
-      - Prepare_artifact
+      - Prepare_artifact_SelfCareIO
     pool:
       vmImage: 'windows-2019'  
     jobs:
