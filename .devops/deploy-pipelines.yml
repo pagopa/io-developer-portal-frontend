@@ -150,6 +150,8 @@ stages:
   - stage: 'Deploy_SelfCareIO'
     dependsOn:
       - Prepare_artifact
+    pool:
+      vmImage: 'windows-2019'  
     jobs:
       - job: 'deploy_to_container'
         steps:
