@@ -32,7 +32,6 @@ parameters:
 # $(LOGO_PATH)
 variables:
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
-  AZURE_SUBSCRIPTION: $(PROD_AZURE_SUBSCRIPTION)
   # DevPortal
   STORAGE_ACCOUNT_NAME: $(PROD_STORAGE_ACCOUNT_NAME)
   PROFILE_CDN_NAME: $(PROD_PROFILE_CDN_NAME)
@@ -134,7 +133,7 @@ stages:
           - task: AzureCLI@1
             displayName: 'Sync Storage'
             inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              azureSubscription: '$(PROD_AZURE_SUBSCRIPTION)'
               scriptLocation: inlineScript
               inlineScript: |
                 call az storage blob sync --container $(BLOB_CONTAINER_NAME) --account-name $(STORAGE_ACCOUNT_NAME) -s "$(Pipeline.Workspace)\Bundle"
@@ -142,7 +141,7 @@ stages:
           - task: AzureCLI@1
             displayName: 'Purge CDN'
             inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              azureSubscription: '$(PROD_AZURE_SUBSCRIPTION)'
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g $(RESOURCE_GROUP_NAME) -n $(ENDPOINT_NAME) --profile-name $(PROFILE_CDN_NAME) --content-paths "/*"
@@ -163,7 +162,7 @@ stages:
           - task: AzureCLI@1
             displayName: 'Sync Storage'
             inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              azureSubscription: '$(PROD_AZURE_SUBSCRIPTION)'
               scriptLocation: inlineScript
               inlineScript: |
                 call az storage blob sync --container $(SELFCARE_BLOB_CONTAINER_NAME) --account-name $(SELFCARE_STORAGE_ACCOUNT_NAME) -s "$(Pipeline.Workspace)\Bundle"
@@ -171,7 +170,7 @@ stages:
           - task: AzureCLI@1
             displayName: 'Purge CDN'
             inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              azureSubscription: '$(PROD_AZURE_SUBSCRIPTION)'
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g $(SELFCARE_RESOURCE_GROUP_NAME) -n $(SELFCARE_ENDPOINT_NAME) --profile-name $(SELFCARE_PROFILE_CDN_NAME) --content-paths "/*"
