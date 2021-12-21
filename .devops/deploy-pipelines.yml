@@ -167,7 +167,7 @@ stages:
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
 
-          - template: azure-templates/make-build.yml
+          - template: azure-templates/make-build-selfcare.yml
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle
