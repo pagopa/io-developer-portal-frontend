@@ -38,7 +38,7 @@ const verifyToken = (): Either<
 
     // check is expired
     const exp = new Date(payload.exp * 1000);
-    if (exp.getTime() > Date.now()) {
+    if (exp.getTime() <= Date.now()) {
       return left(new Error("Token expired"));
     }
 

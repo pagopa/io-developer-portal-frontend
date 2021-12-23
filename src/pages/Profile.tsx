@@ -228,26 +228,30 @@ class Profile extends Component<Props, ProfileState> {
 
     const isEditingAuthenticatedUser = !email;
 
+    
+
     if (isEditingAuthenticatedUser) {
       // prepopulate new subscription form with values from authenticated user
       // TODO: do this for admins (email = true) as well
       const storedUserData = getStorage().userData;
-      this.setState({
+      const state = {
         newSubscription: {
-          service_name: storedUserData.extension_Service,
-          department_name: storedUserData.extension_Department,
-          organization_name: storedUserData.extension_Organization,
-          organization_fiscal_code: "00000000000",
+          service_name: "", //storedUserData.extension_Service,
+          department_name: "-",// storedUserData.extension_Department,
+          organization_name: storedUserData.organization.id ,// storedUserData.extension_Organization,
+          organization_fiscal_code: storedUserData.organization.fiscal_code,
           new_user: {
             adb2c_id: storedUserData.oid,
-            first_name: storedUserData.given_name,
-            last_name: storedUserData.family_name,
-            email: storedUserData.emails[0]
+            first_name: "-", //storedUserData.given_name,
+            last_name: "-", //storedUserData.family_name,
+            email: `org.${storedUserData.organization.id}@selfcare.io.pagopa.it`
           }
         }
-      });
+      }
+      this.setState(state);
     }
 
+    
     // load all user's subscriptions
     const userSubscriptions: SubscriptionCollection = await getFromBackend<
       SubscriptionCollection
@@ -353,9 +357,10 @@ class Profile extends Component<Props, ProfileState> {
     const userGroups = get(this.state, "userData.apimUser.groupNames");
     return (
       <div>
-        <h4>{get(this.state, "userData.apimUser.email", t("new_user"))}</h4>
+        {/*<h4>{get(this.state, "userData.apimUser.email", t("new_user"))}</h4>*/}
+        <h4>Organizzazione: {get(this.state, "userData.authenticatedUser.organization.id")}</h4>
         <div className="row">
-          <div className="col-md-8">
+        { /* <div className="col-md-8">
             {firstName && (
               <div>
                 {t("name")}: {firstName}
@@ -373,7 +378,7 @@ class Profile extends Component<Props, ProfileState> {
                 </a>
               </div>
             )}
-          </div>
+          </div>*/}
           <div className="col-md-4">
             <button
               onClick={() => {

@@ -24,6 +24,8 @@ export const logout = (configuration: SessionConfig): void => {
   sessionStorage.clear();
   if (MsalConfig.is(configuration)) {
     return getUserAgentApplication(configuration).logout();
+  } else {
+    window.location.href = "/login";
   }
   return;
 };
