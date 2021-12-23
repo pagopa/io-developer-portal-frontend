@@ -13,13 +13,6 @@ parameters:
       - minor
       - patch
     default: patch
-  - name: environment
-    displayName: Target Environment
-    type: string
-    default: prod
-    values:
-      # - dev
-      - prod
 
 # variables set on azdevops to avoid circular dependency warning
 # $(DEFAULT_BRANCH)
@@ -39,18 +32,18 @@ variables:
   RESOURCE_GROUP_NAME: $(PROD_RESOURCE_GROUP_NAME)
   BACKEND_URL: $(PROD_BACKEND_URL)
   # SelfCare IO  
-  SELFCARE_STORAGE_ACCOUNT_NAME: $(PROD_STORAGE_ACCOUNT_NAME)
-  SELFCARE_PROFILE_CDN_NAME: $(PROD_PROFILE_CDN_NAME)
-  SELFCARE_ENDPOINT_NAME: $(PROD_ENDPOINT_NAME)
-  SELFCARE_RESOURCE_GROUP_NAME: $(PROD_RESOURCE_GROUP_NAME)
-  SELFCARE_BACKEND_URL: $(PROD_BACKEND_URL)
+  SELFCARE_STORAGE_ACCOUNT_NAME: $(SELFCARE_PROD_STORAGE_ACCOUNT_NAME)
+  SELFCARE_PROFILE_CDN_NAME: $(SELFCARE_PROD_PROFILE_CDN_NAME)
+  SELFCARE_ENDPOINT_NAME: $(SELFCARE_PROD_ENDPOINT_NAME)
+  SELFCARE_RESOURCE_GROUP_NAME: $(SELFCARE_PROD_RESOURCE_GROUP_NAME)
+  SELFCARE_BACKEND_URL: $(SELFCARE_PROD_BACKEND_URL)
 
 resources:
   repositories:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v14
+      ref: refs/tags/v18
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
