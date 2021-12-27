@@ -53,7 +53,7 @@ class Header extends Component<RouteComponentProps, never> {
                             {storage.service.service_name})
                           </span>
                         ) : (
-                          <span>IO Backoffice</span>
+                          <span>{getConfig("IO_DEVELOPER_PORTAL_TITLE")}</span>
                         )}
                       </NavLink>
                     </NavItem>
