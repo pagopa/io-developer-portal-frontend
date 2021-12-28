@@ -163,7 +163,7 @@ stages:
           - template: azure-templates/make-build-selfcare.yml
 
           - publish: $(System.DefaultWorkingDirectory)/dist
-            artifact: Bundle
+            artifact: BundleSC
  
 
   - stage: 'Deploy_SelfCareIO'
@@ -177,7 +177,7 @@ stages:
           - checkout: none
 
           - download: current
-            artifact: Bundle
+            artifact: BundleSC
 
           - task: AzureCLI@1
             displayName: 'Sync Storage'

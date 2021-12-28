@@ -375,11 +375,11 @@ class Profile extends Component<Props, ProfileState> {
       <h4>
         {" "}
         {isSelfCare
-          ? get(this.state, "userData.apimUser.email", t("new_user"))
-          : `Organizzazione: ${get(
+          ? `Organizzazione: ${get(
               this.state,
               "userData.authenticatedUser.organization.id"
-            )}`}
+            )}`
+          : get(this.state, "userData.apimUser.email", t("new_user"))}
       </h4>
     );
 
