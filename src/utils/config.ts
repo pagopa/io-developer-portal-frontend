@@ -1,4 +1,5 @@
 export interface IConfig {
+  IO_DEVELOPER_PORTAL_TITLE: string;
   IO_DEVELOPER_PORTAL_PUBLIC_PATH: string;
   IO_DEVELOPER_PORTAL_BASE_URL: string;
   IO_DEVELOPER_PORTAL_PORT: string;

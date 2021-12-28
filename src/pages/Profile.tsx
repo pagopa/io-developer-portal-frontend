@@ -15,14 +15,14 @@ import { RouteComponentProps } from "react-router";
 import Confirmation from "../components/modal/Confirmation";
 import NewService from "../components/modal/NewService";
 
-import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
-
 import { Service } from "../../generated/definitions/commons/Service";
 
 import { SubscriptionCollection } from "../../generated/definitions/backend/SubscriptionCollection";
 import { SubscriptionContract } from "../../generated/definitions/backend/SubscriptionContract";
 import { UserData } from "../../generated/definitions/backend/UserData";
 
+import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
+import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
 import {
   getColorClass,
   getServiceReviewStatus,
@@ -120,7 +120,7 @@ interface UserSubscriptions {
 }
 
 type ProfileState = {
-  applicationConfig: MsalConfig;
+  applicationConfig: PublicConfig;
   userData: UserData | {};
   newSubscription: {
     service_name?: string;
@@ -210,10 +210,47 @@ class Profile extends Component<Props, ProfileState> {
     }));
   };
 
+  private getSubscriptionDefaults(applicationConfig: PublicConfig) {
+    // prepopulate new subscription form with values from authenticated user
+    // TODO: do this for admins (email = true) as well
+    const storedUserData = getStorage().userData;
+    if (MsalConfig.is(applicationConfig)) {
+      return {
+        newSubscription: {
+          service_name: storedUserData.extension_Service,
+          department_name: storedUserData.extension_Department,
+          organization_name: storedUserData.extension_Organization,
+          organization_fiscal_code: "00000000000",
+          new_user: {
+            adb2c_id: storedUserData.oid,
+            first_name: storedUserData.given_name,
+            last_name: storedUserData.family_name,
+            email: storedUserData.emails[0]
+          }
+        }
+      };
+    } else {
+      return {
+        newSubscription: {
+          service_name: "", // storedUserData.extension_Service,
+          department_name: "-", // storedUserData.extension_Department,
+          organization_name: storedUserData.organization.id, // storedUserData.extension_Organization,
+          organization_fiscal_code: storedUserData.organization.fiscal_code,
+          new_user: {
+            adb2c_id: storedUserData.oid,
+            first_name: "-", // storedUserData.given_name,
+            last_name: "-", // storedUserData.family_name,
+            email: `org.${storedUserData.organization.id}@selfcare.io.pagopa.it`
+          }
+        }
+      };
+    }
+  }
+
   public async componentDidMount() {
     const email = getMail(this.props.match.params.email);
 
-    const applicationConfig: MsalConfig = await getFromBackend<MsalConfig>({
+    const applicationConfig = await getFromBackend<PublicConfig>({
       path: "configuration"
     });
     this.setState({ applicationConfig });
@@ -229,23 +266,7 @@ class Profile extends Component<Props, ProfileState> {
     const isEditingAuthenticatedUser = !email;
 
     if (isEditingAuthenticatedUser) {
-      // prepopulate new subscription form with values from authenticated user
-      // TODO: do this for admins (email = true) as well
-      const storedUserData = getStorage().userData;
-      this.setState({
-        newSubscription: {
-          service_name: storedUserData.extension_Service,
-          department_name: storedUserData.extension_Department,
-          organization_name: storedUserData.extension_Organization,
-          organization_fiscal_code: "00000000000",
-          new_user: {
-            adb2c_id: storedUserData.oid,
-            first_name: storedUserData.given_name,
-            last_name: storedUserData.family_name,
-            email: storedUserData.emails[0]
-          }
-        }
-      });
+      this.setState(this.getSubscriptionDefaults(applicationConfig));
     }
 
     // load all user's subscriptions
@@ -345,35 +366,61 @@ class Profile extends Component<Props, ProfileState> {
   public renderNewUserDiv() {
     const { t } = this.props;
 
-    const isSameUser = !this.props.match.params.email;
-
-    const firstName = get(this.state, "userData.apimUser.firstName");
-    const lastName = get(this.state, "userData.apimUser.lastName");
-
     const userGroups = get(this.state, "userData.apimUser.groupNames");
-    return (
-      <div>
-        <h4>{get(this.state, "userData.apimUser.email", t("new_user"))}</h4>
-        <div className="row">
-          <div className="col-md-8">
-            {firstName && (
-              <div>
-                {t("name")}: {firstName}
-              </div>
-            )}
-            {lastName && (
-              <div>
-                {t("surname")}: {lastName}
-              </div>
-            )}
-            {isSameUser && this.state.applicationConfig.changePasswordLink && (
+
+    const applicationConfig = get(this.state, "applicationConfig");
+    const isSelfCare = !MsalConfig.is(applicationConfig);
+
+    const SubscriptionOwnerName = () => (
+      <h4>
+        {" "}
+        {isSelfCare
+          ? get(this.state, "userData.apimUser.email", t("new_user"))
+          : `Organizzazione: ${get(
+              this.state,
+              "userData.authenticatedUser.organization.id"
+            )}`}
+      </h4>
+    );
+
+    const AccountInfo = () => {
+      if (isSelfCare) {
+        return <></>;
+      }
+
+      const isSameUser = !this.props.match.params.email;
+      const firstName = get(this.state, "userData.apimUser.firstName");
+      const lastName = get(this.state, "userData.apimUser.lastName");
+      return (
+        <div className="col-md-8">
+          {firstName && (
+            <div>
+              {t("name")}: {firstName}
+            </div>
+          )}
+          {lastName && (
+            <div>
+              {t("surname")}: {lastName}
+            </div>
+          )}
+          {isSameUser &&
+            "changePasswordLink" in this.state.applicationConfig &&
+            this.state.applicationConfig.changePasswordLink && (
               <div>
                 <a href={this.state.applicationConfig.changePasswordLink}>
                   {t("change_password")}
                 </a>
               </div>
             )}
-          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div>
+        <SubscriptionOwnerName />
+        <div className="row">
+          <AccountInfo />
           <div className="col-md-4">
             <button
               onClick={() => {
