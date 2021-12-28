@@ -185,7 +185,7 @@ stages:
               azureSubscription: '$(PROD_AZURE_SUBSCRIPTION)'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $(BLOB_CONTAINER_NAME) --account-name $(SELFCARE_STORAGE_ACCOUNT_NAME) -s "$(Pipeline.Workspace)\Bundle"
+                call az storage blob sync --container $(BLOB_CONTAINER_NAME) --account-name $(SELFCARE_STORAGE_ACCOUNT_NAME) -s "$(Pipeline.Workspace)\BundleSC"
 
           - task: AzureCLI@1
             displayName: 'Purge CDN'
