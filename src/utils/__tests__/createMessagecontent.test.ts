@@ -1,3 +1,4 @@
+import moment from "moment";
 import { createMessageContent } from "../operations";
 
 const messageData = {
@@ -20,12 +21,15 @@ describe("Create Message Content", () => {
   it("should create a message with payment_data", () => {
     const data = mockMessageData();
     const res = createMessageContent(data);
+
     expect(res).not.toBeNull();
     expect(res).toEqual({
       markdown:
         "This is the markdown, it should be at least 80 characters long otherwise you'll got an error.",
       subject: "A test subject",
-      due_date: new Date("2021-10-22T16:00:00.000Z"),
+      due_date: new Date(
+        moment(messageData.dueDate, messageData.dueDateFormat).toISOString()
+      ),
       payment_data: {
         amount: 123,
         notice_number: "000111222333444555",
