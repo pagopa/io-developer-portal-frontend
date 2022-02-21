@@ -267,9 +267,9 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     );
   };
 
-  public getHandleBlur = (
-    prop: keyof ServiceMetadata | keyof Service | keyof SpecialServiceMetadata
-  ) => (event: FocusEvent<HTMLInputElement>) => {
+  public getHandleBlur = (prop: keyof Service) => (
+    event: FocusEvent<HTMLInputElement>
+  ) => {
     const target = event.target;
     const inputValue =
       target.type === "checkbox" ? target.checked : target.value;
@@ -284,7 +284,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   };
 
   public getHandleMetadataBlur = (
-    prop: keyof ServiceMetadata | keyof Service
+    prop: keyof ServiceMetadata | keyof SpecialServiceMetadata
   ) => (event: FocusEvent<HTMLSelectElement | HTMLInputElement>) => {
     const {
       target: { name, value }
@@ -928,6 +928,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onChange={this.handleInputChange}
                     onChangeMetadata={this.handleMetadataChange}
                     onBlur={this.getHandleBlur}
+                    onBlurMetadata={this.getHandleMetadataBlur}
                     service={service}
                     showError={showError}
                     errors={errors}

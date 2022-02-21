@@ -16,7 +16,10 @@ type OwnProps = {
     event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
   ) => void;
   onBlur: (
-    prop: keyof Service | keyof SpecialServiceMetadata
+    prop: keyof Service
+  ) => (event: FocusEvent<HTMLInputElement>) => void;
+  onBlurMetadata: (
+    prop: keyof SpecialServiceMetadata
   ) => (event: FocusEvent<HTMLInputElement>) => void;
 };
 
@@ -27,6 +30,7 @@ const AdminFields = ({
   onChange,
   onChangeMetadata,
   onBlur,
+  onBlurMetadata,
   errors,
   t
 }: Props) => {
@@ -94,7 +98,7 @@ const AdminFields = ({
                 ? service.service_metadata.custom_special_flow
                 : undefined
             }
-            onBlur={onBlur("custom_special_flow")}
+            onBlur={onBlurMetadata("custom_special_flow")}
             className="mb4"
           />
         </div>
