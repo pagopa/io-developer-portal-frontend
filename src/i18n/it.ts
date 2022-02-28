@@ -200,6 +200,15 @@ const it = {
     add: "Aggiungi un server",
     default: "default"
   },
+  subscription_migrations: {
+    open_migrations_panel: "Importa i Servizi",
+    migrations_summary_title:
+      "Se hai già dei servizi attivi su IO che gestivi nel IO Backoffice puoi importarli qui",
+    migrations_summary_latest: "Stato dell'importazione",
+    migrations_summary_latest_empty: "Nessuna importazioni avviata",
+    disclaimer:
+      "L’importazione dei tuoi servizi dal portale IO Backoffice comporta orem ipsum dolor sit amet, consectetur adipiscing elit. In non mauris enim. Aenean pellentesque tristique elit sed pulvinar. Non verranno importati i profili dei delegati associati ai servizi che stai importando, ma solo i servizi stessi. Per tanto, una volta importati i servizi, i/il Referente/i Amministrativo/i associati a App IO dovranno aggiungere i delegati associati al prodotto nell’apposita sezione Referenti."
+  },
   templates: {
     edit: "Modifica",
     send: "Invia ad un destinatario",
