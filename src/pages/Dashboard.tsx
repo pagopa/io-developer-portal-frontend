@@ -12,8 +12,8 @@ import { RouteComponentProps } from "react-router";
 
 import "./Dashboard.css";
 
-import SummaryBox from "../components/subscription-migrations/SummaryBox";
 import MigrationsPanel from "../components/subscription-migrations/MigrationsPanel";
+import SummaryBox from "../components/subscription-migrations/SummaryBox";
 import {
   MessageDocument,
   MessagePostAndPersistResult
@@ -96,10 +96,17 @@ class Dashboard extends Component<Props, DashboardState> {
             <>
               <section className="d-flex">
                 <div className="m-3 p-3 card">
-                  <SummaryBox onSubmitHandler={() => this.setState({ showModal: true })} />
+                  <SummaryBox
+                    onSubmitHandler={() => this.setState({ showModal: true })}
+                  />
                 </div>
               </section>
-              {showModal && <MigrationsPanel show={showModal} onClose={() => this.setState({ showModal: false })} />}
+              {showModal && (
+                <MigrationsPanel
+                  show={showModal}
+                  onClose={() => this.setState({ showModal: false })}
+                />
+              )}
             </>
           )}
       </>

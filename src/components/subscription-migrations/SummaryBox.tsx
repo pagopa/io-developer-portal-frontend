@@ -11,7 +11,7 @@ type Props = WithNamespaces & OwnProps;
 const SummaryBox = ({ onSubmitHandler, t }: Props) => {
   return (
     <div className="">
-      <div className="" >
+      <div className="">
         <h4>{t("migrations_summary_title")}</h4>
       </div>
 
@@ -22,12 +22,10 @@ const SummaryBox = ({ onSubmitHandler, t }: Props) => {
       </div>
 
       <div className="mt-4">
-        <span className="pt-4 pb-4">
-          {t("disclaimer")}
-        </span>
+        <span className="pt-4 pb-4">{t("disclaimer")}</span>
       </div>
 
-      <div className="mt-4" >
+      <div className="mt-4">
         <h4>{t("migrations_summary_latest")}</h4>
       </div>
 

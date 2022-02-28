@@ -1,5 +1,4 @@
-import { Button } from "design-react-kit";
-import React, { ChangeEvent, Component, MouseEvent } from "react";
+import React, { Component, MouseEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 import "../modal/Modal.css";
@@ -29,7 +28,7 @@ class MigrationsPanel extends Component<Props> {
     if (!this.state.show) {
       return null;
     }
-    const { t } = this.props
+    const { t } = this.props;
     return (
       <div className="modal-card" onClick={this.props.onClose}>
         <div
@@ -54,4 +53,6 @@ class MigrationsPanel extends Component<Props> {
     );
   }
 }
-export default withNamespaces(["subscription_migrations", "modal"])(MigrationsPanel);
+export default withNamespaces(["subscription_migrations", "modal"])(
+  MigrationsPanel
+);
