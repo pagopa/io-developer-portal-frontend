@@ -208,7 +208,14 @@ const en = {
     migrations_summary_latest: "Import status",
     migrations_summary_latest_empty: "No import has been started yet",
     disclaimer:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In non mauris enim. Aenean pellentesque tristique elit sed pulvinar. Non verranno importati i profili dei delegati associati ai servizi che stai importando, ma solo i servizi stessi. Per tanto, una volta importati i servizi, i/il Referente/i Amministrativo/i associati a App IO dovranno aggiungere i delegati associati al prodotto nell’apposita sezione Referenti."
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In non mauris enim. Aenean pellentesque tristique elit sed pulvinar. Non verranno importati i profili dei delegati associati ai servizi che stai importando, ma solo i servizi stessi. Per tanto, una volta importati i servizi, i/il Referente/i Amministrativo/i associati a App IO dovranno aggiungere i delegati associati al prodotto nell’apposita sezione Referenti.",
+    migrations_panel_title: "Import Services",
+    migrations_panel_abstract:
+      "Here you will find the delegates who work on the services associated with your organization. To import, select the delegates you want to import / services added for each delegate",
+    migrations_panel_list: "List of delegates who work for your organization",
+    migrations_panel_list_empty:
+      "There are no delegates working for your organization",
+    close: "Close"
   },
   templates: {
     edit: "Edit",
