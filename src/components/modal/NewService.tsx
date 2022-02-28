@@ -2,7 +2,7 @@ import { Button } from "design-react-kit";
 import React, { ChangeEvent, Component, MouseEvent } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
-import "./NewService.css";
+import "./Modal.css";
 
 type OwnProps = {
   t: (key: string) => string;
