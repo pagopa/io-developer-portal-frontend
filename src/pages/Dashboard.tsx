@@ -13,6 +13,7 @@ import { RouteComponentProps } from "react-router";
 import "./Dashboard.css";
 
 import SummaryBox from "../components/subscription-migrations/SummaryBox";
+import MigrationsPanel from "../components/subscription-migrations/MigrationsPanel";
 import {
   MessageDocument,
   MessagePostAndPersistResult
@@ -35,6 +36,7 @@ type Props = RouteComponentProps<
 
 type DashboardState = {
   applicationConfig: PublicConfig;
+  showModal: boolean;
 };
 
 class Dashboard extends Component<Props, DashboardState> {
@@ -59,6 +61,7 @@ class Dashboard extends Component<Props, DashboardState> {
   public render() {
     const { location } = this.props;
     const applicationConfig = get(this.state, "applicationConfig");
+    const showModal = get(this.state, "showModal");
     return (
       <>
         <section className="d-flex">
@@ -90,11 +93,14 @@ class Dashboard extends Component<Props, DashboardState> {
         </section>
         {ff("SUBSCRIPTION_MIGRATIONS_ENABLED") &&
           SelfCareSessionConfig.is(applicationConfig) && (
-            <section className="d-flex">
-              <div className="m-3 p-3 card">
-                <SummaryBox onSubmitHandler={() => console.log("noop")} />
-              </div>
-            </section>
+            <>
+              <section className="d-flex">
+                <div className="m-3 p-3 card">
+                  <SummaryBox onSubmitHandler={() => this.setState({ showModal: true })} />
+                </div>
+              </section>
+              {showModal && <MigrationsPanel show={showModal} onClose={() => this.setState({ showModal: false })} />}
+            </>
           )}
       </>
     );
