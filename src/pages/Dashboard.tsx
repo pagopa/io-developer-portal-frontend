@@ -103,7 +103,6 @@ class Dashboard extends Component<Props, DashboardState> {
               </section>
               {showModal && (
                 <MigrationsPanel
-                  show={showModal}
                   onClose={() => this.setState({ showModal: false })}
                 />
               )}

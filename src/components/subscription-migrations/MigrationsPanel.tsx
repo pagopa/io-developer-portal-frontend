@@ -5,29 +5,13 @@ import "../modal/Modal.css";
 
 type OwnProps = {
   t: (key: string) => string;
-  show: boolean;
   onClose: (event: MouseEvent) => void;
 };
 
 type Props = WithNamespaces & OwnProps;
 
 class MigrationsPanel extends Component<Props> {
-  public state: {
-    show: boolean;
-  } = {
-    show: false
-  };
-
-  public componentDidMount() {
-    this.setState({
-      show: this.props.show
-    });
-  }
-
   public render() {
-    if (!this.state.show) {
-      return null;
-    }
     const { t } = this.props;
     return (
       <div className="modal-card" onClick={this.props.onClose}>
