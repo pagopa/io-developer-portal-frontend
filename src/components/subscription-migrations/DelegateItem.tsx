@@ -53,18 +53,23 @@ class DelegateItem extends Component<Props> {
       selected
     } = this.props;
     const isStatusLoaded = typeof migrationStatus !== "undefined";
+    const isSelectable =
+      migrationStatus === "todo" || migrationStatus === "failed";
 
     return (
-      <div
-        className="d-flex mt-1"
-        style={{ gap: "10px", cursor: "pointer" }}
-        onClick={() => {
-          this.setState({ selected: !selected });
-          onSelectionChange(id, !selected);
-        }}
-      >
+      <div className="d-flex mt-1" style={{ gap: "10px" }}>
         <div style={{ minWidth: "1em", flex: 1, flexGrow: 0 }}>
-          <input name="selected" type="checkbox" defaultChecked={selected} />
+          {isSelectable && (
+            <input
+              name="selected"
+              type="checkbox"
+              defaultChecked={selected}
+              onChange={() => {
+                this.setState({ selected: !selected });
+                onSelectionChange(id, !selected);
+              }}
+            />
+          )}
         </div>
         <div style={{ minWidth: "15em" }}>
           {name} {surname}
