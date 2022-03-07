@@ -214,7 +214,12 @@ const it = {
     migrations_panel_list: "Lista dei delegati che operano per il tuo Ente",
     migrations_panel_list_empty:
       "Non ci sono delegati che operano per il tuo Ente",
-    close: "Chiudi"
+    close: "Chiudi",
+    migrations_panel_start_migration: "Importa selezionati",
+    migration_status_todo: "da avviare",
+    migration_status_doing: "in esecuzione",
+    migration_status_done: "completata",
+    migration_status_failed: "fallita"
   },
   templates: {
     edit: "Modifica",
