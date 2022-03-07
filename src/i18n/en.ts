@@ -215,7 +215,12 @@ const en = {
     migrations_panel_list: "List of delegates who work for your organization",
     migrations_panel_list_empty:
       "There are no delegates working for your organization",
-    close: "Close"
+    close: "Close",
+    migrations_panel_start_migration: "Import selected",
+    migration_status_todo: "to be started yet",
+    migration_status_doing: "executing",
+    migration_status_done: "completed",
+    migration_status_failed: "failed"
   },
   templates: {
     edit: "Edit",
