@@ -220,7 +220,9 @@ const en = {
     migration_status_todo: "to be started yet",
     migration_status_doing: "executing",
     migration_status_done: "completed",
-    migration_status_failed: "failed"
+    migration_status_failed: "failed",
+    api_error: "An error occurred",
+    api_error_claim_migrations: "One or more ownership claims has failed"
   },
   templates: {
     edit: "Edit",

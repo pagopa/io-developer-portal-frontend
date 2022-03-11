@@ -219,7 +219,10 @@ const it = {
     migration_status_todo: "da avviare",
     migration_status_doing: "in esecuzione",
     migration_status_done: "completata",
-    migration_status_failed: "fallita"
+    migration_status_failed: "fallita",
+    api_error: "Si è verificato un errore",
+    api_error_claim_migrations:
+      "Una o più migrazioni richieste non sono andate a buon fine"
   },
   templates: {
     edit: "Modifica",
