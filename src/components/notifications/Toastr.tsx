@@ -44,7 +44,7 @@ type OwnProps = {
   position?: ToastrPosition;
   delay?: number;
   onToastrClose: (event: ToastrItem) => void;
-  onErrorDetail: () => void;
+  onErrorDetail?: () => void;
 };
 type Props = WithNamespaces & OwnProps;
 
@@ -148,6 +148,7 @@ class Toastr extends Component<Props, ToastrState> {
 
   public render() {
     const { toastList, position } = this.state;
+    const { onErrorDetail } = this.props;
     return (
       <>
         <div className={`notification-container ${position}`}>
@@ -163,14 +164,15 @@ class Toastr extends Component<Props, ToastrState> {
               <div>
                 <p className="notification-title">{toast.title}</p>
                 <p className="notification-message">{toast.description}</p>
-                {toast.type === ToastrType.error && (
-                  <p
-                    className="notification-errors-detail"
-                    onClick={() => this.props.onErrorDetail()}
-                  >
-                    {this.props.t("list_errors")}
-                  </p>
-                )}
+                {toast.type === ToastrType.error &&
+                  typeof onErrorDetail === "function" && (
+                    <p
+                      className="notification-errors-detail"
+                      onClick={() => onErrorDetail()}
+                    >
+                      {this.props.t("list_errors")}
+                    </p>
+                  )}
               </div>
             </div>
           ))}
