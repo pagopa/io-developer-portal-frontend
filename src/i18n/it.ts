@@ -222,7 +222,10 @@ const it = {
     migration_status_failed: "fallita",
     api_error: "Si è verificato un errore",
     api_error_claim_migrations:
-      "Una o più migrazioni richieste non sono andate a buon fine"
+    "Una o più migrazioni richieste non sono andate a buon fine",
+    api_success: "Operazione eseguita",
+    api_success_claim_migrations:
+      "La richiesta di migrazione delle sottoscrizioni scelte è stata accettata"
   },
   templates: {
     edit: "Modifica",

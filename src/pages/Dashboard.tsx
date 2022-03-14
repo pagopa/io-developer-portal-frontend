@@ -138,9 +138,23 @@ class Dashboard extends Component<Props, DashboardState> {
                             )
                           ]
                         });
+                      case "done":
+                        // confirm operation and close modal
+                        return this.setState({
+                          showModal: false,
+                          toasts: [
+                            ...toasts,
+                            toToastMessage(
+                              t("subscription_migrations:api_success"),
+                              t(
+                                "subscription_migrations:api_success_claim_migrations"
+                              ),
+                              ToastrType.success
+                            )
+                          ]
+                        });
                       // in any other case, just close
                       case "cancel":
-                      case "done":
                         return this.setState({ showModal: false });
                       default:
                         // tslint:disable-next-line:no-dead-store

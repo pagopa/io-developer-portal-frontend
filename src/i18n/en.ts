@@ -222,7 +222,10 @@ const en = {
     migration_status_done: "completed",
     migration_status_failed: "failed",
     api_error: "An error occurred",
-    api_error_claim_migrations: "One or more ownership claims has failed"
+    api_error_claim_migrations: "One or more ownership claims has failed",
+    api_success: "Success",
+    api_success_claim_migrations:
+      "Ownership claim for selecteded subscriptions has been accepted"
   },
   templates: {
     edit: "Edit",
