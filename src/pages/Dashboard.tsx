@@ -23,9 +23,26 @@ import { TemplateDocument } from "./Message";
 
 import { get } from "lodash";
 import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
+import Toastr, {
+  ToastrItem,
+  ToastrType
+} from "../components/notifications/Toastr";
 import { getFromBackend } from "../utils/backend";
 import ff from "../utils/feature-flags";
 import { SelfCareSessionConfig } from "../utils/session/selfcare";
+
+const toToastMessage = (
+  title: string,
+  description: string,
+  type: ToastrType
+): ToastrItem => ({
+  // toasts with same id won't render twice at the same time
+  // this is strong-enough-for-the-case check that assumes different messages have different lenghts
+  id: description.length + title.length,
+  title,
+  description,
+  type
+});
 
 type Props = RouteComponentProps<
   {},
@@ -36,6 +53,7 @@ type Props = RouteComponentProps<
 
 type DashboardState = {
   applicationConfig: PublicConfig;
+  toasts: readonly ToastrItem[];
   showModal: boolean;
 };
 
@@ -59,9 +77,10 @@ class Dashboard extends Component<Props, DashboardState> {
     );
   }
   public render() {
-    const { location } = this.props;
+    const { location, t } = this.props;
     const applicationConfig = get(this.state, "applicationConfig");
     const showModal = get(this.state, "showModal");
+    const toasts = get(this.state, "toasts", [] as readonly ToastrItem[]);
     return (
       <>
         <section className="d-flex">
@@ -103,11 +122,49 @@ class Dashboard extends Component<Props, DashboardState> {
               </section>
               {showModal && (
                 <MigrationsPanel
-                  onClose={() => this.setState({ showModal: false })}
+                  onClose={reason => {
+                    switch (reason) {
+                      case "error":
+                        // show the error, but keep the modal visible
+                        return this.setState({
+                          toasts: [
+                            ...toasts,
+                            toToastMessage(
+                              t("subscription_migrations:api_error"),
+                              t(
+                                "subscription_migrations:api_error_claim_migrations"
+                              ),
+                              ToastrType.error
+                            )
+                          ]
+                        });
+                      // in any other case, just close
+                      case "cancel":
+                      case "done":
+                        return this.setState({ showModal: false });
+                      default:
+                        // tslint:disable-next-line:no-dead-store
+                        const _: never = reason;
+                        return this.setState({ showModal: false });
+                    }
+                  }}
                 />
               )}
             </>
           )}
+        {toasts &&
+          toasts.map(ti => (
+            <Toastr
+              key={ti.id}
+              delay={5000}
+              toastMessage={ti}
+              onToastrClose={() =>
+                this.setState({
+                  toasts: toasts.filter(e => e.id !== ti.id)
+                })
+              }
+            />
+          ))}
       </>
     );
   }
