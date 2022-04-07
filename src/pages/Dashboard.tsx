@@ -122,7 +122,7 @@ class Dashboard extends Component<Props, DashboardState> {
               </section>
               {showModal && (
                 <MigrationsPanel
-                  onClose={reason => {
+                  onFinish={reason => {
                     switch (reason) {
                       case "error":
                         // show the error, but keep the modal visible

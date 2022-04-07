@@ -5,11 +5,12 @@ import { getFromBackend, postToBackend } from "../../utils/backend";
 import "../modal/Modal.css";
 import DelegateItem, { MigrationStatus } from "./DelegateItem";
 
-type CloseReason = "cancel" | "done" | "error";
+type FinishReason = "cancel" | "done" | "error";
 
 type OwnProps = {
   t: (key: string) => string;
-  onClose: (reason: CloseReason) => void;
+  // executed when this panel's job is over
+  onFinish: (reason: FinishReason) => void;
 };
 
 type Props = WithNamespaces & OwnProps;
@@ -96,11 +97,11 @@ class MigrationsPanel extends Component<Props, State> {
         )
       );
       this.setState({ selectedForMigration: [] });
-      this.props.onClose("done");
+      this.props.onFinish("done");
     } catch (error) {
       // as some migrations might be successfully claimed, it's better to reset the state
       void this.loadMigrations();
-      this.props.onClose("error");
+      this.props.onFinish("error");
     }
   }
 
@@ -172,7 +173,7 @@ class MigrationsPanel extends Component<Props, State> {
       <>
         <div
           className="modal-card"
-          onClick={() => this.props.onClose("cancel")}
+          onClick={() => this.props.onFinish("cancel")}
         >
           <div
             className="modal-content"
@@ -207,7 +208,7 @@ class MigrationsPanel extends Component<Props, State> {
             </div>
             <div className="modal-footer">
               <button
-                onClick={() => this.props.onClose("cancel")}
+                onClick={() => this.props.onFinish("cancel")}
                 className="btn btn-primary"
               >
                 {t("close")}
