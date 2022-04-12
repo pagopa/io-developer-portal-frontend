@@ -38,7 +38,7 @@ class Header extends Component<RouteComponentProps, never> {
       <header>
         <StorageContext.Consumer>
           {storage => (
-            <Navbar expand="lg">
+            <Navbar expand="lg" className="bg-primary">
               <Collapse isOpen={true} navbar={true}>
                 <Nav navbar={true} className="justify-content-between">
                   <section>
