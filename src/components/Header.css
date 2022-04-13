@@ -18,5 +18,5 @@
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
-  color: #17324D;
+  color: var(--dark);
 }
