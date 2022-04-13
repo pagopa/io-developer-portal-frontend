@@ -1,0 +1,22 @@
+.header-selfcare {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+}
+
+.header-selfcare-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 90%;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.header-selfcare-title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #17324D;
+}
