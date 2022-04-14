@@ -45,13 +45,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./index.css";
 import LogoOrganizations from "./src/pages/LogoOrganizations";
 import { getConfig } from "./src/utils/config";
+import Footer from "./src/components/Footer";
 
 const Layout = ({ children }: { children: ReactNode }) => (
-  <section className="row">
+  <section className="row flex-grow-1 mb-4">
     <div className="col-3">
       <Aside />
     </div>
-    <div className="col-9">
+    <div className="col-9" style={{ overflowY: "auto" }}>
       <React.Fragment>{children}</React.Fragment>
     </div>
   </section>
@@ -157,6 +158,7 @@ const Root = () => {
             />
             <Route component={Login} />
           </Switch>
+          <Footer />
         </I18nextProvider>
       </Router>
     </PouchDB>

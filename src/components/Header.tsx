@@ -46,7 +46,10 @@ class Header extends Component<RouteComponentProps, HeaderState, never> {
     const applicationConfig = get(this.state, "applicationConfig");
     return (
       <header>
-        {SelfCareSessionConfig.is(applicationConfig) && (
+        {SelfCareSessionConfig.is({
+          ...applicationConfig,
+          login_url: "test"
+        }) && (
           <div className="header-selfcare">
             <div className="header-selfcare-container">
               <p className="header-selfcare-title font-weight-bold">
@@ -65,7 +68,6 @@ class Header extends Component<RouteComponentProps, HeaderState, never> {
                       <NavLink
                         href={getConfig("IO_DEVELOPER_PORTAL_BASE_URL") || "/"}
                       >
-                        <i className="it-app mr-3" />
                         {storage.service ? (
                           <span>
                             {storage.service.organization_name} (

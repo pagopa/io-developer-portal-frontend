@@ -102,3 +102,10 @@ table.rounded td:last-child {
 {
     padding: 0;
 }
+
+#root {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100vh;
+}

@@ -19,13 +19,21 @@ import User from "react-icons/lib/fa/user";
 import { StorageContext } from "../context/storage";
 
 import "./Aside.css";
+import { none } from "fp-ts/lib/Option";
 
 class Aside extends Component<WithNamespaces, never> {
   public render() {
     const { t } = this.props;
 
     return (
-      <aside className="shadow">
+      <aside
+        style={{
+          paddingLeft: "24px",
+          position: "static",
+          minHeight: "unset",
+          height: "unset",
+        }}
+      >
         <StorageContext.Consumer>
           {storage => (
             <LinkList>
@@ -50,10 +58,7 @@ class Aside extends Component<WithNamespaces, never> {
                 </Link>
               </li>
               <li>
-                <Link
-                  className="large list-item border-top border-custom-grey"
-                  to={{ pathname: "/compose" }}
-                >
+                <Link className="large list-item" to={{ pathname: "/compose" }}>
                   <Rocket className="mr-2 aside--icon" />
                   {t("send")}
                 </Link>
@@ -95,10 +100,7 @@ class Aside extends Component<WithNamespaces, never> {
                 </Link>
               </li>
               <li>
-                <a
-                  href="./openapi.html"
-                  className="large list-item border-top border-custom-grey"
-                >
+                <a href="./openapi.html" className="large list-item">
                   <Inbox className="mr-2 aside--icon" />
                   {t("openapi")}
                 </a>
@@ -106,7 +108,7 @@ class Aside extends Component<WithNamespaces, never> {
               {storage.isApiAdmin && (
                 <li>
                   <Link
-                    className="large list-item border-top border-custom-grey"
+                    className="large list-item"
                     to={{ pathname: "/logo/organizations" }}
                   >
                     <Image className="mr-2 aside--icon" />

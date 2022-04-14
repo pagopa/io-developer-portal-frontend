@@ -1,6 +1,6 @@
 .header-selfcare {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   height: 48px;
 }
@@ -9,9 +9,8 @@
   display: flex;
   align-items: center;
   height: 100%;
-  width: 90%;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: 48px;
+  padding-right: 48px;
 }
 
 .header-selfcare-title {

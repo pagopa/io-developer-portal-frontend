@@ -1,0 +1,25 @@
+.footer-selfcare {
+  border-top: 1px solid var(--100);
+}
+
+.footer-selfcare-container {
+  height: 156px;
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+.footer-selfcare-description {
+  padding-left: 64px;
+  font-size: 15px;
+  text-align: left;
+  line-height: 1.5;
+  color: var(--dark);
+}
+
+.footer-selfcare-link {
+  text-decoration: none;
+  font-weight: 400;
+  line-height: 1.5;
+  font-size: 15px;
+  color: var(--dark);
+}
