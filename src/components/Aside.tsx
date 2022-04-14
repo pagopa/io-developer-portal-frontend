@@ -1,11 +1,6 @@
-import React, { Component } from "react";
-
-import { WithNamespaces, withNamespaces } from "react-i18next";
-
-import { Link } from "react-router-dom";
-
 import { LinkList } from "design-react-kit";
-
+import React, { Component } from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import Book from "react-icons/lib/fa/book";
 import Envelope from "react-icons/lib/fa/envelope";
 import FileText from "react-icons/lib/fa/file-text-o";
@@ -15,11 +10,9 @@ import Inbox from "react-icons/lib/fa/inbox";
 import Rocket from "react-icons/lib/fa/rocket";
 import TableHead from "react-icons/lib/fa/th-large";
 import User from "react-icons/lib/fa/user";
-
+import { Link } from "react-router-dom";
 import { StorageContext } from "../context/storage";
-
 import "./Aside.css";
-import { none } from "fp-ts/lib/Option";
 
 class Aside extends Component<WithNamespaces, never> {
   public render() {
@@ -31,7 +24,7 @@ class Aside extends Component<WithNamespaces, never> {
           paddingLeft: "24px",
           position: "static",
           minHeight: "unset",
-          height: "unset",
+          height: "unset"
         }}
       >
         <StorageContext.Consumer>

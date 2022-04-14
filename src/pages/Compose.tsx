@@ -264,7 +264,7 @@ class Compose extends Component<Props, ComposeState> {
 
           return (
             <Button
-              className="mt-3 pl-5 pr-5"
+              className="my-3 pl-5 pr-5"
               color="primary"
               disabled={isValid.includes(false)}
               onClick={this.onMessageSubmit}

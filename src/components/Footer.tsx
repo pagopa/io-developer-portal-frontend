@@ -29,8 +29,8 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
           login_url: "test"
         }) && (
           <footer className="footer-selfcare d-flex">
-            <div className="footer-selfcare-container d-flex flex-column pt-4">
-              <div className="footer-selfcare-info d-flex justify-content-between align-items-start mb-3">
+            <div className="footer-selfcare-container d-flex flex-column justify-content-between py-4">
+              <div className="footer-selfcare-info d-flex justify-content-between align-items-start">
                 <div className="footer-selfcare-logo">
                   <img
                     src={pagopaLogo}

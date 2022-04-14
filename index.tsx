@@ -48,8 +48,11 @@ import { getConfig } from "./src/utils/config";
 import Footer from "./src/components/Footer";
 
 const Layout = ({ children }: { children: ReactNode }) => (
-  <section className="row flex-grow-1 mb-4">
-    <div className="col-3">
+  <section className="row flex-grow-1" style={{ margin: 0 }}>
+    <div
+      className="col-3"
+      style={{ borderRight: "1px solid var(--100)", padding: 0 }}
+    >
       <Aside />
     </div>
     <div className="col-9" style={{ overflowY: "auto" }}>
