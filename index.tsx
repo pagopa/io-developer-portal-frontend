@@ -49,10 +49,7 @@ import Footer from "./src/components/Footer";
 
 const Layout = ({ children }: { children: ReactNode }) => (
   <section className="row flex-grow-1" style={{ margin: 0 }}>
-    <div
-      className="col-3"
-      style={{ borderRight: "1px solid var(--100)", padding: 0 }}
-    >
+    <div className="col-3" style={{ borderRight: "1px solid var(--100)", padding: 0 }}>
       <Aside />
     </div>
     <div className="col-9 p-5">
@@ -74,19 +71,19 @@ const PrivateRoute = ({
 }: PrivateRouteParams) => (
   <Route
     {...rest}
-    render={props =>
-      !!sessionStorage.getItem("userData") ? (
-        <Layout>
-          <Component {...props} dbName={dbName} />
-        </Layout>
-      ) : (
-        <Redirect
-          to={{
-            pathname: "/login",
-            state: { from: props.location }
-          }}
-        />
-      )
+    render={
+      props =>
+        !!sessionStorage.getItem("userData") ? (
+          <Layout>
+            <Component {...props} dbName={dbName} />
+          </Layout>
+        ) : null
+      // <Redirect
+      //   to={{
+      //     pathname: "/login",
+      //     state: { from: props.location }
+      //   }}
+      // />
     }
   />
 );

@@ -1,3 +1,8 @@
 .aside--icon {
   margin-top: -2px;
 }
+
+.highlight-item {
+  background-color: #0073E614;
+  border-right: 2px solid var(--blue);
+}
