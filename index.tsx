@@ -52,7 +52,7 @@ const Layout = ({ children }: { children: ReactNode }) => (
     <div className="col-3" style={{ borderRight: "1px solid var(--100)", padding: 0 }}>
       <Aside />
     </div>
-    <div className="col-9 h-100">
+    <div className="col-9 p-5">
       <React.Fragment>{children}</React.Fragment>
     </div>
   </section>

@@ -28,63 +28,51 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
           ...applicationConfig,
           login_url: "test"
         }) && (
-          <footer className="footer-selfcare d-flex">
-            <div className="footer-selfcare-container d-flex flex-column justify-content-between py-4">
-              <div className="footer-selfcare-info d-flex justify-content-between align-items-start">
-                <div className="footer-selfcare-logo">
+          <footer className="selfcare-border-top d-flex">
+            <div className="w-100 d-flex flex-column">
+              <div className="p-4 d-flex justify-content-between align-items-center">
+                <div>
                   <img
                     src={pagopaLogo}
                     alt="pagoPA"
-                    style={{ width: "119px", height: "28px", padding: 0 }}
+                    style={{ width: "119px", height: "32px", padding: 0 }}
                     aria-hidden="true"
                   />
                 </div>
-                <div className="d-flex flex-column">
-                  <div className="footer-selfcare-description">
-                    {t("pagopaInfo")}
-                  </div>
-                  <div className="footer-selfcare-description">
-                    {t("pagopaInfoCF")}
-                  </div>
+                <div>
+                  <a
+                    className="footer-selfcare-link"
+                    href="https:/pagopa.it/it/privacy-policy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={t("privacyPolicy")}
+                  >
+                    {t("privacyPolicy")}
+                  </a>
+                  <a
+                    className="footer-selfcare-link ml-4"
+                    href="https:/pagopa.it/it/termini-e-condizioni-di-utilizzo-del-sito/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={t("terms")}
+                  >
+                    {t("terms")}
+                  </a>
+                  <a
+                    className="footer-selfcare-link ml-4"
+                    href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={t("accessibility")}
+                  >
+                    {t("accessibility")}
+                  </a>
                 </div>
               </div>
-              <div className="pl-2">
-                <a
-                  className="footer-selfcare-link"
-                  href="https:/pagopa.it/it/privacy-policy/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={t("privacyPolicy")}
-                >
-                  {t("privacyPolicy")}
-                </a>
-                <a
-                  className="footer-selfcare-link ml-3"
-                  href="https:/pagopa.it/it/termini-e-condizioni-di-utilizzo-del-sito/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={t("privacyPolicy")}
-                >
-                  {t("terms")}
-                </a>
-                <a
-                  className="footer-selfcare-link ml-3"
-                  href="https:/pagopa.it/it/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={t("privacyPolicy")}
-                >
-                  {t("security")}
-                </a>
-                <a
-                  className="footer-selfcare-link ml-3"
-                  href="https:/dev.selfcare.pagopa.it/assistenza"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={t("privacyPolicy")}
-                >
-                  {t("assistance")}
-                </a>
+              <div className="selfcare-border-top p-3 d-flex justify-content-center align-items-center">
+                <div className="footer-selfcare-description px-2 d-flex flex-row justify-content-center">
+                  {t("pagopaInfo")}
+                </div>
               </div>
             </div>
           </footer>

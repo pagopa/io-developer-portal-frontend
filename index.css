@@ -109,3 +109,7 @@ table.rounded td:last-child {
     flex-direction: column;
     height: 100vh;
 }
+
+.selfcare-border-top {
+    border-top: 1px solid var(--100);
+}

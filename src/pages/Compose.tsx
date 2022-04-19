@@ -217,7 +217,7 @@ class Compose extends Component<Props, ComposeState> {
     ]);
 
     return (
-      <section className="mr-4 ml-4 pt-5 pr-5 pl-5 h-100">
+      <section className="h-100">
         <SelectedService />
         <ContactAdd
           code={code}
@@ -226,7 +226,7 @@ class Compose extends Component<Props, ComposeState> {
           onInputCode={this.onInputCode}
         />
 
-        <section className="mb-3" style={{ height: "600px"}}>
+        <section className="mb-3">
           <TemplatesEditor
             subject={subject}
             markdown={markdown}

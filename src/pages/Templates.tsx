@@ -190,7 +190,7 @@ class Templates extends Component<Props, TemplatesState> {
           }
 
           return (
-            <section className="mb-3" style={{ height: "600px"}}>
+            <section className="mb-3">
               <TemplatesEditor
                 subject={subject}
                 markdown={markdown}
