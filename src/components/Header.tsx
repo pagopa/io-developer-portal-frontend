@@ -51,7 +51,7 @@ class Header extends Component<RouteComponentProps, HeaderState, never> {
           login_url: "test"
         }) && (
           <div className="header-selfcare">
-            <div className="header-selfcare-container">
+            <div className="header-selfcare-container px-4">
               <p className="header-selfcare-title font-weight-bold">
                 {"PagoPA S.p.A"}
               </p>
@@ -67,6 +67,7 @@ class Header extends Component<RouteComponentProps, HeaderState, never> {
                     <NavItem>
                       <NavLink
                         href={getConfig("IO_DEVELOPER_PORTAL_BASE_URL") || "/"}
+                        style={{ paddingLeft: 0 }}
                       >
                         {storage.service ? (
                           <span>

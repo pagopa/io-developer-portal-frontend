@@ -21,7 +21,6 @@ class Aside extends Component<WithNamespaces, never> {
     return (
       <aside
         style={{
-          paddingLeft: "24px",
           position: "static",
           minHeight: "unset",
           height: "unset"

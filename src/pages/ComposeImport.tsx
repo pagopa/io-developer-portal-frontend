@@ -196,7 +196,7 @@ class Compose extends Component<Props, ComposeState> {
     const isValid = ignoreHeaders ? areHeadersValid(headers) : true;
 
     return (
-      <section className="pages--container">
+      <section>
         <SelectedService />
         <Col className="col-auto mb-2">
           <header
