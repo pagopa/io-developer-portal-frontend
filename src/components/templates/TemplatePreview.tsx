@@ -12,7 +12,7 @@ class TemplatePreview extends Component<Props, never> {
 
     return (
       <ReactMarkdown
-        className="templates-editor--message--preview form-control card shadow h-100 flex-1"
+        className="templates-editor--message--preview form-control card h-100 flex-1"
         source={markdown}
         unwrapDisallowed={true}
         allowedTypes={[

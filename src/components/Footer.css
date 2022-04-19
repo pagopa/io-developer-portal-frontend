@@ -1,0 +1,11 @@
+.footer-selfcare-description {
+  width: 920px;
+  text-align: center;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.footer-selfcare-link {
+  text-decoration: none;
+  font-weight: 400;
+}

@@ -48,8 +48,8 @@ class Header extends Component<RouteComponentProps, HeaderState, never> {
       <header>
         {SelfCareSessionConfig.is(applicationConfig) && (
           <div className="header-selfcare">
-            <div className="header-selfcare-container">
-              <p className="header-selfcare-title font-weight-bold">
+            <div className="header-selfcare-container px-4">
+              <p className="header-selfcare-title selfcare-text font-weight-bold">
                 {"PagoPA S.p.A"}
               </p>
             </div>
@@ -64,8 +64,8 @@ class Header extends Component<RouteComponentProps, HeaderState, never> {
                     <NavItem>
                       <NavLink
                         href={getConfig("IO_DEVELOPER_PORTAL_BASE_URL") || "/"}
+                        style={{ paddingLeft: 0 }}
                       >
-                        <i className="it-app mr-3" />
                         {storage.service ? (
                           <span>
                             {storage.service.organization_name} (
