@@ -113,3 +113,9 @@ table.rounded td:last-child {
 .selfcare-border-top {
     border-top: 1px solid var(--100);
 }
+
+.selfcare-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--dark);
+}

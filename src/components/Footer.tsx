@@ -41,7 +41,7 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
                 </div>
                 <div>
                   <a
-                    className="footer-selfcare-link"
+                    className="footer-selfcare-link selfcare-text"
                     href="https:/pagopa.it/it/privacy-policy/"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -50,7 +50,7 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
                     {t("privacyPolicy")}
                   </a>
                   <a
-                    className="footer-selfcare-link ml-4"
+                    className="footer-selfcare-link selfcare-text ml-4"
                     href="https:/pagopa.it/it/termini-e-condizioni-di-utilizzo-del-sito/"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -59,7 +59,7 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
                     {t("terms")}
                   </a>
                   <a
-                    className="footer-selfcare-link ml-4"
+                    className="footer-selfcare-link selfcare-text ml-4"
                     href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -70,7 +70,7 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
                 </div>
               </div>
               <div className="selfcare-border-top p-3 d-flex justify-content-center align-items-center">
-                <div className="footer-selfcare-description px-2 d-flex flex-row justify-content-center">
+                <div className="footer-selfcare-description selfcare-text px-2 d-flex flex-row justify-content-center">
                   {t("pagopaInfo")}
                 </div>
               </div>

@@ -52,7 +52,7 @@ class Header extends Component<RouteComponentProps, HeaderState, never> {
         }) && (
           <div className="header-selfcare">
             <div className="header-selfcare-container px-4">
-              <p className="header-selfcare-title font-weight-bold">
+              <p className="header-selfcare-title selfcare-text font-weight-bold">
                 {"PagoPA S.p.A"}
               </p>
             </div>
