@@ -1,17 +1,35 @@
 .header-selfcare {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: 48px;
 }
 
 .header-selfcare-container {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   height: 100%;
+  width: 100%;
 }
 
 .header-selfcare-title {
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.header-app-title {
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+  font-size: 28px;
+  color: var(--dark);
+}
+
+.header-selfcare-button {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--blue);
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   -webkit-font-smoothing: antialiased;
 }
