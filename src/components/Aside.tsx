@@ -22,7 +22,7 @@ class Aside extends Component<WithNamespaces, never> {
         return defaultStyle + " highlight-item";
       }
     };
-    return defaultStyle;
+    return defaultStyle + " color-dark";
   }
   public render() {
     const { t } = this.props;
@@ -113,7 +113,7 @@ class Aside extends Component<WithNamespaces, never> {
                 </Link>
               </li>
               <li>
-                <a href="./openapi.html" className="large list-item">
+                <a href="./openapi.html" className="large list-item color-dark">
                   <Inbox className="mr-2 aside--icon" />
                   {t("openapi")}
                 </a>

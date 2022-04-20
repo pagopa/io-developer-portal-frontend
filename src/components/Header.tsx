@@ -44,7 +44,7 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
           ...applicationConfig,
           login_url: "test"
         }) && (
-          <div className="header-selfcare">
+          <div className="header-selfcare selfcare-border-bottom">
             <div className="header-selfcare-container px-4">
               <p className="header-selfcare-title selfcare-text font-weight-bold">
                 {"PagoPA S.p.A"}
@@ -88,7 +88,7 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
           {storage => (
             <Navbar
               expand="lg"
-              className="selfcare-border-top selfcare-border-bottom"
+              className="selfcare-border-bottom"
               style={{ backgroundColor: "white" }}
             >
               <Collapse isOpen={true} navbar={true}>

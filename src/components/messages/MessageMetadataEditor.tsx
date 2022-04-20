@@ -124,8 +124,8 @@ class MessageMetadataEditor extends Component<Props, never> {
 
           <InputGroup className="position-relative">
             <InputGroupAddon addonType="prepend">
-              <InputGroupText>{t("format:currency")}</InputGroupText>
-              <InputGroupText>{amount && Number(amount) / 100}</InputGroupText>
+              <InputGroupText className="bg-white">{t("format:currency")}</InputGroupText>
+              <InputGroupText className="bg-white">{amount && Number(amount) / 100}</InputGroupText>
             </InputGroupAddon>
             <MaskedInput
               type="text"
@@ -156,13 +156,13 @@ class MessageMetadataEditor extends Component<Props, never> {
           </InputGroup>
         </Col>
         <Col>
-          <InputGroup className="pb-2 pt-2">
+          <InputGroup className="pb-2 pt-2 align-items-center">
             <input
               name="invalid_after_due_date"
               type="checkbox"
               checked={invalidAfterDueDate}
               onChange={onChangeInvalidAfterDueDate}
-              className="mt-1 mr-2"
+              className="mr-2"
             />
             <Label className="m-0">{t("invalid_after_due_date")}</Label>
           </InputGroup>
