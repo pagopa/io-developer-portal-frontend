@@ -18,10 +18,12 @@
 }
 
 .header-app-title {
-  font-weight: 700;
-  -webkit-font-smoothing: antialiased;
-  font-size: 28px;
-  color: var(--dark);
+  font-weight: 700 !important;
+  -webkit-font-smoothing: antialiased !important;
+  font-size: 28px !important;
+  color: var(--dark) !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .header-selfcare-button {
@@ -32,4 +34,24 @@
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
   -webkit-font-smoothing: antialiased;
+}
+
+.header-dropdown-menu {
+  margin-top: 0 !important;
+  transform: translate3d(25px, 50px, 0px) !important;
+}
+
+.header-dropdown-menu::before {
+  display: none !important;
+}
+
+.header-dropdown-list-item {
+  font-weight: 500 !important;
+  -webkit-font-smoothing: antialiased !important;
+  font-size: 16px !important;
+}
+
+.header-dropdown-list-item:hover {
+  background-color: #0073E614;
+  color: var(--blue) !important;
 }

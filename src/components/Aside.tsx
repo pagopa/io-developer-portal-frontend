@@ -15,7 +15,7 @@ import { StorageContext } from "../context/storage";
 import "./Aside.css";
 
 class Aside extends Component<WithNamespaces, never> {
-  public highlightItem(...paths: Array<string>) {
+  private highlightItem(...paths: Array<string>) {
     const defaultStyle = "large list-item";
     for( const path of paths){
       if (location.pathname === path) {

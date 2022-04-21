@@ -1,4 +1,14 @@
-import { Collapse, Nav, Navbar, NavItem, NavLink } from "design-react-kit";
+import {
+  Collapse,
+  Dropdown,
+  DropdownMenu,
+  DropdownToggle,
+  LinkList,
+  Nav,
+  Navbar,
+  NavItem,
+  NavLink
+} from "design-react-kit";
 import { get } from "lodash";
 import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -16,10 +26,17 @@ import { SelfCareSessionConfig } from "../utils/session/selfcare";
 import "./Header.css";
 
 type HeaderState = {
-  applicationConfig: PublicConfig;
+  applicationConfig?: PublicConfig;
+  dropdownOpen: boolean;
 };
 
 class Header extends Component<WithNamespaces, HeaderState, never> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      dropdownOpen: false
+    };
+  }
   public async componentDidMount() {
     const applicationConfig = await getFromBackend<PublicConfig>({
       path: "configuration"
@@ -92,26 +109,66 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
               style={{ backgroundColor: "white" }}
             >
               <Collapse isOpen={true} navbar={true}>
-                <Nav navbar={true} className="justify-content-between">
-                  <section>
-                    <NavItem>
-                      <NavLink
-                        href={getConfig("IO_DEVELOPER_PORTAL_BASE_URL") || "/"}
-                        style={{ paddingLeft: 0 }}
+                <Nav
+                  navbar={true}
+                  className="justify-content-between align-items-center"
+                >
+                  {SelfCareSessionConfig.is({
+                    ...applicationConfig,
+                    login_url: "test"
+                  }) ? (
+                    <Dropdown
+                      isOpen={get(this.state, "dropdownOpen")}
+                      toggle={() =>
+                        this.setState({
+                          ...this.state,
+                          dropdownOpen: !get(this.state, "dropdownOpen")
+                        })
+                      }
+                    >
+                      <DropdownToggle
+                        className="btn btn-outline-primary dropdown-toggle header-app-title d-flex align-items-center"
+                        caret
+                        tag="a"
                       >
-                        {storage.service ? (
-                          <span>
-                            {storage.service.organization_name} (
-                            {storage.service.service_name})
-                          </span>
-                        ) : (
-                          <span className="header-app-title">
-                            {getConfig("IO_DEVELOPER_PORTAL_TITLE")}
-                          </span>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                  </section>
+                        {getConfig("IO_DEVELOPER_PORTAL_TITLE")}
+                      </DropdownToggle>
+                      <DropdownMenu className="header-dropdown-menu">
+                        <LinkList>
+                          <li>
+                            <a
+                              className="header-dropdown-list-item color-dark pl-3"
+                              href="https://selfcare.pagopa.it"
+                            >
+                              {t("reserved")}
+                            </a>
+                          </li>
+                        </LinkList>
+                      </DropdownMenu>
+                    </Dropdown>
+                  ) : (
+                    <section>
+                      <NavItem>
+                        <NavLink
+                          href={
+                            getConfig("IO_DEVELOPER_PORTAL_BASE_URL") || "/"
+                          }
+                          style={{ paddingLeft: 0 }}
+                        >
+                          {storage.service ? (
+                            <span>
+                              {storage.service.organization_name} (
+                              {storage.service.service_name})
+                            </span>
+                          ) : (
+                            <span className="header-app-title">
+                              {getConfig("IO_DEVELOPER_PORTAL_TITLE")}
+                            </span>
+                          )}
+                        </NavLink>
+                      </NavItem>
+                    </section>
+                  )}
                   <section className="d-flex align-items-center">
                     <Nav>
                       <NavItem>
