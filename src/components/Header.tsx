@@ -57,10 +57,7 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
     const applicationConfig = get(this.state, "applicationConfig");
     return (
       <header>
-        {SelfCareSessionConfig.is({
-          ...applicationConfig,
-          login_url: "test"
-        }) && (
+        {SelfCareSessionConfig.is(applicationConfig) && (
           <div className="header-selfcare selfcare-border-bottom">
             <div className="header-selfcare-container px-4">
               <p className="header-selfcare-title selfcare-text font-weight-bold">
@@ -113,10 +110,7 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
                   navbar={true}
                   className="justify-content-between align-items-center"
                 >
-                  {SelfCareSessionConfig.is({
-                    ...applicationConfig,
-                    login_url: "test"
-                  }) ? (
+                  {SelfCareSessionConfig.is(applicationConfig) ? (
                     <Dropdown
                       isOpen={get(this.state, "dropdownOpen")}
                       toggle={() =>
@@ -194,10 +188,7 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
                         </NavItem>
                       )}
                       {storage.userData &&
-                        !SelfCareSessionConfig.is({
-                          ...applicationConfig,
-                          login_url: "test"
-                        }) && (
+                        !SelfCareSessionConfig.is(applicationConfig) && (
                           <NavItem
                             className="cursor-pointer"
                             onClick={this.onSignOut}

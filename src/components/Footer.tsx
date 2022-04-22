@@ -24,10 +24,7 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
     const applicationConfig = get(this.state, "applicationConfig");
     return (
       <>
-        {SelfCareSessionConfig.is({
-          ...applicationConfig,
-          login_url: "test"
-        }) && (
+        {SelfCareSessionConfig.is(applicationConfig) && (
           <footer className="selfcare-border-top d-flex">
             <div className="w-100 d-flex flex-column">
               <div className="p-4 d-flex justify-content-between align-items-center">
