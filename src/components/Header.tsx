@@ -31,7 +31,7 @@ type HeaderState = {
 };
 
 class Header extends Component<WithNamespaces, HeaderState, never> {
-  constructor(props: any) {
+  constructor(props: Readonly<WithNamespaces>) {
     super(props);
     this.state = {
       dropdownOpen: false
@@ -122,7 +122,7 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
                     >
                       <DropdownToggle
                         className="btn btn-outline-primary dropdown-toggle header-app-title d-flex align-items-center pl-0"
-                        caret
+                        caret={true}
                         tag="a"
                       >
                         {getConfig("IO_DEVELOPER_PORTAL_TITLE")}

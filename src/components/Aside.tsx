@@ -15,13 +15,13 @@ import { StorageContext } from "../context/storage";
 import "./Aside.css";
 
 class Aside extends Component<WithNamespaces, never> {
-  private highlightItem(...paths: Array<string>) {
+  private highlightItem(...paths: ReadonlyArray<string>) {
     const defaultStyle = "large list-item";
-    for( const path of paths){
+    for (const path of paths) {
       if (location.pathname === path) {
         return defaultStyle + " highlight-item";
       }
-    };
+    }
     return defaultStyle + " color-dark";
   }
   public render() {

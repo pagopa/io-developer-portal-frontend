@@ -293,8 +293,8 @@ const it = {
   header: {
     assistance: "Assistenza",
     exit: "Esci",
-    reserved: "Area Riservata",
-  },
+    reserved: "Area Riservata"
+  }
 };
 
 export default it;

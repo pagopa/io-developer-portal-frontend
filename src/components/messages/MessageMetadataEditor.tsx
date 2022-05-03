@@ -124,8 +124,12 @@ class MessageMetadataEditor extends Component<Props, never> {
 
           <InputGroup className="position-relative">
             <InputGroupAddon addonType="prepend">
-              <InputGroupText className="bg-white">{t("format:currency")}</InputGroupText>
-              <InputGroupText className="bg-white">{amount && Number(amount) / 100}</InputGroupText>
+              <InputGroupText className="bg-white">
+                {t("format:currency")}
+              </InputGroupText>
+              <InputGroupText className="bg-white">
+                {amount && Number(amount) / 100}
+              </InputGroupText>
             </InputGroupAddon>
             <MaskedInput
               type="text"
