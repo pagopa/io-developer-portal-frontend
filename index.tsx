@@ -1,8 +1,11 @@
+import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
+import "bootstrap-italia/dist/css/italia-icon-font.css";
+import "moment/locale/it";
 import React, { ReactNode } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 import { render } from "react-dom";
-
+import { I18nextProvider } from "react-i18next";
 import { PouchDB } from "react-pouchdb/browser";
-
 import {
   BrowserRouter as Router,
   Redirect,
@@ -10,48 +13,40 @@ import {
   RouteProps,
   Switch
 } from "react-router-dom";
-
-import { I18nextProvider } from "react-i18next";
-import i18n from "./src/i18n/i18n";
-
 import WebFont from "webfontloader";
-
-import "moment/locale/it";
-
-const { sessionStorage } = window;
-
+import "./index.css";
 import Aside from "./src/components/Aside";
+import Footer from "./src/components/Footer";
 import Header from "./src/components/Header";
 import Worker from "./src/components/Worker";
-
+import i18n from "./src/i18n/i18n";
 import Compose from "./src/pages/Compose";
 import ComposeImport from "./src/pages/ComposeImport";
 import Contacts from "./src/pages/Contacts";
 import Dashboard from "./src/pages/Dashboard";
 import Login from "./src/pages/Login";
+import LogoOrganizations from "./src/pages/LogoOrganizations";
 import Message from "./src/pages/Message";
 import Messages from "./src/pages/Messages";
+import Profile from "./src/pages/Profile";
 import Report from "./src/pages/Report";
 import Servers from "./src/pages/Servers";
-import Templates from "./src/pages/Templates";
-
-import Profile from "./src/pages/Profile";
 import SubscriptionService from "./src/pages/SubscriptionService";
+import Templates from "./src/pages/Templates";
 import UserList from "./src/pages/UserList";
-
-import "bootstrap-italia/dist/css/bootstrap-italia.min.css";
-import "bootstrap-italia/dist/css/italia-icon-font.css";
-import "react-datepicker/dist/react-datepicker.css";
-import "./index.css";
-import LogoOrganizations from "./src/pages/LogoOrganizations";
 import { getConfig } from "./src/utils/config";
 
+const { sessionStorage } = window;
+
 const Layout = ({ children }: { children: ReactNode }) => (
-  <section className="row">
-    <div className="col-3">
+  <section className="row flex-grow-1" style={{ margin: 0 }}>
+    <div
+      className="col-3"
+      style={{ borderRight: "1px solid var(--100)", padding: 0 }}
+    >
       <Aside />
     </div>
-    <div className="col-9">
+    <div className="col-9 p-5">
       <React.Fragment>{children}</React.Fragment>
     </div>
   </section>
@@ -157,6 +152,7 @@ const Root = () => {
             />
             <Route component={Login} />
           </Switch>
+          <Footer />
         </I18nextProvider>
       </Router>
     </PouchDB>
