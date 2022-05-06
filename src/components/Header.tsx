@@ -71,7 +71,8 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
                     width: "20px",
                     height: "20px",
                     padding: 0,
-                    marginRight: "10px"
+                    marginRight: "10px",
+                    border: "none"
                   }}
                   aria-hidden="true"
                 />
