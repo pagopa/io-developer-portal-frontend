@@ -2,3 +2,7 @@
 {
     overflow-y: auto;
 }
+
+.templates-editor--message--preview p {
+    overflow-y: scroll;
+}

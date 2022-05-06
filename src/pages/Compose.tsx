@@ -226,7 +226,7 @@ class Compose extends Component<Props, ComposeState> {
           onInputCode={this.onInputCode}
         />
 
-        <section className="mb-3">
+        <section className="mb-5">
           <TemplatesEditor
             subject={subject}
             markdown={markdown}

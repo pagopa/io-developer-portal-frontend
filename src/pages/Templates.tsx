@@ -190,7 +190,7 @@ class Templates extends Component<Props, TemplatesState> {
           }
 
           return (
-            <section className="mb-3">
+            <section className="mb-5">
               <TemplatesEditor
                 subject={subject}
                 markdown={markdown}
