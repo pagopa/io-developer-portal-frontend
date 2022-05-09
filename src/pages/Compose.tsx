@@ -217,7 +217,7 @@ class Compose extends Component<Props, ComposeState> {
     ]);
 
     return (
-      <section className="mt-4 mr-4 ml-4 pt-5 pr-5 pl-5 pages--container">
+      <section className="h-100">
         <SelectedService />
         <ContactAdd
           code={code}
@@ -226,7 +226,7 @@ class Compose extends Component<Props, ComposeState> {
           onInputCode={this.onInputCode}
         />
 
-        <section className="h-80">
+        <section className="mb-5">
           <TemplatesEditor
             subject={subject}
             markdown={markdown}
@@ -264,7 +264,7 @@ class Compose extends Component<Props, ComposeState> {
 
           return (
             <Button
-              className="mt-3 pl-5 pr-5"
+              className="my-3 pl-5 pr-5"
               color="primary"
               disabled={isValid.includes(false)}
               onClick={this.onMessageSubmit}

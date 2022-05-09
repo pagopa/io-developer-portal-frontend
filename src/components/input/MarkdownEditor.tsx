@@ -59,7 +59,10 @@ class MarkdownEditor extends Component<Props, never> {
       <section className="pages--container">
         <section className="h-90 d-flex flex-column">
           <label className="m-0">{t(name)}</label>
-          <section className="h-100 flex-1 d-flex flex-row">
+          <section
+            className="flex-1 d-flex flex-row"
+            style={{ height: "550px" }}
+          >
             <section className="flex-1 h-100">
               <Input
                 name={name}

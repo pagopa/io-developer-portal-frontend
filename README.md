@@ -74,6 +74,7 @@ The table below describes all the Environment variables needed by the applicatio
 |IO\_DEVELOPER\_PORTAL\_APIM\_BASE_URL| Full url and path for the APIM|string|
 |IO\_DEVELOPER\_PORTAL\_BASE\_URL| Base URL for the application|string|
 |IO\_DEVELOPER\_PORTAL\_PUBLIC\_PATH| Public base url for the application|string|
+|IO\_DEVELOPER\_PORTAL\_TITLE| Application title |string|
 
 ### Environment variables run-time injection
 

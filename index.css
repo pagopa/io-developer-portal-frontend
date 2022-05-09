@@ -102,3 +102,28 @@ table.rounded td:last-child {
 {
     padding: 0;
 }
+
+#root {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.selfcare-border-top {
+    border-top: 1px solid var(--100);
+}
+
+.selfcare-border-bottom {
+    border-bottom: 1px solid var(--100);
+}
+
+.selfcare-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--dark);
+}
+
+.color-dark {
+    color: var(--dark) !important;
+}

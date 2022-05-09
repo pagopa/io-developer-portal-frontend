@@ -39,7 +39,7 @@ class TemplatesEditor extends Component<Props, never> {
     const { t } = this.props;
 
     return (
-      <section className="h-90 d-flex flex-column">
+      <section className="d-flex flex-column" style={{ height: "600px" }}>
         <Input
           className="font-weight-normal"
           type="text"
@@ -56,7 +56,7 @@ class TemplatesEditor extends Component<Props, never> {
           </div>
         )}
 
-        <section className="flex-1 d-flex flex-row">
+        <section className="flex-1 d-flex flex-row" style={{ height: "550px" }}>
           <div className="flex-1 h-100">
             <Input
               className="h-100 font-weight-normal"

@@ -44,7 +44,7 @@ class ContactAdd extends Component<Props, never> {
             onClick={() => isCodeValid && onInputAdd()}
           >
             <span
-              className={`border-0 input-group-text it-close icon-rotate-45deg ${
+              className={`border-0 input-group-text it-close icon-rotate-45deg bg-white ${
                 isCodeValid ? "cursor-pointer" : ""
               }`}
             />

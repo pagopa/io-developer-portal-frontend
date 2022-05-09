@@ -163,7 +163,7 @@ class Templates extends Component<Props, TemplatesState> {
     ]);
 
     return (
-      <section className="pages--container">
+      <section>
         <SelectedService />
         {(() => {
           if (!template_id) {
@@ -190,7 +190,7 @@ class Templates extends Component<Props, TemplatesState> {
           }
 
           return (
-            <section className="h-100">
+            <section className="mb-5">
               <TemplatesEditor
                 subject={subject}
                 markdown={markdown}
