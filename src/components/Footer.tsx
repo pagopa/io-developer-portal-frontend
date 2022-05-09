@@ -32,7 +32,12 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
                   <img
                     src={pagopaLogo}
                     alt="pagoPA"
-                    style={{ width: "119px", height: "32px", padding: 0 }}
+                    style={{
+                      width: "119px",
+                      height: "32px",
+                      padding: 0,
+                      border: "none"
+                    }}
                     aria-hidden="true"
                   />
                 </div>

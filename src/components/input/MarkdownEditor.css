@@ -8,3 +8,7 @@
     font-weight: 400;
     color: #B3BABF;
 }
+
+.editor--message--preview p {
+    overflow-y: scroll;
+}
