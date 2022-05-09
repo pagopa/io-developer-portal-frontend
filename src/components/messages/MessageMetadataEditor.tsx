@@ -56,7 +56,7 @@ class MessageMetadataEditor extends Component<Props, never> {
     const { t } = this.props;
 
     return (
-      <Row className="form-inline">
+      <Row className="form-inline align-items-start">
         <Col lg="4">
           <Label className="text-uppercase">{t("due_date")}</Label>
           <InputGroup className="position-relative input-group-datepicker">
