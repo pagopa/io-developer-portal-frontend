@@ -133,6 +133,7 @@ const it = {
     example_authorized_ips: "(esempio 192.168.200.25/32;192.168.200.26/32)",
     max_allowed_payment_amount: "Importo massimo autorizzato",
     visible_service: "Visibile nella lista servizi",
+    require_secure_channels: "Richiede canali sicuri",
     eurocents: "eurocents",
     edit: "Modifica i dati del servizio",
     save: "Salva i dati del servizio",

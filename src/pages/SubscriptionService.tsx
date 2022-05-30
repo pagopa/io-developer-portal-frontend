@@ -243,6 +243,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         service
       })
     );
+    console.log(this.state);
   };
 
   public handleMetadataChange = (
@@ -491,6 +492,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           authorized_cidrs: service.authorized_cidrs,
           authorized_recipients: service.authorized_recipients,
           is_visible: service.is_visible,
+          require_secure_channels: service.require_secure_channels,
           service_metadata: service.service_metadata
         })
       }
