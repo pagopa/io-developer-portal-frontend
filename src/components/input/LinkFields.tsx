@@ -41,7 +41,8 @@ const LinkFields = ({
     app_android: null,
     web_url: null,
     tos_url: null,
-    privacy_url: null
+    privacy_url: null,
+    cta: null
   });
   type ServiceMetadataUrls = ts.TypeOf<typeof ServiceMetadataUrls>;
   const linkFields: ReadonlyArray<ServiceMetadataUrls> = MetadataKeys.reduce(
