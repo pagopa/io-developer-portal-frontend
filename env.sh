@@ -19,3 +19,7 @@ for io_developer_portal_var in $(env | grep -i io_developer_portal); do
 done
 
 echo "}" >> ./env-config.js
+
+while IFS='=' read -r -d '' n v; do
+    printf "'%s'='%s'\n" "$n" "$v"
+done < <(env -0)
