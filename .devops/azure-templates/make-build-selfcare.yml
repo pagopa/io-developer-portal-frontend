@@ -12,7 +12,7 @@ steps:
     chmod +x env.sh && source env.sh
     yarn build
   env:
-    IO_DEVELOPER_PORTAL_TITLE: 'SelfCare IO'
+    IO_DEVELOPER_PORTAL_TITLE: 'App IO'
     IO_DEVELOPER_PORTAL_PORT: $(PORT)
     IO_DEVELOPER_PORTAL_BACKEND: $(SELFCARE_BACKEND_URL)
     IO_DEVELOPER_PORTAL_APIM_BASE_URL: $(APIM_BASE_URL)
