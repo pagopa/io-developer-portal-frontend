@@ -14,6 +14,7 @@ for io_developer_portal_var in $(env | grep -i io_developer_portal); do
     varvalue=$(printf '%s\n' "$io_developer_portal_var" | sed -e 's/^[^=]*=//')
 
     echo "  $varname: \"$varvalue\"," >> ./env-config.js
+    echo "DEBUG: $io_developer_portal_var, $varname: \"$varvalue\""
 done
 
 echo "}" >> ./env-config.js
