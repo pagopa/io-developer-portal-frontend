@@ -377,7 +377,7 @@ class Profile extends Component<Props, ProfileState> {
         {isSelfCare
           ? `Organizzazione: ${get(
               this.state,
-              "userData.authenticatedUser.organization.id"
+              "userData.authenticatedUser.organization.name"
             )}`
           : get(this.state, "userData.apimUser.email", t("new_user"))}
       </h4>
