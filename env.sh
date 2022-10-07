@@ -20,6 +20,8 @@ done
 
 echo "}" >> ./env-config.js
 
-while IFS='=' read -r -d '' n v; do
-    printf "'%s'='%s'\n" "$n" "$v"
+while IFS='=' read -r -d '' k v; do
+    if [[ ${k,,} == io_developer_portal* ]]; then
+        printf "'%s'='%s'\n" "$k" "$v"
+    fi
 done < <(env -0)
