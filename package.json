@@ -1,6 +1,6 @@
 {
   "name": "italia-backoffice",
-  "version": "3.9.1",
+  "version": "3.10.0",
   "engines": {
     "node": "^8.0.0",
     "yarn": "*"
@@ -49,10 +49,10 @@
     "i18next": "^14.1.1",
     "io-ts": "1.8.5",
     "lodash": "^4.17.21",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "msal": "^1.2.1",
     "papaparse": "^4.6.0",
-    "pouchdb": "^7.0.0",
+    "pouchdb": "^7.1.0",
     "pouchdb-browser": "^7.0.0",
     "pouchdb-find": "^7.0.0",
     "prop-types": "^15.6.2",

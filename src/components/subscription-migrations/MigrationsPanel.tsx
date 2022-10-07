@@ -1,16 +1,16 @@
 import { get } from "lodash";
 import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import Toastr, { ToastrType } from "../../components/notifications/Toastr";
 import { getFromBackend, postToBackend } from "../../utils/backend";
 import "../modal/Modal.css";
 import DelegateItem, { MigrationStatus } from "./DelegateItem";
 
-type CloseReason = "cancel" | "done" | "error";
+type FinishReason = "cancel" | "done" | "error";
 
 type OwnProps = {
   t: (key: string) => string;
-  onClose: (reason: CloseReason) => void;
+  // executed when this panel's job is over
+  onFinish: (reason: FinishReason) => void;
 };
 
 type Props = WithNamespaces & OwnProps;
@@ -73,35 +73,10 @@ const listToRecord = <T extends Record<string, any>, K extends keyof T>(
   return list.reduce((p, e) => ({ ...p, [e[key]]: e }), {} as Record<T[K], T>);
 };
 
-const ErrorToast = ({
-  title,
-  description,
-  onClose
-}: {
-  title: string;
-  description: string;
-  onClose: () => void;
-}) => (
-  <Toastr
-    delay={5000}
-    toastMessage={{
-      // toasts with same id won't render twice at the same time
-      // this is strong-enough-for-the-case check that assumes different messages have different lenghts
-      id: description.length + title.length,
-      title,
-      description,
-      type: ToastrType.error
-    }}
-    onToastrClose={() => onClose()}
-    onErrorDetail={() => window.scrollTo(0, 0)}
-  />
-);
-
 type State = {
   migrations: MigrationRepository;
   selectedForMigration: ReadonlyArray<Delegate["sourceId"]>;
   disabled: boolean;
-  failureMessage?: string;
 };
 class MigrationsPanel extends Component<Props, State> {
   public async componentDidMount() {
@@ -122,13 +97,11 @@ class MigrationsPanel extends Component<Props, State> {
         )
       );
       this.setState({ selectedForMigration: [] });
-      this.props.onClose("done");
+      this.props.onFinish("done");
     } catch (error) {
-      this.setState({
-        failureMessage: this.props.t("api_error_claim_migrations")
-      });
       // as some migrations might be successfully claimed, it's better to reset the state
       void this.loadMigrations();
+      this.props.onFinish("error");
     }
   }
 
@@ -158,7 +131,6 @@ class MigrationsPanel extends Component<Props, State> {
     );
     const disabled =
       get(this.state, "disabled", false) || selectedForMigration.length === 0;
-    const failureMessage = get(this.state, "failureMessage");
 
     const LoadingMigrationList = () => null;
 
@@ -201,7 +173,7 @@ class MigrationsPanel extends Component<Props, State> {
       <>
         <div
           className="modal-card"
-          onClick={() => this.props.onClose("cancel")}
+          onClick={() => this.props.onFinish("cancel")}
         >
           <div
             className="modal-content"
@@ -236,7 +208,7 @@ class MigrationsPanel extends Component<Props, State> {
             </div>
             <div className="modal-footer">
               <button
-                onClick={() => this.props.onClose("cancel")}
+                onClick={() => this.props.onFinish("cancel")}
                 className="btn btn-primary"
               >
                 {t("close")}
@@ -244,13 +216,6 @@ class MigrationsPanel extends Component<Props, State> {
             </div>
           </div>
         </div>
-        {failureMessage && (
-          <ErrorToast
-            title={t("api_error")}
-            description={failureMessage}
-            onClose={() => this.setState({ failureMessage: undefined })}
-          />
-        )}
       </>
     );
   }
