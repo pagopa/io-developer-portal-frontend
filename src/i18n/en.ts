@@ -2,7 +2,7 @@ const en = {
   aside: {
     dashboard: "Dashboard",
     users: "Registered users",
-    profile: "Profile (subscriptions)",
+    profile: "Services",
     send: "Send message",
     send_from_file: "Send from file",
     send_from_template: "Send with Template",

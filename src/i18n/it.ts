@@ -2,7 +2,7 @@ const it = {
   aside: {
     dashboard: "Dashboard",
     users: "Utenti registrati",
-    profile: "Profilo (sottoscrizioni)",
+    profile: "Servizi",
     send: "Invio rapido",
     send_from_file: "Invio da files",
     send_from_template: "Invio con Template",
