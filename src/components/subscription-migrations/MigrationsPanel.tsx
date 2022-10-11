@@ -4,6 +4,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { getFromBackend, postToBackend } from "../../utils/backend";
 import "../modal/Modal.css";
 import DelegateItem, { MigrationStatus } from "./DelegateItem";
+import SelectorInput from "./SelectorInput";
 
 type FinishReason = "cancel" | "done" | "error";
 
@@ -144,27 +145,40 @@ class MigrationsPanel extends Component<Props, State> {
       <>
         <div>
           {migrations &&
-            Object.values(migrations).map(d => (
-              <DelegateItem
-                delegate={d}
-                key={d.sourceId}
-                onSelectionChange={(id, selected) => {
-                  if (selected) {
-                    this.setState({
-                      selectedForMigration: [...selectedForMigration, id]
-                    });
-                  } else {
-                    this.setState({
-                      selectedForMigration: selectedForMigration.filter(
-                        e => e !== id
-                      )
-                    });
-                  }
-                }}
-                selected={selectedForMigration.includes(d.sourceId)}
-                migrationStatus={computeMigrationStatus(d.status)}
-              />
-            ))}
+            Object.values(migrations)
+              .map(({ status, ...e }) => ({
+                ...e,
+                status: computeMigrationStatus(status)
+              }))
+              .map(d => (
+                <div
+                  key={d.sourceId}
+                  className="d-flex mt-1"
+                  style={{ gap: "10px" }}
+                >
+                  <SelectorInput
+                    onSelectionChange={selected => {
+                      if (selected) {
+                        this.setState({
+                          selectedForMigration: [
+                            ...selectedForMigration,
+                            d.sourceId
+                          ]
+                        });
+                      } else {
+                        this.setState({
+                          selectedForMigration: selectedForMigration.filter(
+                            e => e !== d.sourceId
+                          )
+                        });
+                      }
+                    }}
+                    selected={selectedForMigration.includes(d.sourceId)}
+                    disabled={d.status !== "todo" && d.status !== "failed"}
+                  />
+                  <DelegateItem delegate={d} migrationStatus={d.status} />
+                </div>
+              ))}
         </div>
       </>
     );

@@ -34,11 +34,8 @@ const StatusIcon = ({
 
 type OwnProps = {
   t: (key: string) => string;
-  // exdcuted when an item is selected/unselected
-  onSelectionChange: (id: Delegate["sourceId"], selected: boolean) => void;
   delegate: Delegate;
   migrationStatus: MigrationStatus;
-  selected: boolean;
 };
 
 type Props = WithNamespaces & OwnProps;
@@ -47,30 +44,13 @@ class DelegateItem extends Component<Props> {
   public render() {
     const {
       t,
-      delegate: { sourceName: name, sourceSurname: surname, sourceId: id },
-      onSelectionChange,
-      migrationStatus,
-      selected
+      delegate: { sourceName: name, sourceSurname: surname },
+      migrationStatus
     } = this.props;
     const isStatusLoaded = typeof migrationStatus !== "undefined";
-    const isSelectable =
-      migrationStatus === "todo" || migrationStatus === "failed";
 
     return (
-      <div className="d-flex mt-1" style={{ gap: "10px" }}>
-        <div style={{ minWidth: "1em", flex: 1, flexGrow: 0 }}>
-          {isSelectable && (
-            <input
-              name="selected"
-              type="checkbox"
-              defaultChecked={selected}
-              onChange={() => {
-                this.setState({ selected: !selected });
-                onSelectionChange(id, !selected);
-              }}
-            />
-          )}
-        </div>
+      <>
         <div style={{ minWidth: "15em" }}>
           {name} {surname}
         </div>
@@ -83,7 +63,7 @@ class DelegateItem extends Component<Props> {
             </>
           )}
         </div>
-      </div>
+      </>
     );
   }
 }
