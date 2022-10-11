@@ -65,7 +65,9 @@ class DelegateItem extends Component<Props> {
               type="checkbox"
               defaultChecked={selected}
               onChange={() => {
-                this.setState({ selected: !selected });
+                this.setState({
+                  selected: !selected
+                });
                 onSelectionChange(id, !selected);
               }}
             />
