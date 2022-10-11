@@ -15,7 +15,7 @@
     "lint": "tslint -p . -c tslint.json -t verbose",
     "commons-definitions:clean": "shx rm -rf generated/definitions/commons",
     "commons-definitions:mkdir": "shx mkdir -p generated/definitions/commons",
-    "commons-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-commons/v22.0.1/openapi/index.yaml --out-dir ./generated/definitions/commons",
+    "commons-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-commons/v22.0.1/openapi/index.yaml --out-dir ./generated/definitions/commons --no-strict",
     "api-definitions:clean": "shx rm -rf generated/definitions/api",
     "api-definitions:mkdir": "shx mkdir -p generated/definitions/api",
     "api-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-admin/master/openapi/index.yaml --out-dir generated/definitions/api --no-strict",
