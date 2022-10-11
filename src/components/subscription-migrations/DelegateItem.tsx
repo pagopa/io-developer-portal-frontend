@@ -65,7 +65,10 @@ class DelegateItem extends Component<Props> {
               type="checkbox"
               defaultChecked={selected}
               onChange={() => {
-                this.setState({ selected: !selected });
+                this.setState({
+                  selected: !selected
+                });
+                // tslint:disable-next-line: no-unused-expression
                 onSelectionChange(id, !selected);
               }}
             />
