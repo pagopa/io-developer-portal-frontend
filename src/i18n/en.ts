@@ -202,6 +202,8 @@ const en = {
     default: "default"
   },
   subscription_migrations: {
+    error_migration_latest:
+      "Error on retrieve data for latest migration status",
     open_migrations_panel: "Import Services",
     migrations_summary_title:
       "If you already manage Services in IO Backoffice, you can import them here",

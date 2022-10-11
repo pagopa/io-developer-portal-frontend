@@ -201,6 +201,8 @@ const it = {
     default: "default"
   },
   subscription_migrations: {
+    error_migration_latest:
+      "Errore nel ricevere i dati per operazione di migrazione",
     open_migrations_panel: "Importa i Servizi",
     migrations_summary_title:
       "Se hai già dei servizi attivi su IO che gestivi nel IO Backoffice puoi importarli qui",

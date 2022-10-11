@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
-type Delegate = {
+export type Delegate = {
   sourceName: string;
   sourceSurname: string;
   sourceId: string;
@@ -35,10 +35,10 @@ const StatusIcon = ({
 type OwnProps = {
   t: (key: string) => string;
   // exdcuted when an item is selected/unselected
-  onSelectionChange: (id: Delegate["sourceId"], selected: boolean) => void;
+  onSelectionChange?: (id: Delegate["sourceId"], selected: boolean) => void;
   delegate: Delegate;
   migrationStatus: MigrationStatus;
-  selected: boolean;
+  selected?: boolean;
 };
 
 type Props = WithNamespaces & OwnProps;
@@ -66,7 +66,7 @@ class DelegateItem extends Component<Props> {
               defaultChecked={selected}
               onChange={() => {
                 this.setState({ selected: !selected });
-                onSelectionChange(id, !selected);
+                onSelectionChange && onSelectionChange(id, !selected);
               }}
             />
           )}
