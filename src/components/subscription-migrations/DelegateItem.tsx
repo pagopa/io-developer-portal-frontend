@@ -68,7 +68,6 @@ class DelegateItem extends Component<Props> {
                 this.setState({
                   selected: !selected
                 });
-                // tslint:disable-next-line: no-unused-expression
                 onSelectionChange(id, !selected);
               }}
             />
