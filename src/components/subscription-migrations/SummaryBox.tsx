@@ -1,6 +1,7 @@
 import React from "react";
 
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import LatestMigrationsPanel from "./LatestMigrationsPanel";
 
 type OwnProps = {
   onSubmitHandler: () => void;
@@ -31,7 +32,7 @@ const SummaryBox = ({ onSubmitHandler, t }: Props) => {
 
       <div className="mt-3">
         <span className="pt-3 pb-3">
-          {t("migrations_summary_latest_empty")}
+          <LatestMigrationsPanel />
         </span>
       </div>
     </div>
