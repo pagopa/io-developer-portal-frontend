@@ -55,6 +55,7 @@ type DashboardState = {
   applicationConfig: PublicConfig;
   toasts: readonly ToastrItem[];
   showModal: boolean;
+  lastMigrationsRefresh: ReturnType<typeof Date.now>;
 };
 
 class Dashboard extends Component<Props, DashboardState> {
@@ -80,6 +81,7 @@ class Dashboard extends Component<Props, DashboardState> {
     const { location, t } = this.props;
     const applicationConfig = get(this.state, "applicationConfig");
     const showModal = get(this.state, "showModal");
+    const lastMigrationsRefresh = get(this.state, "lastMigrationsRefresh");
     const toasts = get(this.state, "toasts", [] as readonly ToastrItem[]);
     return (
       <>
@@ -116,6 +118,7 @@ class Dashboard extends Component<Props, DashboardState> {
               <section className="d-flex">
                 <div className="m-3 p-3 card">
                   <SummaryBox
+                    key={lastMigrationsRefresh}
                     onSubmitHandler={() => this.setState({ showModal: true })}
                   />
                 </div>
@@ -141,6 +144,7 @@ class Dashboard extends Component<Props, DashboardState> {
                       case "done":
                         // confirm operation and close modal
                         return this.setState({
+                          lastMigrationsRefresh: Date.now(),
                           showModal: false,
                           toasts: [
                             ...toasts,
