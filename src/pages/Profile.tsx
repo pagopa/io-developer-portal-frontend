@@ -518,6 +518,9 @@ class Profile extends Component<Props, ProfileState> {
         onAdd={this.onAddSubscription}
         onClose={() => this.setState({ showModal: false })}
         show={this.state.showModal}
+        allowOrganizationFiscalCode={MsalConfig.is(
+          get(this.state, "applicationConfig")
+        )}
       />
     );
   }
