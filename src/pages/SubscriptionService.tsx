@@ -1,5 +1,7 @@
 import { Alert, Button } from "design-react-kit";
 
+import get from "lodash/get";
+
 import * as ts from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { Service } from "../../generated/definitions/commons/Service";
@@ -22,6 +24,8 @@ import JiraStatus from "../components/jira/JiraStatus";
 import DisableService from "../components/modal/DisableService";
 import PublishService from "../components/modal/PublishService";
 
+import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
+import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
 import Toastr, {
   ToastrItem,
   ToastrType
@@ -71,6 +75,7 @@ type Props = RouteComponentProps<{ service_id: string }> &
   OwnProps;
 
 type SubscriptionServiceState = {
+  applicationConfig?: PublicConfig;
   errorLogoUpload: boolean;
   service?: Service;
   logo?: string;
@@ -120,6 +125,7 @@ function inputValueMap(name: string, value: InputValue) {
 
 class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public state: SubscriptionServiceState = {
+    applicationConfig: undefined,
     errorLogoUpload: false,
     service: undefined,
     logo: undefined,
@@ -139,9 +145,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   public async componentDidMount() {
     const serviceId = this.props.match.params.service_id;
 
-    const serviceFromBackend = await getFromBackend<Service>({
-      path: `services/${serviceId}`
-    });
+    const [applicationConfig, serviceFromBackend] = await Promise.all([
+      getFromBackend<PublicConfig>({
+        path: "configuration"
+      }),
+      getFromBackend<Service>({
+        path: `services/${serviceId}`
+      })
+    ]);
 
     const service = {
       ...serviceFromBackend,
@@ -160,7 +171,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 
     this.setState({
       service,
-      originalIsVisible: serviceFromBackend.is_visible
+      originalIsVisible: serviceFromBackend.is_visible,
+      applicationConfig
     });
   }
 
@@ -751,22 +763,27 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onBlur={this.getHandleBlur("service_name")}
                     className={errors[`service_name`] ? "mb4 error" : "mb4"}
                   />
-                  <label
-                    className={
-                      errors[`organization_name`] ? "mb0 error-text" : "mb0"
-                    }
-                  >
-                    {t("organization")}*
-                  </label>
-                  <input
-                    name="organization_name"
-                    type="text"
-                    defaultValue={service.organization_name}
-                    onBlur={this.getHandleBlur("organization_name")}
-                    className={
-                      errors[`organization_name`] ? "mb4 error" : "mb4"
-                    }
-                  />
+
+                  {MsalConfig.is(get(this.state, "applicationConfig")) && (
+                    <>
+                      <label
+                        className={
+                          errors[`organization_name`] ? "mb0 error-text" : "mb0"
+                        }
+                      >
+                        {t("organization")}*
+                      </label>
+                      <input
+                        name="organization_name"
+                        type="text"
+                        defaultValue={service.organization_name}
+                        onBlur={this.getHandleBlur("organization_name")}
+                        className={
+                          errors[`organization_name`] ? "mb4 error" : "mb4"
+                        }
+                      />
+                    </>
+                  )}
                   <label
                     className={
                       errors[`department_name`] ? "mb0 error-text" : "mb0"
@@ -781,24 +798,30 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                     onBlur={this.getHandleBlur("department_name")}
                     className={errors[`department_name`] ? "mb4 error" : "mb4"}
                   />
-                  <label
-                    className={
-                      errors[`organization_fiscal_code`]
-                        ? "mb0 error-text"
-                        : "mb0"
-                    }
-                  >
-                    {t("organization_fiscal_code")}*
-                  </label>
-                  <input
-                    name="organization_fiscal_code"
-                    type="text"
-                    defaultValue={service.organization_fiscal_code}
-                    onBlur={this.getHandleBlur("organization_fiscal_code")}
-                    className={
-                      errors[`organization_fiscal_code`] ? "mb4 error" : "mb4"
-                    }
-                  />
+                  {MsalConfig.is(get(this.state, "applicationConfig")) && (
+                    <>
+                      <label
+                        className={
+                          errors[`organization_fiscal_code`]
+                            ? "mb0 error-text"
+                            : "mb0"
+                        }
+                      >
+                        {t("organization_fiscal_code")}*
+                      </label>
+                      <input
+                        name="organization_fiscal_code"
+                        type="text"
+                        defaultValue={service.organization_fiscal_code}
+                        onBlur={this.getHandleBlur("organization_fiscal_code")}
+                        className={
+                          errors[`organization_fiscal_code`]
+                            ? "mb4 error"
+                            : "mb4"
+                        }
+                      />
+                    </>
+                  )}
                   <label className="m-0">{t("address")}</label>
                   <input
                     name={"address"}

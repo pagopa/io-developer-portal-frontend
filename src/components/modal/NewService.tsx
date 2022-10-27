@@ -14,6 +14,8 @@ type OwnProps = {
   departmentName: string;
   organizationName: string;
   organization_fiscal_code: string;
+  // if true, the organization fiscal code is editable
+  allowOrganizationFiscalCode: boolean;
 };
 
 type Props = WithNamespaces & OwnProps;
@@ -60,21 +62,26 @@ class NewService extends Component<Props> {
                 defaultValue={this.props.departmentName}
                 onChange={this.props.onChange}
               />
-              <label>{this.props.t("service:organization")}</label>
-              <input
-                name="organization_name"
-                defaultValue={this.props.organizationName}
-                type="text"
-                onChange={this.props.onChange}
-              />
-              <label>{this.props.t("service:organization_fiscal_code")}</label>
-              <input
-                name="organization_fiscal_code"
-                type="text"
-                defaultValue={this.props.organization_fiscal_code}
-                onChange={this.props.onChange}
-              />
-
+              {this.props.allowOrganizationFiscalCode && (
+                <>
+                  <label>{this.props.t("service:organization")}</label>
+                  <input
+                    name="organization_name"
+                    defaultValue={this.props.organizationName}
+                    type="text"
+                    onChange={this.props.onChange}
+                  />
+                  <label>
+                    {this.props.t("service:organization_fiscal_code")}
+                  </label>
+                  <input
+                    name="organization_fiscal_code"
+                    type="text"
+                    defaultValue={this.props.organization_fiscal_code}
+                    onChange={this.props.onChange}
+                  />
+                </>
+              )}
               <Button
                 className="mt-3"
                 color="primary"
