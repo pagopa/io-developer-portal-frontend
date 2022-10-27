@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
 import assistenza from "../assets/images/assistenza.svg";
-import { StorageContext } from "../context/storage";
+import { getStorage, StorageContext } from "../context/storage";
 import { getFromBackend } from "../utils/backend";
 import { getConfig } from "../utils/config";
 import * as session from "../utils/session";
@@ -51,6 +51,16 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
 
     session.logout(configuration);
   };
+
+  private getDelegateName(storage: ReturnType<typeof getStorage>) {
+    return `${storage.userData.given_name} ${storage.userData.family_name} ${
+      storage.isApiAdmin ? " (admin)" : ""
+    }`;
+  }
+
+  private getOrganizationName(storage: ReturnType<typeof getStorage>) {
+    return storage.userData.organization.name;
+  }
 
   public render() {
     const { t } = this.props;
@@ -181,9 +191,9 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
                               className="nav-link color-dark"
                               to={{ pathname: "/profile" }}
                             >
-                              {storage.userData.given_name}{" "}
-                              {storage.userData.family_name}
-                              {storage.isApiAdmin ? " (admin)" : ""}
+                              {SelfCareSessionConfig.is(applicationConfig)
+                                ? this.getOrganizationName(storage)
+                                : this.getDelegateName(storage)}
                             </Link>
                           </div>
                         </NavItem>
