@@ -211,12 +211,12 @@ const en = {
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In non mauris enim. Aenean pellentesque tristique elit sed pulvinar. Non verranno importati i profili dei delegati associati ai servizi che stai importando, ma solo i servizi stessi. Per tanto, una volta importati i servizi, i/il Referente/i Amministrativo/i associati a App IO dovranno aggiungere i delegati associati al prodotto nell’apposita sezione Referenti.",
     migrations_panel_title: "Import Services",
     migrations_panel_abstract:
-      "Here you will find the delegates who work on the services associated with your organization. To import, select the delegates you want to import / services added for each delegate",
+      "Select delegates to import services they created for your organization. Imported services will be available only in the Personal Area and for all user of the organization.",
     migrations_panel_list: "List of delegates who work for your organization",
     migrations_panel_list_empty:
       "There are no delegates working for your organization",
     close: "Close",
-    migrations_panel_start_migration: "Import selected",
+    migrations_panel_start_migration: "Import",
     migration_status_todo: "to be started yet",
     migration_status_doing: "executing",
     migration_status_done: "completed",

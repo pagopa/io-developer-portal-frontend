@@ -210,12 +210,12 @@ const it = {
       "L’importazione dei tuoi servizi dal portale IO Backoffice comporta orem ipsum dolor sit amet, consectetur adipiscing elit. In non mauris enim. Aenean pellentesque tristique elit sed pulvinar. Non verranno importati i profili dei delegati associati ai servizi che stai importando, ma solo i servizi stessi. Per tanto, una volta importati i servizi, i/il Referente/i Amministrativo/i associati a App IO dovranno aggiungere i delegati associati al prodotto nell’apposita sezione Referenti.",
     migrations_panel_title: "Importa i Servizi",
     migrations_panel_abstract:
-      "Qui trovi i delegati che operano sui servizi associati al tuo Ente. Per effettuare l’importazione seleziona i delegati che vuoi importare / servizi aggiunti per ogni delegato",
+      "Per importare i servizi, seleziona i delegati che li hanno creati. I servizi importati saranno visibili solo nell'Area Riservata e saranno accessibili a tutti gli utenti dell'ente.",
     migrations_panel_list: "Lista dei delegati che operano per il tuo Ente",
     migrations_panel_list_empty:
       "Non ci sono delegati che operano per il tuo Ente",
     close: "Chiudi",
-    migrations_panel_start_migration: "Importa selezionati",
+    migrations_panel_start_migration: "Importa",
     migration_status_todo: "da avviare",
     migration_status_doing: "in esecuzione",
     migration_status_done: "completata",
