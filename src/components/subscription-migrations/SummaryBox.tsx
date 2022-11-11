@@ -14,16 +14,13 @@ const SummaryBox = ({ onSubmitHandler, t }: Props) => {
     <div className="">
       <div className="">
         <h4>{t("migrations_summary_title")}</h4>
+        <p>{t("migrations_summary_abstract")}</p>
       </div>
 
       <div className="mt-3">
         <button className="btn btn-primary" onClick={onSubmitHandler}>
           {t("open_migrations_panel")}
         </button>
-      </div>
-
-      <div className="mt-4">
-        <span className="pt-4 pb-4">{t("disclaimer")}</span>
       </div>
 
       <div className="mt-4">
