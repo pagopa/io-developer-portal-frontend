@@ -223,7 +223,7 @@ class MigrationsPanel extends Component<Props, State> {
             <div className="modal-footer">
               <button
                 onClick={() => this.props.onFinish("cancel")}
-                className="btn btn-primary"
+                className="btn btn-secondary"
               >
                 {t("close")}
               </button>
