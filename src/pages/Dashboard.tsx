@@ -28,7 +28,6 @@ import Toastr, {
   ToastrType
 } from "../components/notifications/Toastr";
 import { getFromBackend } from "../utils/backend";
-import ff from "../utils/feature-flags";
 import { SelfCareSessionConfig } from "../utils/session/selfcare";
 
 const toToastMessage = (
@@ -112,64 +111,63 @@ class Dashboard extends Component<Props, DashboardState> {
             render={({ docs }) => this.getCard(docs, "contacts")}
           />
         </section>
-        {ff("SUBSCRIPTION_MIGRATIONS_ENABLED") &&
-          SelfCareSessionConfig.is(applicationConfig) && (
-            <>
-              <section className="d-flex">
-                <div className="m-3 p-3 card">
-                  <SummaryBox
-                    key={lastMigrationsRefresh}
-                    onSubmitHandler={() => this.setState({ showModal: true })}
-                  />
-                </div>
-              </section>
-              {showModal && (
-                <MigrationsPanel
-                  onFinish={reason => {
-                    switch (reason) {
-                      case "error":
-                        // show the error, but keep the modal visible
-                        return this.setState({
-                          toasts: [
-                            ...toasts,
-                            toToastMessage(
-                              t("subscription_migrations:api_error"),
-                              t(
-                                "subscription_migrations:api_error_claim_migrations"
-                              ),
-                              ToastrType.error
-                            )
-                          ]
-                        });
-                      case "done":
-                        // confirm operation and close modal
-                        return this.setState({
-                          lastMigrationsRefresh: Date.now(),
-                          showModal: false,
-                          toasts: [
-                            ...toasts,
-                            toToastMessage(
-                              t("subscription_migrations:api_success"),
-                              t(
-                                "subscription_migrations:api_success_claim_migrations"
-                              ),
-                              ToastrType.success
-                            )
-                          ]
-                        });
-                      // in any other case, just close
-                      case "cancel":
-                        return this.setState({ showModal: false });
-                      default:
-                        // tslint:disable-next-line:no-dead-store
-                        const _: never = reason;
-                        return this.setState({ showModal: false });
-                    }
-                  }}
+        {SelfCareSessionConfig.is(applicationConfig) && (
+          <>
+            <section className="d-flex">
+              <div className="m-3 p-3 card">
+                <SummaryBox
+                  key={lastMigrationsRefresh}
+                  onSubmitHandler={() => this.setState({ showModal: true })}
                 />
-              )}
-            </>
-          )}
+              </div>
+            </section>
+            {showModal && (
+              <MigrationsPanel
+                onFinish={reason => {
+                  switch (reason) {
+                    case "error":
+                      // show the error, but keep the modal visible
+                      return this.setState({
+                        toasts: [
+                          ...toasts,
+                          toToastMessage(
+                            t("subscription_migrations:api_error"),
+                            t(
+                              "subscription_migrations:api_error_claim_migrations"
+                            ),
+                            ToastrType.error
+                          )
+                        ]
+                      });
+                    case "done":
+                      // confirm operation and close modal
+                      return this.setState({
+                        lastMigrationsRefresh: Date.now(),
+                        showModal: false,
+                        toasts: [
+                          ...toasts,
+                          toToastMessage(
+                            t("subscription_migrations:api_success"),
+                            t(
+                              "subscription_migrations:api_success_claim_migrations"
+                            ),
+                            ToastrType.success
+                          )
+                        ]
+                      });
+                    // in any other case, just close
+                    case "cancel":
+                      return this.setState({ showModal: false });
+                    default:
+                      // tslint:disable-next-line:no-dead-store
+                      const _: never = reason;
+                      return this.setState({ showModal: false });
+                  }
+                }}
+              />
+            )}
+          </>
+        )}
         {toasts &&
           toasts.map(ti => (
             <Toastr
