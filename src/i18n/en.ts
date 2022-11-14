@@ -202,21 +202,20 @@ const en = {
     default: "default"
   },
   subscription_migrations: {
-    open_migrations_panel: "Import Services",
-    migrations_summary_title:
-      "If you already manage Services in IO Backoffice, you can import them here",
+    open_migrations_panel: "Import services",
+    migrations_summary_title: "Import services from Developer Portal",
+    migrations_summary_abstract:
+      "The Developer Portal is being decommissioned. At the moment you can use both portals, but soon the IO services will be managed only from the Reserved Area. You don't have to import all services at the same time: you can do multiple imports.",
     migrations_summary_latest: "Import status",
     migrations_summary_latest_empty: "No import has been started yet",
-    disclaimer:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In non mauris enim. Aenean pellentesque tristique elit sed pulvinar. Non verranno importati i profili dei delegati associati ai servizi che stai importando, ma solo i servizi stessi. Per tanto, una volta importati i servizi, i/il Referente/i Amministrativo/i associati a App IO dovranno aggiungere i delegati associati al prodotto nell’apposita sezione Referenti.",
     migrations_panel_title: "Import Services",
     migrations_panel_abstract:
-      "Here you will find the delegates who work on the services associated with your organization. To import, select the delegates you want to import / services added for each delegate",
+      "Select delegates to import services they created for your organization. Imported services will be available only in the Personal Area and for all user of the organization.",
     migrations_panel_list: "List of delegates who work for your organization",
     migrations_panel_list_empty:
       "There are no delegates working for your organization",
     close: "Close",
-    migrations_panel_start_migration: "Import selected",
+    migrations_panel_start_migration: "Import",
     migration_status_todo: "to be started yet",
     migration_status_doing: "executing",
     migration_status_done: "completed",

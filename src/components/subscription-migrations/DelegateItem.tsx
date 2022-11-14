@@ -25,7 +25,8 @@ const StatusIcon = ({
     case "failed":
       return <>{t("migration_status_failed")}</>;
     case "todo":
-      return <>{t("migration_status_todo")}</>;
+      // just an empty string
+      return <></>;
     default:
       const _: never = status; // exhaustive check
       return null;
