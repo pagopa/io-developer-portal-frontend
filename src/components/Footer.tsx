@@ -44,7 +44,7 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
                 <div>
                   <a
                     className="footer-selfcare-link selfcare-text"
-                    href="https:/pagopa.it/it/privacy-policy/"
+                    href="./privacypolicy.html"
                     target="_blank"
                     rel="noopener noreferrer"
                     title={t("privacyPolicy")}
@@ -53,7 +53,7 @@ class Footer extends Component<WithNamespaces, FooterState, never> {
                   </a>
                   <a
                     className="footer-selfcare-link selfcare-text ml-4"
-                    href="https:/pagopa.it/it/termini-e-condizioni-di-utilizzo-del-sito/"
+                    href="./tos.html"
                     target="_blank"
                     rel="noopener noreferrer"
                     title={t("terms")}
