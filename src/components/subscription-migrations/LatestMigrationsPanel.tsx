@@ -1,4 +1,5 @@
 import { get } from "lodash";
+import moment from "moment";
 import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { getFromBackend } from "../../utils/backend";
@@ -26,7 +27,11 @@ type ClaimProcedureStatus = {
 };
 
 type LatestMigrationsResponse = {
-  items: ReadonlyArray<{ delegate: Delegate; status: ClaimProcedureStatus }>;
+  items: ReadonlyArray<{
+    delegate: Delegate;
+    status: ClaimProcedureStatus;
+    lastUpdate: string; // expected ISO UTC format
+  }>;
 };
 
 // the full migration status report is reduced so that it's ready to be rendered
@@ -79,21 +84,29 @@ class MigrationsPanel extends Component<Props, State> {
 
     const MigrationList = () => (
       <>
-        <div>
+        <div className="d-flex">
           {migrations &&
             migrations
               .map(({ status, ...e }) => ({
                 ...e,
                 status: computeMigrationStatus(status)
               }))
-              .map(({ delegate, status }) => (
-                <div
-                  key={delegate.sourceId}
-                  className="d-flex mt-1"
-                  style={{ gap: "10px" }}
-                >
-                  <DelegateItem delegate={delegate} migrationStatus={status} />
-                </div>
+              .map(({ delegate, status, lastUpdate }) => (
+                <>
+                  <div
+                    key={delegate.sourceId}
+                    className="d-flex mt-1"
+                    style={{ gap: "10px" }}
+                  >
+                    <DelegateItem
+                      delegate={delegate}
+                      migrationStatus={status}
+                    />
+                  </div>
+                  <div key={delegate.sourceId} className="ml-2 mt-1">
+                    {moment(lastUpdate).format(t("format:date"))}
+                  </div>
+                </>
               ))}
         </div>
       </>
