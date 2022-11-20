@@ -12,6 +12,7 @@ import { RouteComponentProps } from "react-router";
 
 import "./Dashboard.css";
 
+import DelegateSummaryBox from "../components/subscription-migrations/DelegateSummaryBox";
 import MigrationsPanel from "../components/subscription-migrations/MigrationsPanel";
 import SummaryBox from "../components/subscription-migrations/SummaryBox";
 import {
@@ -28,6 +29,7 @@ import Toastr, {
   ToastrType
 } from "../components/notifications/Toastr";
 import { getFromBackend } from "../utils/backend";
+import { MsalSessionConfig } from "../utils/session/msal";
 import { SelfCareSessionConfig } from "../utils/session/selfcare";
 
 const toToastMessage = (
@@ -167,6 +169,12 @@ class Dashboard extends Component<Props, DashboardState> {
               />
             )}
           </>
+        )}
+        {MsalSessionConfig.is(applicationConfig) && (
+          <DelegateSummaryBox
+            key={lastMigrationsRefresh}
+            onSubmitHandler={() => this.setState({ showModal: true })}
+          />
         )}
         {toasts &&
           toasts.map(ti => (
