@@ -105,6 +105,17 @@ const AdminFields = ({
 
         <div className="mt-5">
           <input
+            name="require_secure_channels"
+            type="checkbox"
+            defaultChecked={service.require_secure_channels}
+            onChange={onChange}
+            className="mb-4 mr-2"
+          />
+          <label className="m-0">{t("require_secure_channels")}</label>
+        </div>
+
+        <div className="mt-5">
+          <input
             name="is_visible"
             type="checkbox"
             defaultChecked={service.is_visible}
