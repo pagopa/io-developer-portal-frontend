@@ -31,7 +31,7 @@ import {
   ValidService
 } from "../utils/service";
 
-import "./Profile.css";
+import SubscriptionsLoader from "../components/subscriptions/SubscriptionsLoader";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
@@ -112,7 +112,7 @@ const SubscriptionService = ({
 };
 
 // max number of subscriptions loaded for each interaction (pagination)
-const subscriptionsLimit: number = 20;
+const SUBSCRIPTIONS_PAGE_SIZE = 20;
 
 type Props = RouteComponentProps<{ email: string }> & WithNamespaces;
 
@@ -293,7 +293,7 @@ class Profile extends Component<Props, ProfileState> {
       path:
         "subscriptions" +
         (email ? "/" + encodeURIComponent(email) : "") +
-        `?offset=${offset}&limit=${subscriptionsLimit}`
+        `?offset=${offset}&limit=${SUBSCRIPTIONS_PAGE_SIZE}`
     });
 
     const userSubscriptionsObj = Object.keys(userSubscriptions).reduce<
@@ -681,48 +681,15 @@ class Profile extends Component<Props, ProfileState> {
           )}
         </div>
 
-        <div className="row">
-          <div className="col-md-12 text-center">
-            <button
-              onClick={() => {
-                this.loadUserSubscriptions(
-                  this.state.subscriptionsOffset + subscriptionsLimit
-                );
-              }}
-              hidden={
-                !this.state.hasMoreSubscriptions ||
-                (this.state.areSubscriptionsLoading &&
-                  this.state.hasMoreSubscriptions)
-              }
-              className="btn btn-secondary btn-lg btn-block"
-            >
-              {t("load_more_services")}
-            </button>
-            <div
-              className={
-                this.state.areSubscriptionsLoading
-                  ? "progress profile--services-progess"
-                  : "profile--services-progess-hidden"
-              }
-              style={
-                this.state.areSubscriptionsLoading
-                  ? { height: "56px" }
-                  : undefined
-              }
-            >
-              <div
-                className="progress-bar progress-bar-striped progress-bar-animated"
-                role="progressbar"
-                aria-valuenow={100}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                style={{ width: "100%" }}
-              >
-                {t("loading_services")}
-              </div>
-            </div>
-          </div>
-        </div>
+        <SubscriptionsLoader
+          areSubscriptionsLoading={this.state.areSubscriptionsLoading}
+          hasMoreSubscriptions={this.state.hasMoreSubscriptions}
+          onClick={() => {
+            this.loadUserSubscriptions(
+              this.state.subscriptionsOffset + SUBSCRIPTIONS_PAGE_SIZE
+            );
+          }}
+        />
 
         <Confirmation
           isOpen={isConfirmationOpen}

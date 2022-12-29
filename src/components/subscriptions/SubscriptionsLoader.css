@@ -1,8 +1,8 @@
-.profile--services-progess-hidden {
+.subscriptions-loader--progess-hidden {
     display: none;
   }
   
-.profile--services-progess {
+.subscriptions-loader--progess {
     height: '56px';
     font-size: 18px;
     font-weight: 600;
