@@ -1,0 +1,9 @@
+.profile--services-progess-hidden {
+    display: none;
+  }
+  
+.profile--services-progess {
+    height: '56px';
+    font-size: 18px;
+    font-weight: 600;
+  }
