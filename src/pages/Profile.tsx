@@ -150,7 +150,7 @@ type ProfileState = {
   showModal: boolean;
   subscriptionsOffset: number;
   hasMoreSubscriptions: boolean;
-  areSubscriptionsLoading: boolean,
+  areSubscriptionsLoading: boolean;
 };
 
 class Profile extends Component<Props, ProfileState> {
@@ -286,11 +286,14 @@ class Profile extends Component<Props, ProfileState> {
 
   private async loadUserSubscriptions(offset: number, email?: string) {
     this.setState({ areSubscriptionsLoading: true });
-    
+
     const userSubscriptions: SubscriptionCollection = await getFromBackend<
       SubscriptionCollection
     >({
-      path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : "") + `?offset=${offset}&limit=${subscriptionsLimit}`
+      path:
+        "subscriptions" +
+        (email ? "/" + encodeURIComponent(email) : "") +
+        `?offset=${offset}&limit=${subscriptionsLimit}`
     });
 
     const userSubscriptionsObj = Object.keys(userSubscriptions).reduce<
@@ -310,9 +313,14 @@ class Profile extends Component<Props, ProfileState> {
     }, {});
 
     this.setState({
-      userSubscriptions: {...this.state.userSubscriptions, ...userSubscriptionsObj},
+      userSubscriptions: {
+        ...this.state.userSubscriptions,
+        ...userSubscriptionsObj
+      },
       subscriptionsOffset: offset,
-      hasMoreSubscriptions: userSubscriptions['nextLink' as keyof typeof userSubscriptions] !== undefined,
+      hasMoreSubscriptions:
+        userSubscriptions["nextLink" as keyof typeof userSubscriptions] !==
+        undefined,
       areSubscriptionsLoading: false
     });
 
@@ -677,16 +685,39 @@ class Profile extends Component<Props, ProfileState> {
           <div className="col-md-12 text-center">
             <button
               onClick={() => {
-                this.loadUserSubscriptions(this.state.subscriptionsOffset + subscriptionsLimit);
+                this.loadUserSubscriptions(
+                  this.state.subscriptionsOffset + subscriptionsLimit
+                );
               }}
-              hidden={!this.state.hasMoreSubscriptions || (this.state.areSubscriptionsLoading && this.state.hasMoreSubscriptions)}
+              hidden={
+                !this.state.hasMoreSubscriptions ||
+                (this.state.areSubscriptionsLoading &&
+                  this.state.hasMoreSubscriptions)
+              }
               className="btn btn-secondary btn-lg btn-block"
             >
               {t("load_more_services")}
             </button>
-            <div className={this.state.areSubscriptionsLoading ? 'progress profile--services-progess' : 'profile--services-progess-hidden'} 
-              style={this.state.areSubscriptionsLoading ?  {height: '56px'} : undefined}>
-              <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={100} aria-valuemin={0} aria-valuemax={100} style={{width: '100%'}}>
+            <div
+              className={
+                this.state.areSubscriptionsLoading
+                  ? "progress profile--services-progess"
+                  : "profile--services-progess-hidden"
+              }
+              style={
+                this.state.areSubscriptionsLoading
+                  ? { height: "56px" }
+                  : undefined
+              }
+            >
+              <div
+                className="progress-bar progress-bar-striped progress-bar-animated"
+                role="progressbar"
+                aria-valuenow={100}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                style={{ width: "100%" }}
+              >
                 {t("loading_services")}
               </div>
             </div>
