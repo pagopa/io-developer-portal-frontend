@@ -90,7 +90,9 @@ const en = {
     service_not_valid: "incomplete or incorrect data",
     service_valid: "active",
     service_loading: "Loading service data",
-    create_new_service: "Create new service"
+    create_new_service: "Create new service",
+    load_more_services: "Load more services",
+    loading_services: "Loading services"
   },
   modal: {
     important: "Important!",

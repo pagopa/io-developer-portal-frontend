@@ -90,7 +90,9 @@ const it = {
     service_not_valid: "dati incompleti o incorretti",
     service_valid: "attivo",
     service_loading: "Recupero dati servizio",
-    create_new_service: "Crea un nuovo servizio"
+    create_new_service: "Crea un nuovo servizio",
+    load_more_services: "Carica altri servizi",
+    loading_services: "Caricamento servizi in corso"
   },
   modal: {
     important: "Importante!",

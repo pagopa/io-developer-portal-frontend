@@ -1,0 +1,9 @@
+.subscriptions-loader--progess-hidden {
+    display: none;
+  }
+  
+.subscriptions-loader--progess {
+    height: '56px';
+    font-size: 18px;
+    font-weight: 600;
+  }

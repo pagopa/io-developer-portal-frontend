@@ -31,6 +31,8 @@ import {
   ValidService
 } from "../utils/service";
 
+import SubscriptionsLoader from "../components/subscriptions/SubscriptionsLoader";
+
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
 
@@ -109,6 +111,9 @@ const SubscriptionService = ({
   ) : null;
 };
 
+// max number of subscriptions loaded for each interaction (pagination)
+const SUBSCRIPTIONS_PAGE_SIZE = 20;
+
 type Props = RouteComponentProps<{ email: string }> & WithNamespaces;
 
 function isString<T>(value: T | string): value is string {
@@ -143,6 +148,9 @@ type ProfileState = {
   onConfirmOperation: () => void;
   serviceState: { [serviceId: string]: string };
   showModal: boolean;
+  subscriptionsOffset: number;
+  hasMoreSubscriptions: boolean;
+  areSubscriptionsLoading: boolean;
 };
 
 class Profile extends Component<Props, ProfileState> {
@@ -162,7 +170,10 @@ class Profile extends Component<Props, ProfileState> {
     keyDisplay: {},
     isConfirmationOpen: false,
     onConfirmOperation: () => undefined,
-    showModal: false
+    showModal: false,
+    subscriptionsOffset: 0,
+    hasMoreSubscriptions: true,
+    areSubscriptionsLoading: true
   };
 
   public onAddSubscription = async () => {
@@ -269,11 +280,20 @@ class Profile extends Component<Props, ProfileState> {
       this.setState(this.getSubscriptionDefaults(applicationConfig));
     }
 
-    // load all user's subscriptions
+    // load user's subscriptions (paginated)
+    await this.loadUserSubscriptions(this.state.subscriptionsOffset, email);
+  }
+
+  private async loadUserSubscriptions(offset: number, email?: string) {
+    this.setState({ areSubscriptionsLoading: true });
+
     const userSubscriptions: SubscriptionCollection = await getFromBackend<
       SubscriptionCollection
     >({
-      path: "subscriptions" + (email ? "/" + encodeURIComponent(email) : "")
+      path:
+        "subscriptions" +
+        (email ? "/" + encodeURIComponent(email) : "") +
+        `?offset=${offset}&limit=${SUBSCRIPTIONS_PAGE_SIZE}`
     });
 
     const userSubscriptionsObj = Object.keys(userSubscriptions).reduce<
@@ -293,7 +313,15 @@ class Profile extends Component<Props, ProfileState> {
     }, {});
 
     this.setState({
-      userSubscriptions: userSubscriptionsObj
+      userSubscriptions: {
+        ...this.state.userSubscriptions,
+        ...userSubscriptionsObj
+      },
+      subscriptionsOffset: offset,
+      hasMoreSubscriptions:
+        userSubscriptions["nextLink" as keyof typeof userSubscriptions] !==
+        undefined,
+      areSubscriptionsLoading: false
     });
 
     // load all services related to the user's subscriptions
@@ -652,6 +680,16 @@ class Profile extends Component<Props, ProfileState> {
             []
           )}
         </div>
+
+        <SubscriptionsLoader
+          areSubscriptionsLoading={this.state.areSubscriptionsLoading}
+          hasMoreSubscriptions={this.state.hasMoreSubscriptions}
+          onClick={() => {
+            void this.loadUserSubscriptions(
+              this.state.subscriptionsOffset + SUBSCRIPTIONS_PAGE_SIZE
+            );
+          }}
+        />
 
         <Confirmation
           isOpen={isConfirmationOpen}
