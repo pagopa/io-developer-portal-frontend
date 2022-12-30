@@ -281,7 +281,7 @@ class Profile extends Component<Props, ProfileState> {
     }
 
     // load user's subscriptions (paginated)
-    this.loadUserSubscriptions(this.state.subscriptionsOffset, email);
+    await this.loadUserSubscriptions(this.state.subscriptionsOffset, email);
   }
 
   private async loadUserSubscriptions(offset: number, email?: string) {
@@ -685,7 +685,7 @@ class Profile extends Component<Props, ProfileState> {
           areSubscriptionsLoading={this.state.areSubscriptionsLoading}
           hasMoreSubscriptions={this.state.hasMoreSubscriptions}
           onClick={() => {
-            this.loadUserSubscriptions(
+            void this.loadUserSubscriptions(
               this.state.subscriptionsOffset + SUBSCRIPTIONS_PAGE_SIZE
             );
           }}
