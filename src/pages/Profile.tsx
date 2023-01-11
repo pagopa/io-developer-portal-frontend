@@ -686,7 +686,8 @@ class Profile extends Component<Props, ProfileState> {
           hasMoreSubscriptions={this.state.hasMoreSubscriptions}
           onClick={() => {
             void this.loadUserSubscriptions(
-              this.state.subscriptionsOffset + SUBSCRIPTIONS_PAGE_SIZE
+              this.state.subscriptionsOffset + SUBSCRIPTIONS_PAGE_SIZE,
+              getMail(this.props.match.params.email)
             );
           }}
         />
