@@ -212,17 +212,20 @@ export const getServiceReviewStatus = (service: Service) => {
     });
 };
 
-export const getColorClass = (status: ServiceStatus) => {
+export const getColorClass = (
+  status: ServiceStatus,
+  classNameType: "circle" | "badge" = "circle"
+) => {
   switch (status) {
     case ServiceStatus.REJECTED:
-      return "circle-red";
+      return classNameType === "circle" ? "circle-red" : "badge-danger";
     case ServiceStatus.REVIEW:
-      return "circle-yellow";
+      return classNameType === "circle" ? "circle-yellow" : "badge-warning";
     case ServiceStatus.VALID:
     case ServiceStatus.DEACTIVE:
-      return "circle-green";
+      return classNameType === "circle" ? "circle-green" : "badge-success";
     default:
-      return "";
+      return classNameType === "circle" ? "" : "badge-secondary";
   }
 };
 

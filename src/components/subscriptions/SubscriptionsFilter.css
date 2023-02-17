@@ -1,0 +1,12 @@
+.subscriptions-filter--select {
+  width: 100px;
+}
+
+.subscriptions-filter--formgroup {
+  padding-bottom: 0;
+  margin-top: 0;
+}
+
+.subscriptions-filter--inputgroup {
+  height: 60px;
+}

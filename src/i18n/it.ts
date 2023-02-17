@@ -92,7 +92,9 @@ const it = {
     service_loading: "Recupero dati servizio",
     create_new_service: "Crea un nuovo servizio",
     load_more_services: "Carica altri servizi",
-    loading_services: "Caricamento servizi in corso"
+    loading_services: "Caricamento servizi in corso",
+    less_info: "Meno info",
+    more_info: "Più info"
   },
   modal: {
     important: "Importante!",
@@ -136,7 +138,7 @@ const it = {
     max_allowed_payment_amount: "Importo massimo autorizzato",
     visible_service: "Visibile nella lista servizi",
     eurocents: "eurocents",
-    edit: "Modifica i dati del servizio",
+    edit: "Modifica",
     save: "Salva i dati del servizio",
     publish: "Pubblica servizio",
     unpublish: "Disattiva il servizio",

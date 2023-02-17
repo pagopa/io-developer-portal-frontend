@@ -1,15 +1,11 @@
-import { Button } from "design-react-kit";
+import { Badge } from "design-react-kit";
 import React, { ChangeEvent, Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Link } from "react-router-dom";
 
 import get from "lodash/get";
 import { getStorage } from "../context/storage";
 
 import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
-
-import FaEye from "react-icons/lib/fa/eye";
-import FaEyeSlash from "react-icons/lib/fa/eye-slash";
 
 import { RouteComponentProps } from "react-router";
 import Confirmation from "../components/modal/Confirmation";
@@ -24,95 +20,21 @@ import { UserData } from "../../generated/definitions/backend/UserData";
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
 import {
-  getColorClass,
   getServiceReviewStatus,
-  getText,
   ServiceStatus,
   ValidService
 } from "../utils/service";
 
+import ServiceCard from "../components/subscriptions/ServiceCard";
+import SubscriptionsFilter, {
+  OptionValueLabel
+} from "../components/subscriptions/SubscriptionsFilter";
 import SubscriptionsLoader from "../components/subscriptions/SubscriptionsLoader";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
 
-const SubscriptionService = ({
-  service,
-  t,
-  status
-}: {
-  service: Service;
-  t: (key: string) => string;
-  status: string;
-}) => {
-  return service ? (
-    <div>
-      <h5>
-        <span className="light-text">{t("service:title")}:</span>{" "}
-        <span className="dark-text">{service.service_id}</span>
-      </h5>
-      <div className="my-3">
-        <span className="light-text">{t("service:name")}:</span>{" "}
-        <span className="light-text">{service.service_name}</span>
-      </div>
-      <div className="my-3">
-        <span className="light-text">{t("service:organization")}:</span>{" "}
-        <span className="light-text">{service.organization_name}</span>
-      </div>
-      <div className="my-3">
-        <span className="light-text">
-          {t("service:authorized_recipients")}:
-        </span>{" "}
-        <span className="light-text">{service.authorized_recipients}</span>
-      </div>
-      <div className="my-3">
-        <span className="light-text">{t("service:authorized_ips")}:</span>{" "}
-        <span className="light-text">{service.authorized_cidrs}</span>
-      </div>
-      <div className="my-3">
-        <span className="light-text">
-          {t("service:max_allowed_payment_amount")}:
-        </span>{" "}
-        <span className="light-text">
-          {service.max_allowed_payment_amount} {t("service:eurocents")}
-        </span>
-      </div>
-      <div className="status-row">
-        <div className="col-md-8">
-          <div className="service-status">
-            <div>
-              <span
-                className={`circle ${getColorClass(status as ServiceStatus)}`}
-              />
-              <div>
-                <span className="light-text">{t("service:state")}:&nbsp;</span>
-                <span className="dark-text">
-                  {t(getText(status as ServiceStatus))}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <Link
-            className="btn btn-primary"
-            to={{
-              pathname: `/service/${service.service_id}`,
-              state: {
-                isVisible: !!service.is_visible
-              }
-            }}
-          >
-            {t("service:edit")}
-          </Link>
-        </div>
-      </div>
-    </div>
-  ) : null;
-};
-
-// max number of subscriptions loaded for each interaction (pagination)
-const SUBSCRIPTIONS_PAGE_SIZE = 20;
+const SUBSCRIPTIONS_CURRENT_PAGE_SIZE_KEY = "subscriptionsPageSize";
 
 type Props = RouteComponentProps<{ email: string }> & WithNamespaces;
 
@@ -140,9 +62,6 @@ type ProfileState = {
     };
   };
   userSubscriptions: UserSubscriptions;
-  keyDisplay: {
-    [x: string]: undefined | boolean;
-  };
   services: { [serviceId: string]: Service };
   isConfirmationOpen: boolean;
   onConfirmOperation: () => void;
@@ -151,6 +70,7 @@ type ProfileState = {
   subscriptionsOffset: number;
   hasMoreSubscriptions: boolean;
   areSubscriptionsLoading: boolean;
+  subscriptionsCurrentPageSize: OptionValueLabel;
 };
 
 class Profile extends Component<Props, ProfileState> {
@@ -167,13 +87,13 @@ class Profile extends Component<Props, ProfileState> {
       clientID: ""
     },
     newSubscription: {},
-    keyDisplay: {},
     isConfirmationOpen: false,
     onConfirmOperation: () => undefined,
     showModal: false,
     subscriptionsOffset: 0,
     hasMoreSubscriptions: true,
-    areSubscriptionsLoading: true
+    areSubscriptionsLoading: true,
+    subscriptionsCurrentPageSize: this.getCurrentPageSize()
   };
 
   public onAddSubscription = async () => {
@@ -281,11 +201,16 @@ class Profile extends Component<Props, ProfileState> {
     }
 
     // load user's subscriptions (paginated)
-    await this.loadUserSubscriptions(this.state.subscriptionsOffset, email);
+    await this.loadUserSubscriptions(this.state.subscriptionsOffset);
   }
 
-  private async loadUserSubscriptions(offset: number, email?: string) {
+  private async loadUserSubscriptions(
+    offset: number,
+    filterBySubscriptionName?: string
+  ) {
     this.setState({ areSubscriptionsLoading: true });
+
+    const email = getMail(this.props.match.params.email);
 
     const userSubscriptions: SubscriptionCollection = await getFromBackend<
       SubscriptionCollection
@@ -293,7 +218,10 @@ class Profile extends Component<Props, ProfileState> {
       path:
         "subscriptions" +
         (email ? "/" + encodeURIComponent(email) : "") +
-        `?offset=${offset}&limit=${SUBSCRIPTIONS_PAGE_SIZE}`
+        `?offset=${offset}&limit=${
+          this.state.subscriptionsCurrentPageSize.value
+        }` +
+        (filterBySubscriptionName ? `&name=${filterBySubscriptionName}` : "")
     });
 
     const userSubscriptionsObj = Object.keys(userSubscriptions).reduce<
@@ -337,46 +265,31 @@ class Profile extends Component<Props, ProfileState> {
     });
   }
 
-  public onToggleKey(keyIdx: string) {
-    this.setState(prevState => ({
-      keyDisplay: {
-        ...prevState.keyDisplay,
-        [keyIdx]: !prevState.keyDisplay[keyIdx]
-      }
-    }));
+  private getCurrentPageSize() {
+    this.setSessionStorageCurrentPageSize(
+      this.getSessionStorageCurrentPageSize()
+    );
+    this.setState({
+      subscriptionsCurrentPageSize: this.getSessionStorageCurrentPageSize()
+    });
+    return this.getSessionStorageCurrentPageSize();
   }
 
-  public onSetKey = (serviceKey: string, service: Service) => () => {
-    sessionStorage.setItem("serviceKey", serviceKey);
-    sessionStorage.setItem("service", JSON.stringify(service));
-    window.location.replace("/compose");
-  };
+  private getSessionStorageCurrentPageSize() {
+    const result = sessionStorage.getItem(SUBSCRIPTIONS_CURRENT_PAGE_SIZE_KEY);
+    if (result) {
+      return JSON.parse(result) as OptionValueLabel;
+    } else {
+      return { label: "20", value: 20 } as OptionValueLabel;
+    }
+  }
 
-  public onRegenerateKey = (
-    keyType: string,
-    subscriptionId: string
-  ) => async () => {
-    this.setState({
-      isConfirmationOpen: true,
-      onConfirmOperation: async () => {
-        const userSubscription: SubscriptionContract = await putToBackend<
-          SubscriptionContract
-        >({
-          path: "subscriptions/" + subscriptionId + "/" + keyType + "_key",
-          options: { body: undefined }
-        });
-        this.setState(prevState => ({
-          isConfirmationOpen: false,
-          userSubscriptions: isString(userSubscription.name)
-            ? {
-                ...prevState.userSubscriptions,
-                [userSubscription.name]: userSubscription
-              }
-            : prevState.userSubscriptions
-        }));
-      }
-    });
-  };
+  private setSessionStorageCurrentPageSize(value: OptionValueLabel) {
+    sessionStorage.setItem(
+      SUBSCRIPTIONS_CURRENT_PAGE_SIZE_KEY,
+      JSON.stringify(value)
+    );
+  }
 
   public handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
@@ -393,9 +306,7 @@ class Profile extends Component<Props, ProfileState> {
 
   public renderNewUserDiv() {
     const { t } = this.props;
-
     const userGroups = get(this.state, "userData.apimUser.groupNames");
-
     const applicationConfig = get(this.state, "applicationConfig");
     const isSelfCare = !MsalConfig.is(applicationConfig);
 
@@ -423,12 +334,12 @@ class Profile extends Component<Props, ProfileState> {
         <div className="col-md-8">
           {firstName && (
             <div>
-              {t("name")}: {firstName}
+              {t("name")}: <strong>{firstName}</strong>
             </div>
           )}
           {lastName && (
             <div>
-              {t("surname")}: {lastName}
+              {t("surname")}: <strong>{lastName}</strong>
             </div>
           )}
           {isSameUser &&
@@ -449,7 +360,7 @@ class Profile extends Component<Props, ProfileState> {
         <SubscriptionOwnerName />
         <div className="row">
           <AccountInfo />
-          <div className="col-md-4">
+          <div className="col-md-4 text-right">
             <button
               onClick={() => {
                 this.setState({ showModal: true });
@@ -460,19 +371,38 @@ class Profile extends Component<Props, ProfileState> {
             </button>
           </div>
         </div>
-
-        <p
-          style={{ maxWidth: "30em", wordWrap: "break-word" }}
-          className="mt-4"
-        >
-          Autorizzazioni: {userGroups && userGroups.join(",")}
-        </p>
-        <p>
-          Limitato:{" "}
-          {userGroups && userGroups.indexOf("apimessagewrite") !== -1
-            ? "no"
-            : "si"}
-        </p>
+        <div className="row">
+          <div className="col-md">
+            <p className="mt-4">
+              Autorizzazioni:{" "}
+              {userGroups
+                ? userGroups.map((userGroup: string, index: number) => (
+                    <Badge
+                      key={index}
+                      color="secondary"
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "15px",
+                        padding: "6px 8px",
+                        margin: "0 4px 4px 0"
+                      }}
+                      pill={true}
+                    >
+                      {userGroup}
+                    </Badge>
+                  ))
+                : ""}
+            </p>
+            <p>
+              Limitato:{" "}
+              {userGroups && userGroups.indexOf("apimessagewrite") !== -1 ? (
+                <strong>NO</strong>
+              ) : (
+                <strong>SI</strong>
+              )}
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -553,18 +483,82 @@ class Profile extends Component<Props, ProfileState> {
     );
   }
 
+  private regenerateKey(keyType: string, subscriptionId: string) {
+    this.setState({
+      isConfirmationOpen: true,
+      onConfirmOperation: async () => {
+        const userSubscription: SubscriptionContract = await putToBackend<
+          SubscriptionContract
+        >({
+          path: `subscriptions/${subscriptionId}/${keyType}_key`,
+          options: { body: undefined }
+        });
+        this.setState(prevState => ({
+          isConfirmationOpen: false,
+          userSubscriptions: isString(userSubscription.name)
+            ? {
+                ...prevState.userSubscriptions,
+                [userSubscription.name]: userSubscription
+              }
+            : prevState.userSubscriptions
+        }));
+      }
+    });
+  }
+
   public render() {
-    const { userSubscriptions, services } = this.state;
-    const { isConfirmationOpen, onConfirmOperation } = this.state;
+    const {
+      userSubscriptions,
+      services,
+      isConfirmationOpen,
+      subscriptionsCurrentPageSize,
+      onConfirmOperation
+    } = this.state;
     const { t } = this.props;
 
+    const handleSubscriptionsPageSizeChange = (
+      newPageSize: OptionValueLabel
+    ) => {
+      this.setState({
+        subscriptionsOffset: 0,
+        subscriptionsCurrentPageSize: { ...newPageSize },
+        userSubscriptions: {}
+      });
+      this.setSessionStorageCurrentPageSize(newPageSize);
+      void this.componentDidMount();
+    };
+
+    const handleSubscriptionSearch = (subscriptionId: string) => {
+      this.setState({ subscriptionsOffset: 0, userSubscriptions: {} });
+      void this.loadUserSubscriptions(0, subscriptionId);
+    };
+
+    const handleSubscriptionSearchClear = () => {
+      this.setState({ subscriptionsOffset: 0, userSubscriptions: {} });
+      void this.loadUserSubscriptions(0);
+    };
+
     return (
-      <div className="m-4 p-5">
+      <div className="mx-4 px-5">
         {this.state.showModal && this.renderModal()}
         {this.renderNewUserDiv()}
 
         <div>
-          <h4 className="mt-4">{t("services")}</h4>
+          <h4 className="mt-3">{t("services")}</h4>
+
+          <SubscriptionsFilter
+            subscriptionsPageSizeOptions={[
+              { value: 10, label: "10" },
+              { value: 20, label: "20" },
+              { value: 50, label: "50" },
+              { value: 100, label: "100" }
+            ]}
+            subscriptionsDefaultPageSize={subscriptionsCurrentPageSize}
+            onSubscriptionSearchClear={handleSubscriptionSearchClear}
+            onSubscriptionSearchClick={handleSubscriptionSearch}
+            onSubscriptionsPageSizeChange={handleSubscriptionsPageSizeChange}
+          />
+
           {Object.keys(userSubscriptions).reduce<ReadonlyArray<JSX.Element>>(
             (jsxElementsArray, key) => {
               const subscription = userSubscriptions[key];
@@ -574,107 +568,15 @@ class Profile extends Component<Props, ProfileState> {
               const service = services[subscription.name];
               return [
                 ...jsxElementsArray,
-                <div className="card-service my-4" key={subscription.id}>
-                  <div className="p-4 mt-4">
-                    <SubscriptionService
-                      service={service}
-                      t={t}
-                      status={this.renderServiceStatus(service)}
-                    />
-                  </div>
-                  <div className="card-service-key p-4">
-                    <div>
-                      {t("primary_key")}:{" "}
-                      {this.state.keyDisplay[`p_${subscription.name}`]
-                        ? subscription.primaryKey
-                        : t("key")}
-                      <Button
-                        outline={true}
-                        color="primary"
-                        size="xs"
-                        className="ml-1 mr-1"
-                        onClick={() =>
-                          this.onToggleKey(`p_${subscription.name}`)
-                        }
-                      >
-                        {this.state.keyDisplay[`p_${subscription.name}`] ? (
-                          <FaEyeSlash />
-                        ) : (
-                          <FaEye />
-                        )}
-                      </Button>
-                      <Button
-                        color="light"
-                        size="xs"
-                        className="mr-1"
-                        disabled={!service || subscription.state !== "active"}
-                        onClick={this.onRegenerateKey(
-                          "primary",
-                          subscription.name
-                        )}
-                      >
-                        {t("regenerate")}
-                      </Button>
-                      <Button
-                        color="primary"
-                        size="xs"
-                        className="mr-1"
-                        disabled={!service || subscription.state !== "active"}
-                        onClick={this.onSetKey(
-                          subscription.primaryKey,
-                          service
-                        )}
-                      >
-                        {t("use")}
-                      </Button>
-                    </div>
-                    <div className="my-2">
-                      {t("secondary_key")}:{" "}
-                      {this.state.keyDisplay[`s_${subscription.name}`]
-                        ? subscription.secondaryKey
-                        : t("key")}
-                      <Button
-                        outline={true}
-                        color="primary"
-                        size="xs"
-                        className="ml-1 mr-1"
-                        onClick={() =>
-                          this.onToggleKey(`s_${subscription.name}`)
-                        }
-                      >
-                        {this.state.keyDisplay[`s_${subscription.name}`] ? (
-                          <FaEyeSlash />
-                        ) : (
-                          <FaEye />
-                        )}
-                      </Button>
-                      <Button
-                        color="light"
-                        size="xs"
-                        className="mr-1"
-                        disabled={!service || subscription.state !== "active"}
-                        onClick={this.onRegenerateKey(
-                          "secondary",
-                          subscription.name
-                        )}
-                      >
-                        {t("regenerate")}
-                      </Button>
-                      <Button
-                        color="primary"
-                        size="xs"
-                        className="mr-1"
-                        disabled={!service || subscription.state !== "active"}
-                        onClick={this.onSetKey(
-                          subscription.secondaryKey,
-                          service
-                        )}
-                      >
-                        {t("use")}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                <ServiceCard
+                  key={key}
+                  subscription={subscription}
+                  service={service}
+                  status={this.renderServiceStatus(service)}
+                  onRegenerateKey={(keyType, subscriptionId) =>
+                    this.regenerateKey(keyType, subscriptionId)
+                  }
+                />
               ];
             },
             []
@@ -686,8 +588,8 @@ class Profile extends Component<Props, ProfileState> {
           hasMoreSubscriptions={this.state.hasMoreSubscriptions}
           onClick={() => {
             void this.loadUserSubscriptions(
-              this.state.subscriptionsOffset + SUBSCRIPTIONS_PAGE_SIZE,
-              getMail(this.props.match.params.email)
+              this.state.subscriptionsOffset +
+                subscriptionsCurrentPageSize.value
             );
           }}
         />

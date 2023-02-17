@@ -92,7 +92,9 @@ const en = {
     service_loading: "Loading service data",
     create_new_service: "Create new service",
     load_more_services: "Load more services",
-    loading_services: "Loading services"
+    loading_services: "Loading services",
+    less_info: "Less info",
+    more_info: "More info"
   },
   modal: {
     important: "Important!",
@@ -136,7 +138,7 @@ const en = {
     max_allowed_payment_amount: "Maximum allowd payment amount",
     visible_service: "Visible in service list",
     eurocents: "eurocents",
-    edit: "Edit service's details",
+    edit: "Edit",
     save: "Save service's details",
     publish: "Publish service",
     unpublish: "Unpublish service",
