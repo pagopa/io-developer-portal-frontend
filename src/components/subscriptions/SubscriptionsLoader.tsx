@@ -17,7 +17,7 @@ class SubscriptionsLoader extends Component<Props, never> {
 
     return (
       <Fragment>
-        <div className="row">
+        <div className="row mt-4">
           <div className="col-md-12 text-center">
             <button
               onClick={() => this.props.onClick()}
