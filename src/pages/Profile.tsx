@@ -25,6 +25,7 @@ import {
   ValidService
 } from "../utils/service";
 
+import ApiKey from "../components/subscriptions/ApiKey";
 import ServiceCard from "../components/subscriptions/ServiceCard";
 import SubscriptionsFilter, {
   OptionValueLabel
@@ -62,6 +63,12 @@ type ProfileState = {
     };
   };
   userSubscriptions: UserSubscriptions;
+  manageSubscription?: SubscriptionContract;
+  collapseManageKey: boolean;
+  maskedManageKeys: {
+    primary: boolean;
+    secondary: boolean;
+  };
   services: { [serviceId: string]: Service };
   isConfirmationOpen: boolean;
   onConfirmOperation: () => void;
@@ -77,6 +84,12 @@ class Profile extends Component<Props, ProfileState> {
   public state: ProfileState = {
     userData: {},
     userSubscriptions: {},
+    manageSubscription: undefined,
+    collapseManageKey: true,
+    maskedManageKeys: {
+      primary: true,
+      secondary: true
+    },
     services: {},
     serviceState: {},
     applicationConfig: {
@@ -200,8 +213,24 @@ class Profile extends Component<Props, ProfileState> {
       this.setState(this.getSubscriptionDefaults(applicationConfig));
     }
 
+    // load manage subscription
+    const userGroups = get(this.state, "userData.apimUser.groupNames");
+    if (userGroups && userGroups.indexOf("apiservicewrite") !== -1) {
+      await this.loadManageSubscription(email);
+    }
+
     // load user's subscriptions (paginated)
     await this.loadUserSubscriptions(this.state.subscriptionsOffset);
+  }
+
+  private async loadManageSubscription(email?: string) {
+    const subscription: SubscriptionContract = await getFromBackend<
+      SubscriptionContract
+    >({
+      path:
+        "subscription-manage" + (email ? "/" + encodeURIComponent(email) : "")
+    });
+    this.setState({ manageSubscription: subscription });
   }
 
   private async loadUserSubscriptions(
@@ -304,11 +333,12 @@ class Profile extends Component<Props, ProfileState> {
     }));
   };
 
-  public renderNewUserDiv() {
+  public renderUserInfo() {
     const { t } = this.props;
     const userGroups = get(this.state, "userData.apimUser.groupNames");
     const applicationConfig = get(this.state, "applicationConfig");
     const isSelfCare = !MsalConfig.is(applicationConfig);
+    const { maskedManageKeys } = this.state;
 
     const SubscriptionOwnerName = () => (
       <h4>
@@ -371,6 +401,38 @@ class Profile extends Component<Props, ProfileState> {
             </button>
           </div>
         </div>
+
+        {userGroups && userGroups.indexOf("apiservicewrite") !== -1 ? (
+          this.state.manageSubscription ? (
+            <ApiKey
+              subscription={this.state.manageSubscription}
+              headerInfo={{
+                header: "Chiave API Manage",
+                content:
+                  "Utilizza la chiave Manage per operazioni programmatiche di creazione o aggiornamento di un servizio."
+              }}
+              showUseKeyAction={false}
+              collapseSecondaryKey={this.state.collapseManageKey}
+              maskedKeys={this.state.maskedManageKeys}
+              additionalClass="px-4 py-3 my-3"
+              onRegenerateKey={(keyType, subscriptionId) =>
+                this.regenerateKey(keyType, subscriptionId)
+              }
+              onCollapseChange={value =>
+                this.setState({ collapseManageKey: value })
+              }
+              onMaskChange={(keyType, masked) =>
+                this.setState({
+                  maskedManageKeys: {
+                    ...maskedManageKeys,
+                    [keyType as keyof typeof maskedManageKeys]: masked
+                  }
+                })
+              }
+            />
+          ) : null
+        ) : null}
+
         <div className="row">
           <div className="col-md">
             <p className="mt-4">
@@ -493,17 +555,26 @@ class Profile extends Component<Props, ProfileState> {
           path: `subscriptions/${subscriptionId}/${keyType}_key`,
           options: { body: undefined }
         });
-        this.setState(prevState => ({
-          isConfirmationOpen: false,
-          userSubscriptions: isString(userSubscription.name)
-            ? {
-                ...prevState.userSubscriptions,
-                [userSubscription.name]: userSubscription
-              }
-            : prevState.userSubscriptions
-        }));
+        this.updateSubscriptionKeys(userSubscription);
       }
     });
+  }
+
+  private updateSubscriptionKeys(userSubscription: SubscriptionContract) {
+    this.setState(prevState => ({
+      isConfirmationOpen: false,
+      userSubscriptions: isString(userSubscription.name)
+        ? {
+            ...prevState.userSubscriptions,
+            [userSubscription.name]: userSubscription
+          }
+        : prevState.userSubscriptions,
+      manageSubscription:
+        isString(userSubscription.name) &&
+        userSubscription.name.startsWith("MANAGE-")
+          ? userSubscription
+          : prevState.manageSubscription
+    }));
   }
 
   public render() {
@@ -541,7 +612,7 @@ class Profile extends Component<Props, ProfileState> {
     return (
       <div className="mx-4 px-5">
         {this.state.showModal && this.renderModal()}
-        {this.renderNewUserDiv()}
+        {this.renderUserInfo()}
 
         <div>
           <h4 className="mt-3">{t("services")}</h4>

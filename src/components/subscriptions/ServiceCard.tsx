@@ -1,19 +1,13 @@
-import { Button } from "design-react-kit";
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Collapse } from "reactstrap";
-
-import FaAngleDown from "react-icons/lib/fa/angle-down";
-import FaAngleUp from "react-icons/lib/fa/angle-up";
-import FaEye from "react-icons/lib/fa/eye";
-import FaEyeSlash from "react-icons/lib/fa/eye-slash";
 
 import { SubscriptionContract } from "../../../generated/definitions/backend/SubscriptionContract";
 import { Service } from "../../../generated/definitions/commons/Service";
 import { getColorClass, getText, ServiceStatus } from "../../utils/service";
 import ToggleServiceInfo from "./ToggleServiceInfo";
 
+import ApiKey from "./ApiKey";
 import "./ServiceCard.css";
 
 type OwnProps = {
@@ -26,41 +20,18 @@ type Props = WithNamespaces & OwnProps;
 
 type ServiceCardState = {
   showMoreInfo: boolean;
-  keyDisplay: {
-    [x: string]: undefined | boolean;
+  collapseSecondaryKey: boolean;
+  maskedKeys: {
+    primary: boolean;
+    secondary: boolean;
   };
-  isSecondaryKeyCollapsed: boolean;
 };
 
 class ServiceCard extends Component<Props, ServiceCardState> {
   public state: ServiceCardState = {
     showMoreInfo: false,
-    keyDisplay: {},
-    isSecondaryKeyCollapsed: true
-  };
-
-  private onToggleKey(keyIdx: string) {
-    this.setState(prevState => ({
-      keyDisplay: {
-        ...prevState.keyDisplay,
-        [keyIdx]: !prevState.keyDisplay[keyIdx]
-      }
-    }));
-  }
-
-  private onSetKey = (serviceKey: string, service: Service) => () => {
-    sessionStorage.setItem("serviceKey", serviceKey);
-    sessionStorage.setItem("service", JSON.stringify(service));
-    window.location.replace("/compose");
-  };
-
-  private onRegenerateKey = (
-    keyType: string,
-    subscriptionId?: string
-  ) => async () => {
-    if (subscriptionId) {
-      return this.props.onRegenerateKey(keyType, subscriptionId);
-    }
+    collapseSecondaryKey: true,
+    maskedKeys: { primary: true, secondary: true }
   };
 
   private getServiceBody = ({ service, status, t }: Props) => (
@@ -149,132 +120,40 @@ class ServiceCard extends Component<Props, ServiceCardState> {
     </div>
   );
 
-  private getServiceApiKeys = ({ subscription, service, t }: Props) => (
-    <div className="card-service-key px-4 py-3">
-      <div className="row">
-        <div className="col-auto m-auto">
-          <span className="service-card--key-label d-inline-block">
-            {t("primary_key")}:{" "}
-          </span>
-          {this.state.keyDisplay[`p_${subscription.name}`]
-            ? subscription.primaryKey
-            : t("key")}
-        </div>
-        <div className="col">
-          <Button
-            outline={true}
-            color="primary"
-            size="xs"
-            className="ml-1 mr-1"
-            onClick={() => this.onToggleKey(`p_${subscription.name}`)}
-          >
-            {this.state.keyDisplay[`p_${subscription.name}`] ? (
-              <FaEyeSlash />
-            ) : (
-              <FaEye />
-            )}
-          </Button>
-          <Button
-            color="primary"
-            size="xs"
-            className="mr-1"
-            outline={true}
-            disabled={!service || subscription.state !== "active"}
-            onClick={this.onRegenerateKey("primary", subscription.name)}
-          >
-            {t("regenerate")}
-          </Button>
-          <Button
-            color="primary"
-            size="xs"
-            className="mr-1"
-            disabled={!service || subscription.state !== "active"}
-            onClick={this.onSetKey(subscription.primaryKey, service)}
-          >
-            {t("use")}
-          </Button>
-        </div>
-        <div className="col-auto text-right">
-          <Button
-            className="py-0"
-            color="link"
-            onClick={this.toggleSecondaryKey}
-            aria-expanded={this.state.isSecondaryKeyCollapsed}
-          >
-            {this.state.isSecondaryKeyCollapsed ? (
-              <FaAngleDown size="2em" />
-            ) : (
-              <FaAngleUp size="2em" />
-            )}
-          </Button>
-        </div>
-      </div>
-      <Collapse isOpen={!this.state.isSecondaryKeyCollapsed}>
-        <div className="row mt-2">
-          <div className="col-auto m-auto">
-            <span className="service-card--key-label d-inline-block">
-              {t("secondary_key")}:{" "}
-            </span>
-            {this.state.keyDisplay[`s_${subscription.name}`]
-              ? subscription.secondaryKey
-              : t("key")}
-          </div>
-          <div className="col">
-            <Button
-              outline={true}
-              color="primary"
-              size="xs"
-              className="ml-1 mr-1"
-              onClick={() => this.onToggleKey(`s_${subscription.name}`)}
-            >
-              {this.state.keyDisplay[`s_${subscription.name}`] ? (
-                <FaEyeSlash />
-              ) : (
-                <FaEye />
-              )}
-            </Button>
-            <Button
-              color="primary"
-              size="xs"
-              className="mr-1"
-              outline={true}
-              disabled={!service || subscription.state !== "active"}
-              onClick={this.onRegenerateKey("secondary", subscription.name)}
-            >
-              {t("regenerate")}
-            </Button>
-
-            <Button
-              color="primary"
-              size="xs"
-              className="mr-1"
-              disabled={!service || subscription.state !== "active"}
-              onClick={this.onSetKey(subscription.secondaryKey, service)}
-            >
-              {t("use")}
-            </Button>
-          </div>
-        </div>
-      </Collapse>
-    </div>
-  );
-
-  private toggleSecondaryKey = () => {
-    this.setState({
-      isSecondaryKeyCollapsed: !this.state.isSecondaryKeyCollapsed
-    });
-  };
-
   public render() {
     const { subscription, service } = this.props;
+    const { collapseSecondaryKey, maskedKeys } = this.state;
+
+    const toggleSecondaryKey = (value: boolean) => {
+      this.setState({
+        collapseSecondaryKey: value
+      });
+    };
+
+    const maskChange = (key: "primary" | "secondary", masked: boolean) => {
+      this.setState({
+        maskedKeys: { ...maskedKeys, [key]: masked }
+      });
+    };
 
     return service ? (
-      <Fragment>
-        <div className="card-service my-4" key={subscription.id}>
-          {this.getServiceBody(this.props)}
-          {this.getServiceApiKeys(this.props)}
-        </div>
-      </Fragment>
+      <div className="card-service my-4" key={subscription.id}>
+        {this.getServiceBody(this.props)}
+        <ApiKey
+          subscription={subscription}
+          service={service}
+          showUseKeyAction={true}
+          collapseSecondaryKey={collapseSecondaryKey}
+          maskedKeys={maskedKeys}
+          additionalClass="px-4 py-3"
+          additionalStyle={{ borderRadius: "0px 0px 10px 10px" }}
+          onRegenerateKey={(keyType, subscriptionId) =>
+            this.props.onRegenerateKey(keyType, subscriptionId)
+          }
+          onCollapseChange={toggleSecondaryKey}
+          onMaskChange={maskChange}
+        />
+      </div>
     ) : null;
   }
 }
