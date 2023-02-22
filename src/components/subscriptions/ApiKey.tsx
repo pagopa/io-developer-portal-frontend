@@ -21,19 +21,30 @@ type ApiKeyHeaderContent = {
 };
 
 type OwnProps = {
+  /** Apim subscription to which primary and secondary keys belong */
   subscription: SubscriptionContract;
+  /** Service */
   service?: Service;
+  /** If defined, show a header in the layout with *ApiKeyHeaderContent.header* title and info icon with a tooltip filled with *ApiKeyHeaderContent.content* text. */
   headerInfo?: ApiKeyHeaderContent;
+  /** If true, show the "Use Key" button */
   showUseKeyAction: boolean;
+  /** Additional css class for root component div */
   additionalClass?: string;
+  /** Additional style object for root component div */
   additionalStyle?: React.CSSProperties;
+  /** If true, the component initial rendering is performed with secondaryKey hidden (collasped). */
   collapseSecondaryKey: boolean;
+  /** Indicates whether keys should be masked *(with 'x' masking pattern)* or clearly visible *(values must be false)*. */
   maskedKeys: {
     primary: boolean;
     secondary: boolean;
   };
+  /** Event triggered on "regenerate key" button click */
   onRegenerateKey: (keyType: KeyType, subscriptionId: string) => void;
+  /** Event triggered on "collaspe" icon click */
   onCollapseChange: (isCollapsed: boolean) => void;
+  /** Event triggered on key "eye" icon click */
   onMaskChange: (key: KeyType, masked: boolean) => void;
 };
 type Props = WithNamespaces & OwnProps;
@@ -41,6 +52,21 @@ type Props = WithNamespaces & OwnProps;
 type ApiKeyState = {
   isHeaderTooltipOpen: boolean;
 };
+
+/**
+ * Component used for displaying the primary and secondary keys of the APIM Subscription linked to a Service.
+ * It is composed of:
+ * - an optional header *(used for example to explain the type of key)*
+ * - a row for the primaryKey
+ * - a further row for the secondaryKey
+ *
+ * The component has an icon for secondaryKey collapse, while the primary is always visible.
+ * Within each row of each key row it's possible to:
+ * - display/hide the key
+ * - copy the key *(copy to clipdoard icon)*
+ * - regenerate the key *("Regenerate Key" button)*
+ * - use the key *("Use Key" button)*
+ */
 class ApiKey extends Component<Props, ApiKeyState> {
   public state: ApiKeyState = {
     isHeaderTooltipOpen: false
@@ -142,7 +168,10 @@ class ApiKey extends Component<Props, ApiKeyState> {
       </div>
     );
 
-    return subscription && subscription.primaryKey ? (
+    if (!(subscription && subscription.primaryKey)) {
+      return null;
+    }
+    return (
       <div
         className={`api-key ${this.props.additionalClass}`}
         style={this.props.additionalStyle}
@@ -182,7 +211,7 @@ class ApiKey extends Component<Props, ApiKeyState> {
           {KeyRow("secondary", subscription.secondaryKey, "row mt-2")}
         </Collapse>
       </div>
-    ) : null;
+    );
   }
 }
 

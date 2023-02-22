@@ -407,9 +407,8 @@ class Profile extends Component<Props, ProfileState> {
             <ApiKey
               subscription={this.state.manageSubscription}
               headerInfo={{
-                header: "Chiave API Manage",
-                content:
-                  "Utilizza la chiave Manage per operazioni programmatiche di creazione o aggiornamento di un servizio."
+                header: t("manage_api_key"),
+                content: t("manage_api_key_description")
               }}
               showUseKeyAction={false}
               collapseSecondaryKey={this.state.collapseManageKey}
@@ -425,7 +424,7 @@ class Profile extends Component<Props, ProfileState> {
                 this.setState({
                   maskedManageKeys: {
                     ...maskedManageKeys,
-                    [keyType as keyof typeof maskedManageKeys]: masked
+                    [keyType]: masked
                   }
                 })
               }
@@ -436,7 +435,7 @@ class Profile extends Component<Props, ProfileState> {
         <div className="row">
           <div className="col-md">
             <p className="mt-4">
-              Autorizzazioni:{" "}
+              {t("authorizations")}
               {userGroups
                 ? userGroups.map((userGroup: string, index: number) => (
                     <Badge
@@ -456,7 +455,7 @@ class Profile extends Component<Props, ProfileState> {
                 : ""}
             </p>
             <p>
-              Limitato:{" "}
+              {t("limited")}
               {userGroups && userGroups.indexOf("apimessagewrite") !== -1 ? (
                 <strong>NO</strong>
               ) : (

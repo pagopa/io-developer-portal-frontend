@@ -94,7 +94,12 @@ const it = {
     load_more_services: "Carica altri servizi",
     loading_services: "Caricamento servizi in corso",
     less_info: "Meno info",
-    more_info: "Più info"
+    more_info: "Più info",
+    manage_api_key: "Chiave API Manage",
+    manage_api_key_description:
+      "Utilizza la chiave Manage per operazioni programmatiche di creazione o aggiornamento di un servizio.",
+    authorizations: "Autorizzazioni: ",
+    limited: "Limitato: "
   },
   modal: {
     important: "Importante!",
