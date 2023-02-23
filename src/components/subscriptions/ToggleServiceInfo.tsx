@@ -16,6 +16,10 @@ class ToggleServiceInfo extends Component<Props, ToggleServiceInfoState> {
     showMore: false
   };
 
+  public componentDidMount(): void {
+    this.setState({ showMore: this.props.showMore });
+  }
+
   public render() {
     const { t } = this.props;
 

@@ -94,7 +94,12 @@ const en = {
     load_more_services: "Load more services",
     loading_services: "Loading services",
     less_info: "Less info",
-    more_info: "More info"
+    more_info: "More info",
+    manage_api_key: "Manage API Key",
+    manage_api_key_description:
+      "Use the Manage key for programmatic operations of service creating or updating.",
+    authorizations: "Authorizations: ",
+    limited: "Limited: "
   },
   modal: {
     important: "Important!",
