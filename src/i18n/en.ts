@@ -217,6 +217,8 @@ const en = {
       "The Developer Portal is being decommissioned. At the moment you can use both portals, but soon the IO services will be managed only from the Reserved Area. You don't have to import all services at the same time: you can do multiple imports.",
     migrations_summary_latest: "Import status",
     migrations_summary_latest_empty: "No import has been started yet",
+    migrations_summary_latest_abstract:
+      "Below there is the list of delegates with the relative import status and last update date.",
     migrations_panel_title: "Import Services",
     migrations_panel_abstract:
       "Select delegates to import services they created for your organization. Imported services will be available only in the Personal Area and for all user of the organization.",
