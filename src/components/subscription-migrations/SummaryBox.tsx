@@ -25,6 +25,7 @@ const SummaryBox = ({ onSubmitHandler, t }: Props) => {
 
       <div className="mt-4">
         <h4>{t("migrations_summary_latest")}</h4>
+        <p>{t("migrations_summary_latest_abstract")}</p>
       </div>
 
       <div className="mt-3">

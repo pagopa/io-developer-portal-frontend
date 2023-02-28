@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { Component } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -33,10 +34,15 @@ const StatusIcon = ({
   }
 };
 
+const LastUpdate = ({ timestamp }: { timestamp: string }) => {
+  return <>{moment(timestamp).format("DD/MM/YYYY, HH:mm:ss")}</>;
+};
+
 type OwnProps = {
   t: (key: string) => string;
   delegate: Delegate;
   migrationStatus: MigrationStatus;
+  lastUpdate?: string;
 };
 
 type Props = WithNamespaces & OwnProps;
@@ -46,7 +52,8 @@ class DelegateItem extends Component<Props> {
     const {
       t,
       delegate: { sourceName: name, sourceSurname: surname },
-      migrationStatus
+      migrationStatus,
+      lastUpdate
     } = this.props;
     const isStatusLoaded = typeof migrationStatus !== "undefined";
 
@@ -55,7 +62,7 @@ class DelegateItem extends Component<Props> {
         <div style={{ minWidth: "15em" }}>
           {name} {surname}
         </div>
-        <div style={{ flex: 1 }}>
+        <div style={{ minWidth: "9em" }}>
           {isStatusLoaded && (
             <>
               <span>
@@ -64,6 +71,13 @@ class DelegateItem extends Component<Props> {
             </>
           )}
         </div>
+        {lastUpdate && (
+          <div style={{ flex: 1 }}>
+            <span>
+              <LastUpdate timestamp={lastUpdate} />
+            </span>
+          </div>
+        )}
       </>
     );
   }

@@ -26,7 +26,11 @@ type ClaimProcedureStatus = {
 };
 
 type LatestMigrationsResponse = {
-  items: ReadonlyArray<{ delegate: Delegate; status: ClaimProcedureStatus }>;
+  items: ReadonlyArray<{
+    delegate: Delegate;
+    status: ClaimProcedureStatus;
+    lastUpdate: string;
+  }>;
 };
 
 // the full migration status report is reduced so that it's ready to be rendered
@@ -86,13 +90,17 @@ class MigrationsPanel extends Component<Props, State> {
                 ...e,
                 status: computeMigrationStatus(status)
               }))
-              .map(({ delegate, status }) => (
+              .map(({ delegate, status, lastUpdate }) => (
                 <div
                   key={delegate.sourceId}
                   className="d-flex mt-1"
                   style={{ gap: "10px" }}
                 >
-                  <DelegateItem delegate={delegate} migrationStatus={status} />
+                  <DelegateItem
+                    delegate={delegate}
+                    migrationStatus={status}
+                    lastUpdate={lastUpdate}
+                  />
                 </div>
               ))}
         </div>
