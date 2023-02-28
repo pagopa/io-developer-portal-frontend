@@ -390,7 +390,9 @@ class Profile extends Component<Props, ProfileState> {
         <SubscriptionOwnerName />
         <div className="row">
           <AccountInfo />
-          <div className="col-md-4 text-right">
+          <div
+            className={isSelfCare ? "col-md text-right" : "col-md-4 text-right"}
+          >
             <button
               onClick={() => {
                 this.setState({ showModal: true });
