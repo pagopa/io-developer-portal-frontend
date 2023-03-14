@@ -415,62 +415,60 @@ class Profile extends Component<Props, ProfileState> {
           </div>
         </div>
 
-        {userGroups && userGroups.indexOf("apiservicewrite") !== -1 ? (
-          this.state.manageSubscription ? (
-            <div className="card-service my-4">
-              <div className="p-4">
-                <TitleWithTooltip
-                  title={t("manage_api_key")}
-                  tooltipContent={t("manage_api_key_description")}
-                />
-                <div className="row" style={{ fontSize: "16px" }}>
-                  <div className="col-auto">{t("cidrs_label")}</div>
-                  <div className="col" style={{ fontWeight: 600 }}>
-                    {/** TODO */}
-                    {mockAuthCidrs.map((value, index, list) =>
-                      index < list.length - 1 ? `${value}; ` : value
-                    )}
-                    <span className="ml-2">
-                      <button
-                        onClick={() => {
-                          this.setState({ showEditCidrsModal: true });
-                        }}
-                        type="button"
-                        className="btn btn-link pl-0 py-0 mb-1"
-                      >
-                        <span className="mr-1">
-                          <MdModeEdit />
-                        </span>
-                        {t("edit_cidrs_link")}
-                      </button>
-                    </span>
-                  </div>
+        {this.state.manageSubscription ? (
+          <div className="card-service my-4">
+            <div className="p-4">
+              <TitleWithTooltip
+                title={t("manage_api_key")}
+                tooltipContent={t("manage_api_key_description")}
+              />
+              <div className="row" style={{ fontSize: "16px" }}>
+                <div className="col-auto">{t("cidrs_label")}</div>
+                <div className="col" style={{ fontWeight: 600 }}>
+                  {/** TODO */}
+                  {mockAuthCidrs.map((value, index, list) =>
+                    index < list.length - 1 ? `${value}; ` : value
+                  )}
+                  <span className="ml-2">
+                    <button
+                      onClick={() => {
+                        this.setState({ showEditCidrsModal: true });
+                      }}
+                      type="button"
+                      className="btn btn-link pl-0 py-0 mb-1"
+                    >
+                      <span className="mr-1">
+                        <MdModeEdit />
+                      </span>
+                      {t("edit_cidrs_link")}
+                    </button>
+                  </span>
                 </div>
               </div>
-              <ApiKey
-                subscription={this.state.manageSubscription}
-                showUseKeyAction={false}
-                collapseSecondaryKey={this.state.collapseManageKey}
-                maskedKeys={this.state.maskedManageKeys}
-                additionalClass="px-4 py-3"
-                additionalStyle={{ borderRadius: "0px 0px 10px 10px" }}
-                onRegenerateKey={(keyType, subscriptionId) =>
-                  this.regenerateKey(keyType, subscriptionId)
-                }
-                onCollapseChange={value =>
-                  this.setState({ collapseManageKey: value })
-                }
-                onMaskChange={(keyType, masked) =>
-                  this.setState({
-                    maskedManageKeys: {
-                      ...maskedManageKeys,
-                      [keyType]: masked
-                    }
-                  })
-                }
-              />
             </div>
-          ) : null
+            <ApiKey
+              subscription={this.state.manageSubscription}
+              showUseKeyAction={false}
+              collapseSecondaryKey={this.state.collapseManageKey}
+              maskedKeys={this.state.maskedManageKeys}
+              additionalClass="px-4 py-3"
+              additionalStyle={{ borderRadius: "0px 0px 10px 10px" }}
+              onRegenerateKey={(keyType, subscriptionId) =>
+                this.regenerateKey(keyType, subscriptionId)
+              }
+              onCollapseChange={value =>
+                this.setState({ collapseManageKey: value })
+              }
+              onMaskChange={(keyType, masked) =>
+                this.setState({
+                  maskedManageKeys: {
+                    ...maskedManageKeys,
+                    [keyType]: masked
+                  }
+                })
+              }
+            />
+          </div>
         ) : null}
 
         <div className="row">
