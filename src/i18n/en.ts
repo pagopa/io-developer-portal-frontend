@@ -99,7 +99,9 @@ const en = {
     manage_api_key_description:
       "Use the Manage key for programmatic operations of service creating or updating.",
     authorizations: "Authorizations: ",
-    limited: "Limited: "
+    limited: "Limited: ",
+    edit_cidrs_link: "Edit IP list",
+    cidrs_label: "Authorized source IP list: "
   },
   modal: {
     important: "Important!",
@@ -119,7 +121,9 @@ const en = {
     add_subscription: "Add subscription",
     close: "Close",
     cancel: "Cancel",
-    confirm: "Confirm"
+    confirm: "Confirm",
+    edit: "Edit",
+    edit_cidrs: "Modify the list of allowed source IPs"
   },
   service: {
     custom_special_flow: "Custom Special flow Name",
@@ -139,7 +143,7 @@ const en = {
     organization_fiscal_code: "Fiscal Code for Organization",
     authorized_recipients: "Authorized recipients (Fiscal Codes)",
     authorized_ips: "Authorized IPs*",
-    example_authorized_ips: "(i.e. 192.168.200.25/32;192.168.200.26/32)",
+    example_authorized_ips: "(i.e. 92.45.87.198/0;83.29.176.130/32)",
     max_allowed_payment_amount: "Maximum allowd payment amount",
     visible_service: "Visible in service list",
     eurocents: "eurocents",

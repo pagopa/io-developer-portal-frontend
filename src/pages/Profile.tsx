@@ -25,12 +25,15 @@ import {
   ValidService
 } from "../utils/service";
 
+import MdModeEdit from "react-icons/lib/md/mode-edit";
+import EditCIDRs from "../components/modal/EditCIDRs";
 import ApiKey from "../components/subscriptions/ApiKey";
 import ServiceCard from "../components/subscriptions/ServiceCard";
 import SubscriptionsFilter, {
   OptionValueLabel
 } from "../components/subscriptions/SubscriptionsFilter";
 import SubscriptionsLoader from "../components/subscriptions/SubscriptionsLoader";
+import TitleWithTooltip from "../components/subscriptions/TitleWithTooltip";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
@@ -42,6 +45,12 @@ type Props = RouteComponentProps<{ email: string }> & WithNamespaces;
 function isString<T>(value: T | string): value is string {
   return typeof value === "string";
 }
+
+// TODO: REMOVE
+const mockAuthCidrs: ReadonlyArray<string> = [
+  "93.44.88.198/12",
+  "82.49.175.130/0"
+];
 
 interface UserSubscriptions {
   [key: string]: SubscriptionContract;
@@ -73,7 +82,8 @@ type ProfileState = {
   isConfirmationOpen: boolean;
   onConfirmOperation: () => void;
   serviceState: { [serviceId: string]: string };
-  showModal: boolean;
+  showNewServiceModal: boolean;
+  showEditCidrsModal: boolean;
   subscriptionsOffset: number;
   hasMoreSubscriptions: boolean;
   areSubscriptionsLoading: boolean;
@@ -102,7 +112,8 @@ class Profile extends Component<Props, ProfileState> {
     newSubscription: {},
     isConfirmationOpen: false,
     onConfirmOperation: () => undefined,
-    showModal: false,
+    showNewServiceModal: false,
+    showEditCidrsModal: false,
     subscriptionsOffset: 0,
     hasMoreSubscriptions: true,
     areSubscriptionsLoading: true,
@@ -395,7 +406,7 @@ class Profile extends Component<Props, ProfileState> {
           >
             <button
               onClick={() => {
-                this.setState({ showModal: true });
+                this.setState({ showNewServiceModal: true });
               }}
               className="btn btn-primary"
             >
@@ -406,31 +417,59 @@ class Profile extends Component<Props, ProfileState> {
 
         {userGroups && userGroups.indexOf("apiservicewrite") !== -1 ? (
           this.state.manageSubscription ? (
-            <ApiKey
-              subscription={this.state.manageSubscription}
-              headerInfo={{
-                header: t("manage_api_key"),
-                content: t("manage_api_key_description")
-              }}
-              showUseKeyAction={false}
-              collapseSecondaryKey={this.state.collapseManageKey}
-              maskedKeys={this.state.maskedManageKeys}
-              additionalClass="px-4 py-3 my-3"
-              onRegenerateKey={(keyType, subscriptionId) =>
-                this.regenerateKey(keyType, subscriptionId)
-              }
-              onCollapseChange={value =>
-                this.setState({ collapseManageKey: value })
-              }
-              onMaskChange={(keyType, masked) =>
-                this.setState({
-                  maskedManageKeys: {
-                    ...maskedManageKeys,
-                    [keyType]: masked
-                  }
-                })
-              }
-            />
+            <div className="card-service my-4">
+              <div className="p-4">
+                <TitleWithTooltip
+                  title={t("manage_api_key")}
+                  tooltipContent={t("manage_api_key_description")}
+                />
+                <div className="row" style={{ fontSize: "16px" }}>
+                  <div className="col-auto">{t("cidrs_label")}</div>
+                  <div className="col" style={{ fontWeight: 600 }}>
+                    {/** TODO */}
+                    {mockAuthCidrs.map((value, index, list) =>
+                      index < list.length - 1 ? `${value}; ` : value
+                    )}
+                    <span className="ml-2">
+                      <button
+                        onClick={() => {
+                          this.setState({ showEditCidrsModal: true });
+                        }}
+                        type="button"
+                        className="btn btn-link pl-0 py-0 mb-1"
+                      >
+                        <span className="mr-1">
+                          <MdModeEdit />
+                        </span>
+                        {t("edit_cidrs_link")}
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <ApiKey
+                subscription={this.state.manageSubscription}
+                showUseKeyAction={false}
+                collapseSecondaryKey={this.state.collapseManageKey}
+                maskedKeys={this.state.maskedManageKeys}
+                additionalClass="px-4 py-3"
+                additionalStyle={{ borderRadius: "0px 0px 10px 10px" }}
+                onRegenerateKey={(keyType, subscriptionId) =>
+                  this.regenerateKey(keyType, subscriptionId)
+                }
+                onCollapseChange={value =>
+                  this.setState({ collapseManageKey: value })
+                }
+                onMaskChange={(keyType, masked) =>
+                  this.setState({
+                    maskedManageKeys: {
+                      ...maskedManageKeys,
+                      [keyType]: masked
+                    }
+                  })
+                }
+              />
+            </div>
           ) : null
         ) : null}
 
@@ -525,7 +564,7 @@ class Profile extends Component<Props, ProfileState> {
     }
   }
 
-  public renderModal() {
+  public renderNewServiceModal() {
     return (
       <NewService
         serviceName={get(this.state, "newSubscription.service_name")}
@@ -537,13 +576,39 @@ class Profile extends Component<Props, ProfileState> {
         )}
         onChange={this.handleInputChange}
         onAdd={this.onAddSubscription}
-        onClose={() => this.setState({ showModal: false })}
-        show={this.state.showModal}
+        onClose={() => this.setState({ showNewServiceModal: false })}
+        show={this.state.showNewServiceModal}
         allowOrganizationFiscalCode={MsalConfig.is(
           get(this.state, "applicationConfig")
         )}
       />
     );
+  }
+
+  public renderEditCIDRsModal() {
+    return (
+      <EditCIDRs
+        // TODO
+        value={mockAuthCidrs}
+        onSubmit={cidrs => this.updateSubscriptionCidrs(cidrs)}
+        onClose={() => this.setState({ showEditCidrsModal: false })}
+        show={this.state.showEditCidrsModal}
+      />
+    );
+  }
+
+  // TODO
+  private async updateSubscriptionCidrs(cidrs: readonly string[]) {
+    console.log(cidrs);
+    // Change SubscriptionContract to SubscriptionCidrs
+    // const subscriptionCidrs: SubscriptionContract = await putToBackend<
+    //   SubscriptionContract
+    // >({
+    //   path:
+    //     `subscriptions/${this.state.manageSubscription?.id}/cidrs`,
+    //   options: { body: JSON.stringify(cidrs) }
+    // });
+    // this.setState({ manageSubscription: subscriptionCidrs });
   }
 
   private regenerateKey(keyType: string, subscriptionId: string) {
@@ -612,7 +677,8 @@ class Profile extends Component<Props, ProfileState> {
 
     return (
       <div className="mx-4 px-5">
-        {this.state.showModal && this.renderModal()}
+        {this.state.showNewServiceModal && this.renderNewServiceModal()}
+        {this.state.showEditCidrsModal && this.renderEditCIDRsModal()}
         {this.renderUserInfo()}
 
         <div>
