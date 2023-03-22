@@ -28,7 +28,7 @@ import {
 import MdModeEdit from "react-icons/lib/md/mode-edit";
 import { CIDRsPayload } from "../../generated/definitions/api/CIDRsPayload";
 import { SubscriptionCIDRs } from "../../generated/definitions/api/SubscriptionCIDRs";
-import EditCIDRs from "../components/modal/EditCIDRs";
+import EditCIDRs from "../components/modal/EditCidrs";
 import ApiKey from "../components/subscriptions/ApiKey";
 import ServiceCard from "../components/subscriptions/ServiceCard";
 import SubscriptionsFilter, {
