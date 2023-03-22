@@ -26,6 +26,8 @@ import {
 } from "../utils/service";
 
 import MdModeEdit from "react-icons/lib/md/mode-edit";
+import { CIDRsPayload } from "../../generated/definitions/api/CIDRsPayload";
+import { SubscriptionCIDRs } from "../../generated/definitions/api/SubscriptionCIDRs";
 import EditCIDRs from "../components/modal/EditCIDRs";
 import ApiKey from "../components/subscriptions/ApiKey";
 import ServiceCard from "../components/subscriptions/ServiceCard";
@@ -45,12 +47,6 @@ type Props = RouteComponentProps<{ email: string }> & WithNamespaces;
 function isString<T>(value: T | string): value is string {
   return typeof value === "string";
 }
-
-// TODO: REMOVE
-const mockAuthCidrs: ReadonlyArray<string> = [
-  "93.44.88.198/12",
-  "82.49.175.130/0"
-];
 
 interface UserSubscriptions {
   [key: string]: SubscriptionContract;
@@ -73,6 +69,7 @@ type ProfileState = {
   };
   userSubscriptions: UserSubscriptions;
   manageSubscription?: SubscriptionContract;
+  manageSubscriptionCidrs: CIDRsPayload;
   collapseManageKey: boolean;
   maskedManageKeys: {
     primary: boolean;
@@ -95,6 +92,7 @@ class Profile extends Component<Props, ProfileState> {
     userData: {},
     userSubscriptions: {},
     manageSubscription: undefined,
+    manageSubscriptionCidrs: [],
     collapseManageKey: true,
     maskedManageKeys: {
       primary: true,
@@ -241,7 +239,25 @@ class Profile extends Component<Props, ProfileState> {
       path:
         "subscription-manage" + (email ? "/" + encodeURIComponent(email) : "")
     });
-    this.setState({ manageSubscription: subscription });
+    if (subscription && subscription.primaryKey) {
+      const subscriptionCidrs = await this.loadManageSubscriptionCidrs(
+        subscription
+      );
+      this.setState({
+        manageSubscription: subscription,
+        manageSubscriptionCidrs: Array.isArray(subscriptionCidrs.cidrs)
+          ? subscriptionCidrs.cidrs
+          : []
+      });
+    }
+  }
+
+  private async loadManageSubscriptionCidrs(
+    subscription: SubscriptionContract
+  ) {
+    return await getFromBackend<SubscriptionCIDRs>({
+      path: `subscriptions/${subscription.name}/cidrs`
+    });
   }
 
   private async loadUserSubscriptions(
@@ -365,7 +381,7 @@ class Profile extends Component<Props, ProfileState> {
 
     const AccountInfo = () => {
       if (isSelfCare) {
-        return <></>;
+        return <div className="col-md-8" />;
       }
 
       const isSameUser = !this.props.match.params.email;
@@ -401,9 +417,7 @@ class Profile extends Component<Props, ProfileState> {
         <SubscriptionOwnerName />
         <div className="row">
           <AccountInfo />
-          <div
-            className={isSelfCare ? "col-md text-right" : "col-md-4 text-right"}
-          >
+          <div className="col-md-4 text-right">
             <button
               onClick={() => {
                 this.setState({ showNewServiceModal: true });
@@ -415,7 +429,8 @@ class Profile extends Component<Props, ProfileState> {
           </div>
         </div>
 
-        {this.state.manageSubscription ? (
+        {this.state.manageSubscription &&
+        this.state.manageSubscription.primaryKey ? (
           <div className="card-service my-4">
             <div className="p-4">
               <TitleWithTooltip
@@ -425,9 +440,9 @@ class Profile extends Component<Props, ProfileState> {
               <div className="row" style={{ fontSize: "16px" }}>
                 <div className="col-auto">{t("cidrs_label")}</div>
                 <div className="col" style={{ fontWeight: 600 }}>
-                  {/** TODO */}
-                  {mockAuthCidrs.map((value, index, list) =>
-                    index < list.length - 1 ? `${value}; ` : value
+                  {this.state.manageSubscriptionCidrs.map(
+                    (value, index, list) =>
+                      index < list.length - 1 ? `${value}; ` : value
                   )}
                   <span className="ml-2">
                     <button
@@ -586,27 +601,37 @@ class Profile extends Component<Props, ProfileState> {
   public renderEditCIDRsModal() {
     return (
       <EditCIDRs
-        // TODO
-        value={mockAuthCidrs}
-        onSubmit={cidrs => this.updateSubscriptionCidrs(cidrs)}
+        value={this.state.manageSubscriptionCidrs}
+        onSubmit={cidrs =>
+          this.state.manageSubscription && this.state.manageSubscription.name
+            ? this.updateSubscriptionCidrs(
+                this.state.manageSubscription.name,
+                cidrs
+              )
+            : null
+        }
         onClose={() => this.setState({ showEditCidrsModal: false })}
         show={this.state.showEditCidrsModal}
       />
     );
   }
 
-  // TODO
-  private async updateSubscriptionCidrs(cidrs: readonly string[]) {
+  private async updateSubscriptionCidrs(
+    subscriptionId: string,
+    cidrs: readonly string[]
+  ) {
     console.log(cidrs);
-    // Change SubscriptionContract to SubscriptionCidrs
-    // const subscriptionCidrs: SubscriptionContract = await putToBackend<
-    //   SubscriptionContract
-    // >({
-    //   path:
-    //     `subscriptions/${this.state.manageSubscription?.id}/cidrs`,
-    //   options: { body: JSON.stringify(cidrs) }
-    // });
-    // this.setState({ manageSubscription: subscriptionCidrs });
+    const subscriptionCidrs: SubscriptionCIDRs = await putToBackend<
+      SubscriptionCIDRs
+    >({
+      path: `subscriptions/${subscriptionId}/cidrs`,
+      options: { body: JSON.stringify(cidrs) }
+    });
+    if (Array.isArray(subscriptionCidrs.cidrs)) {
+      this.setState({
+        manageSubscriptionCidrs: subscriptionCidrs.cidrs
+      });
+    }
   }
 
   private regenerateKey(keyType: string, subscriptionId: string) {
