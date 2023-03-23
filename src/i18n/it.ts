@@ -99,7 +99,9 @@ const it = {
     manage_api_key_description:
       "Utilizza la chiave Manage per operazioni programmatiche di creazione o aggiornamento di un servizio.",
     authorizations: "Autorizzazioni: ",
-    limited: "Limitato: "
+    limited: "Limitato: ",
+    edit_cidrs_link: "Modifica lista IP",
+    cidrs_label: "Lista IP di origine autorizzati: "
   },
   modal: {
     important: "Importante!",
@@ -119,7 +121,9 @@ const it = {
     add_subscription: "Aggiungi sottoscrizione",
     close: "Chiudi",
     cancel: "Annulla",
-    confirm: "Conferma"
+    confirm: "Conferma",
+    edit: "Modifica",
+    edit_cidrs: "Modifica la lista IP di origine autorizzati"
   },
   service: {
     custom_special_flow: "Nome del flusso Speciale custom",
@@ -139,7 +143,7 @@ const it = {
     organization_fiscal_code: "Codice fiscale ente",
     authorized_recipients: "Codici fiscali destinatari autorizzati",
     authorized_ips: "Lista IP di origine autorizzati*",
-    example_authorized_ips: "(esempio 192.168.200.25/32;192.168.200.26/32)",
+    example_authorized_ips: "(esempio 92.45.87.198/0;83.29.176.130/32)",
     max_allowed_payment_amount: "Importo massimo autorizzato",
     visible_service: "Visibile nella lista servizi",
     eurocents: "eurocents",

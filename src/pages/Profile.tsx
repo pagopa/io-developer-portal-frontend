@@ -25,12 +25,17 @@ import {
   ValidService
 } from "../utils/service";
 
+import MdModeEdit from "react-icons/lib/md/mode-edit";
+import { CIDRsPayload } from "../../generated/definitions/api/CIDRsPayload";
+import { SubscriptionCIDRs } from "../../generated/definitions/api/SubscriptionCIDRs";
+import EditCIDRs from "../components/modal/EditCidrs";
 import ApiKey from "../components/subscriptions/ApiKey";
 import ServiceCard from "../components/subscriptions/ServiceCard";
 import SubscriptionsFilter, {
   OptionValueLabel
 } from "../components/subscriptions/SubscriptionsFilter";
 import SubscriptionsLoader from "../components/subscriptions/SubscriptionsLoader";
+import TitleWithTooltip from "../components/subscriptions/TitleWithTooltip";
 
 const getMail = (email: string) =>
   email && email !== "" ? atob(email) : undefined;
@@ -64,6 +69,7 @@ type ProfileState = {
   };
   userSubscriptions: UserSubscriptions;
   manageSubscription?: SubscriptionContract;
+  manageSubscriptionCidrs: CIDRsPayload;
   collapseManageKey: boolean;
   maskedManageKeys: {
     primary: boolean;
@@ -73,7 +79,8 @@ type ProfileState = {
   isConfirmationOpen: boolean;
   onConfirmOperation: () => void;
   serviceState: { [serviceId: string]: string };
-  showModal: boolean;
+  showNewServiceModal: boolean;
+  showEditCidrsModal: boolean;
   subscriptionsOffset: number;
   hasMoreSubscriptions: boolean;
   areSubscriptionsLoading: boolean;
@@ -85,6 +92,7 @@ class Profile extends Component<Props, ProfileState> {
     userData: {},
     userSubscriptions: {},
     manageSubscription: undefined,
+    manageSubscriptionCidrs: [],
     collapseManageKey: true,
     maskedManageKeys: {
       primary: true,
@@ -102,7 +110,8 @@ class Profile extends Component<Props, ProfileState> {
     newSubscription: {},
     isConfirmationOpen: false,
     onConfirmOperation: () => undefined,
-    showModal: false,
+    showNewServiceModal: false,
+    showEditCidrsModal: false,
     subscriptionsOffset: 0,
     hasMoreSubscriptions: true,
     areSubscriptionsLoading: true,
@@ -230,7 +239,25 @@ class Profile extends Component<Props, ProfileState> {
       path:
         "subscription-manage" + (email ? "/" + encodeURIComponent(email) : "")
     });
-    this.setState({ manageSubscription: subscription });
+    if (subscription && subscription.primaryKey) {
+      const subscriptionCidrs = await this.loadManageSubscriptionCidrs(
+        subscription
+      );
+      this.setState({
+        manageSubscription: subscription,
+        manageSubscriptionCidrs: Array.isArray(subscriptionCidrs.cidrs)
+          ? subscriptionCidrs.cidrs
+          : []
+      });
+    }
+  }
+
+  private async loadManageSubscriptionCidrs(
+    subscription: SubscriptionContract
+  ) {
+    return await getFromBackend<SubscriptionCIDRs>({
+      path: `subscriptions/${subscription.name}/cidrs`
+    });
   }
 
   private async loadUserSubscriptions(
@@ -354,7 +381,7 @@ class Profile extends Component<Props, ProfileState> {
 
     const AccountInfo = () => {
       if (isSelfCare) {
-        return <></>;
+        return <div className="col-md-8" />;
       }
 
       const isSameUser = !this.props.match.params.email;
@@ -390,12 +417,10 @@ class Profile extends Component<Props, ProfileState> {
         <SubscriptionOwnerName />
         <div className="row">
           <AccountInfo />
-          <div
-            className={isSelfCare ? "col-md text-right" : "col-md-4 text-right"}
-          >
+          <div className="col-md-4 text-right">
             <button
               onClick={() => {
-                this.setState({ showModal: true });
+                this.setState({ showNewServiceModal: true });
               }}
               className="btn btn-primary"
             >
@@ -404,18 +429,45 @@ class Profile extends Component<Props, ProfileState> {
           </div>
         </div>
 
-        {userGroups && userGroups.indexOf("apiservicewrite") !== -1 ? (
-          this.state.manageSubscription ? (
+        {this.state.manageSubscription &&
+        this.state.manageSubscription.primaryKey ? (
+          <div className="card-service my-4">
+            <div className="p-4">
+              <TitleWithTooltip
+                title={t("manage_api_key")}
+                tooltipContent={t("manage_api_key_description")}
+              />
+              <div className="row" style={{ fontSize: "16px" }}>
+                <div className="col-auto">{t("cidrs_label")}</div>
+                <div className="col" style={{ fontWeight: 600 }}>
+                  {this.state.manageSubscriptionCidrs.map(
+                    (value, index, list) =>
+                      index < list.length - 1 ? `${value}; ` : value
+                  )}
+                  <span className="ml-2">
+                    <button
+                      onClick={() => {
+                        this.setState({ showEditCidrsModal: true });
+                      }}
+                      type="button"
+                      className="btn btn-link pl-0 py-0 mb-1"
+                    >
+                      <span className="mr-1">
+                        <MdModeEdit />
+                      </span>
+                      {t("edit_cidrs_link")}
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
             <ApiKey
               subscription={this.state.manageSubscription}
-              headerInfo={{
-                header: t("manage_api_key"),
-                content: t("manage_api_key_description")
-              }}
               showUseKeyAction={false}
               collapseSecondaryKey={this.state.collapseManageKey}
               maskedKeys={this.state.maskedManageKeys}
-              additionalClass="px-4 py-3 my-3"
+              additionalClass="px-4 py-3"
+              additionalStyle={{ borderRadius: "0px 0px 10px 10px" }}
               onRegenerateKey={(keyType, subscriptionId) =>
                 this.regenerateKey(keyType, subscriptionId)
               }
@@ -431,7 +483,7 @@ class Profile extends Component<Props, ProfileState> {
                 })
               }
             />
-          ) : null
+          </div>
         ) : null}
 
         <div className="row">
@@ -525,7 +577,7 @@ class Profile extends Component<Props, ProfileState> {
     }
   }
 
-  public renderModal() {
+  public renderNewServiceModal() {
     return (
       <NewService
         serviceName={get(this.state, "newSubscription.service_name")}
@@ -537,13 +589,49 @@ class Profile extends Component<Props, ProfileState> {
         )}
         onChange={this.handleInputChange}
         onAdd={this.onAddSubscription}
-        onClose={() => this.setState({ showModal: false })}
-        show={this.state.showModal}
+        onClose={() => this.setState({ showNewServiceModal: false })}
+        show={this.state.showNewServiceModal}
         allowOrganizationFiscalCode={MsalConfig.is(
           get(this.state, "applicationConfig")
         )}
       />
     );
+  }
+
+  public renderEditCIDRsModal() {
+    return (
+      <EditCIDRs
+        value={this.state.manageSubscriptionCidrs}
+        onSubmit={cidrs =>
+          this.state.manageSubscription && this.state.manageSubscription.name
+            ? this.updateSubscriptionCidrs(
+                this.state.manageSubscription.name,
+                cidrs
+              )
+            : null
+        }
+        onClose={() => this.setState({ showEditCidrsModal: false })}
+        show={this.state.showEditCidrsModal}
+      />
+    );
+  }
+
+  private async updateSubscriptionCidrs(
+    subscriptionId: string,
+    cidrs: readonly string[]
+  ) {
+    console.log(cidrs);
+    const subscriptionCidrs: SubscriptionCIDRs = await putToBackend<
+      SubscriptionCIDRs
+    >({
+      path: `subscriptions/${subscriptionId}/cidrs`,
+      options: { body: JSON.stringify(cidrs) }
+    });
+    if (Array.isArray(subscriptionCidrs.cidrs)) {
+      this.setState({
+        manageSubscriptionCidrs: subscriptionCidrs.cidrs
+      });
+    }
   }
 
   private regenerateKey(keyType: string, subscriptionId: string) {
@@ -612,7 +700,8 @@ class Profile extends Component<Props, ProfileState> {
 
     return (
       <div className="mx-4 px-5">
-        {this.state.showModal && this.renderModal()}
+        {this.state.showNewServiceModal && this.renderNewServiceModal()}
+        {this.state.showEditCidrsModal && this.renderEditCIDRsModal()}
         {this.renderUserInfo()}
 
         <div>
