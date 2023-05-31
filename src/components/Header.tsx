@@ -88,7 +88,7 @@ class Header extends Component<WithNamespaces, HeaderState, never> {
                 />
                 <a
                   className="selfcare-text header-selfcare-title"
-                  href="mailto:selfcare@assistenza.pagopa.it"
+                  href="mailto:enti-io@assistenza.pagopa.it"
                   target="_blank"
                   rel="noopener noreferrer"
                   title={t("assistance")}
