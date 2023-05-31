@@ -218,7 +218,7 @@ const en = {
     open_migrations_panel: "Import services",
     migrations_summary_title: "Import services from Developer Portal",
     migrations_summary_abstract:
-      "The Developer Portal is being decommissioned. At the moment you can use both portals, but soon the IO services will be managed only from the Reserved Area. You don't have to import all services at the same time: you can do multiple imports.",
+      "Import services of your institution from Developer Portal to this new Reserved Area. The Developer Portal is being phased out, but for now, you can continue to use both portals. You can also import only a portion of the istitutions's services (specifically those created by some delegates) and perform other imports at a later time. For more information, see the dedicated section of the Technical Guide.",
     migrations_summary_latest: "Import status",
     migrations_summary_latest_empty: "No import has been started yet",
     migrations_summary_latest_abstract:
