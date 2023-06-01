@@ -217,7 +217,7 @@ const it = {
     open_migrations_panel: "Importa i servizi",
     migrations_summary_title: "Importa i servizi dal Developer Portal",
     migrations_summary_abstract:
-      "Il Developer Portal è in corso di dismissione. Al momento si possono usare entrambi i portali, ma presto i servizi di IO si potranno gestire solo dall’Area Riservata. Non bisogna importare tutti i servizi nello stesso momento: è possibile fare più importazioni.",
+      "Importa i servizi dell’ente dal Developer Portal al nuovo portale Area Riservata Enti. Il Developer Portal è in corso di dismissione ma al momento puoi continuare a usare entrambi i portali. Puoi importare anche solo una parte dei servizi dell’ente (ovvero solo quelli creati da alcuni delegati), e  fare altre importazioni in un secondo momento. Per maggiori informazioni visita la sezione dedicata della Guida tecnica.",
     migrations_summary_latest: "Stato dell'importazione",
     migrations_summary_latest_empty: "Nessuna importazioni avviata",
     migrations_summary_latest_abstract:
