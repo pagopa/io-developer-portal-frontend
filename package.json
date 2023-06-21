@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@pagopa/ts-commons": "9.3.0",
-    "auto-changelog": "^2.2.1",
+    "auto-changelog": "^2.4.0",
     "batch": "^0.6.1",
     "bootstrap-italia": "^0.9.6",
     "design-react-kit": "^2.4.0",
