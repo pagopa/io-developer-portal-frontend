@@ -21,6 +21,7 @@ import {
 import { ContactDocument } from "../workers/getProfile";
 import { TemplateDocument } from "./Message";
 
+import { Alert } from "design-react-kit";
 import { get } from "lodash";
 import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
 import Toastr, {
@@ -84,6 +85,20 @@ class Dashboard extends Component<Props, DashboardState> {
     const toasts = get(this.state, "toasts", [] as readonly ToastrItem[]);
     return (
       <>
+        <div className="p-3">
+          {/* APIM V2 MIGRATION - TEMPORARY DISCLAIMER */}
+          <Alert color="warning">
+            Ti informiamo che dalle 08:00 alle 24:00 di lunedì 31 luglio verrà
+            effettuato un importante aggiornamento del sistema di gestione delle
+            API. Durante questo periodo sarà comunque{" "}
+            <strong>possibile inviare messaggi</strong>, ma saranno
+            temporaneamente non disponibili le API, e i servizi sul Developer
+            Portal e sull'Area Riservata.
+            <br />
+            Ci scusiamo per il disagio e ti ringraziamo per la collaborazione.
+          </Alert>
+          {/* APIM V2 MIGRATION - TEMPORARY DISCLAIMER */}
+        </div>
         <section className="d-flex">
           <section className="position-fixed dashboard--notifications-container">
             {location.state &&
