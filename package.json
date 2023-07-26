@@ -10,7 +10,7 @@
     "dev:proxy": "node api-proxy.js",
     "type-check": "tsc --noEmit",
     "distclean": "shx rm -rf dist",
-    "postbuild": "shx cp -r assets CNAME 404.html privacypolicy.html tos.html web.config dist/",
+    "postbuild": "shx cp -r assets CNAME 404.html privacypolicy.html tos.html scheduled-info.json web.config dist/",
     "deploy": "gh-pages -d dist -m 'Update GitHub Pages [ci skip]'",
     "lint": "tslint -p . -c tslint.json -t verbose",
     "commons-definitions:clean": "shx rm -rf generated/definitions/commons",
