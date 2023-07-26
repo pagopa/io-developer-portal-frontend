@@ -59,7 +59,7 @@ type DashboardState = {
   toasts: readonly ToastrItem[];
   showModal: boolean;
   lastMigrationsRefresh: ReturnType<typeof Date.now>;
-  scheduledInfoBanners: readonly ScheduledInfo[];
+  scheduledInfoList: readonly ScheduledInfo[];
 };
 
 class Dashboard extends Component<Props, DashboardState> {
@@ -83,7 +83,7 @@ class Dashboard extends Component<Props, DashboardState> {
 
       ScheduledInfoList.decode(data).fold(
         err => console.error("Error while decoding scheduled info", err),
-        scheduledInfoBanners => this.setState({ scheduledInfoBanners })
+        scheduledInfoList => this.setState({ scheduledInfoList })
       );
     } catch (err) {
       console.error(err);
@@ -107,16 +107,16 @@ class Dashboard extends Component<Props, DashboardState> {
     const applicationConfig = get(this.state, "applicationConfig");
     const showModal = get(this.state, "showModal");
     const lastMigrationsRefresh = get(this.state, "lastMigrationsRefresh");
-    const scheduledInfoBanners = get(
+    const scheduledInfoList = get(
       this.state,
-      "scheduledInfoBanners",
+      "scheduledInfoList",
       [] as readonly ScheduledInfo[]
     );
     const toasts = get(this.state, "toasts", [] as readonly ToastrItem[]);
 
     return (
       <>
-        <ScheduledInfoViewer items={scheduledInfoBanners} />
+        <ScheduledInfoViewer items={scheduledInfoList} />
         <section className="d-flex">
           <section className="position-fixed dashboard--notifications-container">
             {location.state &&
