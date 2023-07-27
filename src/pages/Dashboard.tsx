@@ -21,9 +21,12 @@ import {
 import { ContactDocument } from "../workers/getProfile";
 import { TemplateDocument } from "./Message";
 
-import { Alert } from "design-react-kit";
 import { get } from "lodash";
 import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
+import ScheduledInfoViewer, {
+  ScheduledInfo,
+  ScheduledInfoList
+} from "../components/information/ScheduledInfoViewer";
 import Toastr, {
   ToastrItem,
   ToastrType
@@ -56,6 +59,7 @@ type DashboardState = {
   toasts: readonly ToastrItem[];
   showModal: boolean;
   lastMigrationsRefresh: ReturnType<typeof Date.now>;
+  scheduledInfoList: readonly ScheduledInfo[];
 };
 
 class Dashboard extends Component<Props, DashboardState> {
@@ -64,7 +68,27 @@ class Dashboard extends Component<Props, DashboardState> {
       path: "configuration"
     });
     this.setState({ applicationConfig });
+    await this.fetchScheduledInfo();
   }
+
+  private fetchScheduledInfo = async () => {
+    try {
+      const response = await fetch("./scheduled-info.json", {
+        cache: "no-cache"
+      });
+      if (!response.ok) {
+        throw new Error("Error while loading scheduled info data");
+      }
+      const data = await response.json();
+
+      ScheduledInfoList.decode(data).fold(
+        err => console.error("Error while decoding scheduled info", err),
+        scheduledInfoList => this.setState({ scheduledInfoList })
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   private getCard<T = {}>(docs: ReadonlyArray<T>, cardTextKey: string) {
     const { t } = this.props;
@@ -77,28 +101,22 @@ class Dashboard extends Component<Props, DashboardState> {
       </Card>
     );
   }
+
   public render() {
     const { location, t } = this.props;
     const applicationConfig = get(this.state, "applicationConfig");
     const showModal = get(this.state, "showModal");
     const lastMigrationsRefresh = get(this.state, "lastMigrationsRefresh");
+    const scheduledInfoList = get(
+      this.state,
+      "scheduledInfoList",
+      [] as readonly ScheduledInfo[]
+    );
     const toasts = get(this.state, "toasts", [] as readonly ToastrItem[]);
+
     return (
       <>
-        <div className="p-3">
-          {/* APIM V2 MIGRATION - TEMPORARY DISCLAIMER */}
-          <Alert color="warning">
-            Ti informiamo che dalle 08:00 alle 24:00 di lunedì 31 luglio verrà
-            effettuato un importante aggiornamento del sistema di gestione delle
-            API. Durante questo periodo sarà comunque{" "}
-            <strong>possibile inviare messaggi</strong>, ma saranno
-            temporaneamente non disponibili le API, e i servizi sul Developer
-            Portal e sull'Area Riservata.
-            <br />
-            Ci scusiamo per il disagio e ti ringraziamo per la collaborazione.
-          </Alert>
-          {/* APIM V2 MIGRATION - TEMPORARY DISCLAIMER */}
-        </div>
+        <ScheduledInfoViewer items={scheduledInfoList} />
         <section className="d-flex">
           <section className="position-fixed dashboard--notifications-container">
             {location.state &&

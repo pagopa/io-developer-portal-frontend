@@ -311,6 +311,12 @@ const it = {
     assistance: "Assistenza",
     exit: "Esci",
     reserved: "Area Riservata"
+  },
+  scheduledInfo: {
+    msg_20230724T080000_20230730T235959:
+      "Ti informiamo che dalle 08:00 alle 24:00 di lunedì 31 luglio verrà effettuato un importante aggiornamento del sistema di gestione delle API. Durante questo periodo sarà comunque <strong>possibile inviare messaggi</strong>, ma saranno temporaneamente non disponibili le API, e i servizi sul Developer Portal e sull'Area Riservata.<br />Ci scusiamo per il disagio e ti ringraziamo per la collaborazione.",
+    msg_20230731T000000_20230731T235959:
+      "Ti informiamo che oggi - 31 luglio - dalle 08:00 alle 24:00 è in corso un importante aggiornamento del sistema di gestione delle API. E' comunque <strong>possibile inviare messaggi</strong>, ma sono temporaneamente non disponibili le API, e i servizi sul Developer Portal e sull'Area Riservata.<br />Ci scusiamo per il disagio e ti ringraziamo per la collaborazione."
   }
 };
 
