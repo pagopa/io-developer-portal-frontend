@@ -301,7 +301,7 @@ const en = {
   },
   scheduledInfo: {
     msgApimV2MigrationDisclaimer1:
-      "We would like to inform you that a major update of the API management system will take place between 08:00 and 00:00 on Monday 7 August. During this period it will still be <strong>possible to send messages</strong>, but the APIs and services on the Developer Portal and the Reserved Area will be temporarily unavailable.<br />We apologize for the inconvenience and thank you for your cooperation.",
+      "We would like to inform you that a major update of the API management system will take place between 08:00 and 24:00 on Monday 7 August. During this period it will still be <strong>possible to send messages</strong>, but the APIs and services on the Developer Portal and the Reserved Area will be temporarily unavailable.<br />We apologize for the inconvenience and thank you for your cooperation.",
     msgApimV2MigrationDisclaimer2:
       "We inform you that today - August 7 - from 08:00 to 24:00 a major update of the API management system is underway. It is still <strong>possible to send messages</strong>, but the APIs and services on the Developer Portal and the Reserved Area are temporarily unavailable.<br />We apologize for the inconvenience and thank you for your cooperation."
   }
