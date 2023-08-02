@@ -1,12 +1,12 @@
 [
     {
-        "startDateTime": "2023-07-24T08:00:00",
-        "endDateTime": "2023-07-30T23:59:59",
-        "message": "msg_20230724T080000_20230730T235959"
+        "startDateTime": "2023-08-02T08:00:00",
+        "endDateTime": "2023-08-06T23:59:59",
+        "message": "msgApimV2MigrationDisclaimer1"
     },
     {
-        "startDateTime": "2023-07-31T00:00:00",
-        "endDateTime": "2023-07-31T23:59:59",
-        "message": "msg_20230731T000000_20230731T235959"
+        "startDateTime": "2023-08-07T00:00:00",
+        "endDateTime": "2023-08-07T23:59:59",
+        "message": "msgApimV2MigrationDisclaimer2"
     }
 ]
