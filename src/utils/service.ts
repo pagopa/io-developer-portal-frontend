@@ -165,7 +165,9 @@ export const getServiceReviewStatus = (service: Service) => {
             status: ServiceStatus.DEACTIVE
           };
         }
-        switch (res.detail) {
+
+        const ticketStatus = res.detail && res.detail.toUpperCase();
+        switch (ticketStatus) {
           case "NEW":
           case "REVIEW":
             return {
