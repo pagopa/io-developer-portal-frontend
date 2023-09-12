@@ -183,7 +183,7 @@ class ApiKey extends Component<Props, ApiKeyState> {
               style={{ fontSize: "18px", fontWeight: 700 }}
             >
               {headerInfo.header}
-              <span className="api-key--info pointer">
+              <span className="info-icon--info pointer">
                 <MdInfoOutline
                   id="info"
                   size="1.3em"
