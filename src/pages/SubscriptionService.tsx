@@ -30,6 +30,7 @@ import Toastr, {
   ToastrItem,
   ToastrType
 } from "../components/notifications/Toastr";
+import InfoIconWithTooltip from "../components/subscriptions/InfoIconWithTooltip";
 import UploadLogo from "../components/UploadLogo";
 import { StorageContext } from "../context/storage";
 import { getFromBackend, postToBackend, putToBackend } from "../utils/backend";
@@ -44,7 +45,6 @@ import {
   ValidService
 } from "../utils/service";
 import { checkValue, InputValue } from "../utils/validators";
-import InfoIconWithTooltip from "../components/subscriptions/InfoIconWithTooltip";
 
 const { MARKDOWN } = LIMITS;
 const LogoParamsApi = ts.interface({
