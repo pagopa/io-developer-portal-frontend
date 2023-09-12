@@ -44,6 +44,7 @@ import {
   ValidService
 } from "../utils/service";
 import { checkValue, InputValue } from "../utils/validators";
+import InfoIconWithTooltip from "../components/subscriptions/InfoIconWithTooltip";
 
 const { MARKDOWN } = LIMITS;
 const LogoParamsApi = ts.interface({
@@ -503,7 +504,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           authorized_cidrs: service.authorized_cidrs,
           authorized_recipients: service.authorized_recipients,
           is_visible: service.is_visible,
-          service_metadata: service.service_metadata
+          service_metadata: service.service_metadata,
+          require_secure_channels: service.require_secure_channels
         })
       }
     });
@@ -888,6 +890,19 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                   {errors[`description`] && (
                     <Alert color="danger">{errors[`description`]}</Alert>
                   )}
+                  <div className="mt-1">
+                    <input
+                      name="require_secure_channels"
+                      type="checkbox"
+                      defaultChecked={service.require_secure_channels}
+                      onChange={this.handleInputChange}
+                      className="mb-4 mr-2"
+                    />
+                    <label className="m-0">{t("sensitive_service")}</label>
+                    <InfoIconWithTooltip
+                      content={t("sensitive_service_info")}
+                    />
+                  </div>
                 </div>
               </form>
 

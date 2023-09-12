@@ -206,7 +206,10 @@ const it = {
     admin_properties: "Proprietà Admin",
     useful_links: "Links Utili",
     national_service_warn:
-      "ATTENZIONE: il servizio corrente ha il valore di scope impostato a NATIONAL"
+      "ATTENZIONE: il servizio corrente ha il valore di scope impostato a NATIONAL",
+    sensitive_service: "Servizio sensibile",
+    sensitive_service_info:
+      "Il servizio è sensibile quando può veicolare dati sensibili del cittadino. Per maggiori dettagli, visita la sezione dedicata della guida tecnica di IO."
   },
   servers: {
     select: "Seleziona il server (endpoint) predefinito",

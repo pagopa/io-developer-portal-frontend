@@ -207,7 +207,10 @@ const en = {
     admin_properties: "Admin Properties",
     useful_links: "Useful Links",
     national_service_warn:
-      "ATTENTION: the current service has the scope value equals to NATIONAL"
+      "ATTENTION: the current service has the scope value equals to NATIONAL",
+    sensitive_service: "Sensitive service",
+    sensitive_service_info:
+      "The service is sensitive when it can convey sensitive citizen data. For more details, visit the IO technical guide related section."
   },
   servers: {
     select: "Select your server (endpoint) of choice",
