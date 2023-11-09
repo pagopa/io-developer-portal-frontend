@@ -40,7 +40,7 @@
     "fp-ts": "1.17.4"
   },
   "dependencies": {
-    "@pagopa/ts-commons": "9.3.0",
+    "@pagopa/ts-commons": "10.3.0",
     "auto-changelog": "^2.2.1",
     "batch": "^0.6.1",
     "bootstrap-italia": "^0.9.6",
