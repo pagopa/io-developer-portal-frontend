@@ -197,6 +197,9 @@ const en = {
       "Some fields are missing or incorrect, the service cannot be published",
     publish_error_detail:
       "We ask to correct any errors then submit a new request review again",
+    sync_check_error_title: "Warning!",
+    sync_check_error_message:
+      'You cannot make changes to this service via the Developer Portal because a change is already in progress or the service has been canceled. To make a further change you can use the <a style="color: #0073E6;" href="https://docs.pagopa.it/io-guida-tecnica/api/api-servizi" target="_blank">API Manage</a> for this service.',
     publish_review_title: "We're working on it!",
     publish_review_message:
       "Your service is under review, we will update you as soon as possible",

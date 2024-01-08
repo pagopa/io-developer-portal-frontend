@@ -196,6 +196,9 @@ const it = {
       "Alcuni campi risultano mancanti o incorretti, il servizio non può essere pubblicato",
     publish_error_detail:
       "Ti invitiamo a correggere gli errori segnalati e reinviare una nuova richiesta di review",
+    sync_check_error_title: "Attenzione!",
+    sync_check_error_message:
+      'Non è possibile apportare modifiche a questo servizio tramite Developer Portal perché è già in corso una modifica o il servizio è stato cancellato. Per apportare un\'ulteriore modifica puoi usare le <a style="color: #0073E6;" href="https://docs.pagopa.it/io-guida-tecnica/api/api-servizi" target="_blank">API Manage</a> per questo servizio.',
     publish_review_title: "Ci Stiamo lavorando!",
     publish_review_message:
       "Il tuo servizio è in corso di revisione, ti aggiorneremo al più presto",
