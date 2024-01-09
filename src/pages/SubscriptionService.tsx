@@ -26,6 +26,7 @@ import PublishService from "../components/modal/PublishService";
 
 import { MsalConfig } from "../../generated/definitions/backend/MsalConfig";
 import { PublicConfig } from "../../generated/definitions/backend/PublicConfig";
+import { ProblemJson } from "../../generated/definitions/commons/ProblemJson";
 import Toastr, {
   ToastrItem,
   ToastrType
@@ -84,6 +85,7 @@ type SubscriptionServiceState = {
   logoUploaded: boolean;
   originalIsVisible?: boolean;
   showError: boolean;
+  showSyncCheckError: boolean;
   errors: Record<string, string>;
   timestampLogo: number;
   review: ReviewStatus | null;
@@ -134,6 +136,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     logoUploaded: true,
     originalIsVisible: undefined,
     showError: false,
+    showSyncCheckError: false,
     errors: {},
     timestampLogo: Date.now(),
     status: "",
@@ -349,31 +352,14 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
             : "LOCAL"
       }
     };
-
     try {
       const service = this.validateServiceData(ValidService, serviceToUpdate);
 
       if (service && !Object.keys(this.state.errors).length) {
         // Save service to backend
-        if (Service.is(await this.updateService(service))) {
-          this.setState({
-            toastMessage: {
-              id: Math.random(),
-              title: this.props.t("toasterMessage:save_form"),
-              description: this.props.t("toasterMessage:save_service"),
-              type: ToastrType.success
-            }
-          });
-        } else {
-          this.setState({
-            toastMessage: {
-              id: Math.random(),
-              title: this.props.t("toasterMessage:save_form"),
-              description: this.props.t("toasterMessage:save_service_error"),
-              type: ToastrType.error
-            }
-          });
-        }
+        const updateServiceResponse = await this.updateService(service);
+        this.handleUpdateServiceResponse(updateServiceResponse, false);
+
         const serviceId = this.props.match.params.service_id;
         // Open a service review ticket
         const toastMessage = await this.handleReviewSubmit(serviceId)
@@ -454,27 +440,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     );
 
     if (service && !Object.keys(this.state.errors).length) {
-      if (Service.is(await this.updateService(service))) {
-        this.setState({
-          showError: false,
-          toastMessage: {
-            id: Math.random(),
-            title: this.props.t("toasterMessage:save_form"),
-            description: this.props.t("toasterMessage:save_service"),
-            type: ToastrType.success
-          }
-        });
-      } else {
-        this.setState({
-          showError: true,
-          toastMessage: {
-            id: Math.random(),
-            title: this.props.t("toasterMessage:save_form"),
-            description: this.props.t("toasterMessage:save_service_error"),
-            type: ToastrType.error
-          }
-        });
-      }
+      const updateServiceResponse = await this.updateService(service);
+      this.handleUpdateServiceResponse(updateServiceResponse, true);
     } else {
       this.setState({
         showError: true,
@@ -489,9 +456,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
   };
 
   private updateService = async (service: ValidService | ValidDraftService) => {
-    return await putToBackend<{
-      statusCode: number;
-    }>({
+    return await putToBackend<Service | ProblemJson>({
       path: `services/${service.service_id}`,
       options: {
         // limit fields to editable ones
@@ -509,6 +474,48 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
         })
       }
     });
+  };
+
+  private handleUpdateServiceResponse = (
+    updateServiceResponse: Service | ProblemJson,
+    setShowErrorState: boolean
+  ) => {
+    if (Service.is(updateServiceResponse)) {
+      this.setState({
+        showError: false,
+        toastMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:save_form"),
+          description: this.props.t("toasterMessage:save_service"),
+          type: ToastrType.success
+        }
+      });
+    } else if (
+      // synchronization control between legacy services and cms services
+      updateServiceResponse.status === 409 &&
+      updateServiceResponse.detail === "sync_check_error"
+    ) {
+      this.setState({
+        showSyncCheckError: true,
+        showError: false,
+        toastMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:save_form"),
+          description: this.props.t("toasterMessage:save_service_error"),
+          type: ToastrType.error
+        }
+      });
+    } else {
+      this.setState({
+        showError: setShowErrorState,
+        toastMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:save_form"),
+          description: this.props.t("toasterMessage:save_service_error"),
+          type: ToastrType.error
+        }
+      });
+    }
   };
 
   private handleReviewSubmit = async (serviceId: string) => {
@@ -694,6 +701,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       service,
       errors,
       showError,
+      showSyncCheckError,
       logo,
       logoIsValid,
       logoUploaded,
@@ -729,6 +737,20 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
               </div>
 
               <form className="my-4">
+                {showSyncCheckError && (
+                  <div>
+                    <Alert color="danger">
+                      <span className="dark-text">
+                        {t("sync_check_error_title")} &nbsp;
+                      </span>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: t("sync_check_error_message")
+                        }}
+                      />
+                    </Alert>
+                  </div>
+                )}
                 {showError && (
                   <div>
                     <Alert color="danger">
