@@ -200,6 +200,9 @@ const en = {
     sync_check_error_title: "Warning!",
     sync_check_error_message:
       'You cannot make changes to this service via the Developer Portal because a change is already in progress or the service has been canceled. To make a further change you can use the <a style="color: #0073E6;" href="https://docs.pagopa.it/io-guida-tecnica/api/api-servizi" target="_blank">API Manage</a> for this service.',
+    delete_check_error_title: "Warning!",
+    delete_check_error_message:
+      'You cannot make changes because the service has been deleted.',
     publish_review_title: "We're working on it!",
     publish_review_message:
       "Your service is under review, we will update you as soon as possible",
