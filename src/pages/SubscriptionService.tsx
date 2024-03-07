@@ -86,7 +86,7 @@ type SubscriptionServiceState = {
   originalIsVisible?: boolean;
   showError: boolean;
   showSyncCheckError: boolean;
-  showDeleteCheckError:boolean;
+  showDeleteCheckError: boolean;
   errors: Record<string, string>;
   timestampLogo: number;
   review: ReviewStatus | null;
@@ -138,7 +138,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     originalIsVisible: undefined,
     showError: false,
     showSyncCheckError: false,
-    showDeleteCheckError:false,
+    showDeleteCheckError: false,
     errors: {},
     timestampLogo: Date.now(),
     status: "",
@@ -507,7 +507,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           type: ToastrType.error
         }
       });
-    }else if (
+    } else if (
       // cannot edit deleted service
       updateServiceResponse.status === 409 &&
       updateServiceResponse.detail === "delete_check_error"
@@ -522,8 +522,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           type: ToastrType.error
         }
       });
-    }
-     else {
+    } else {
       this.setState({
         showError: setShowErrorState,
         toastMessage: {
@@ -1156,4 +1155,3 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
 }
 
 export default withNamespaces("service")(SubscriptionService);
-
