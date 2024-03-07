@@ -86,7 +86,6 @@ type SubscriptionServiceState = {
   originalIsVisible?: boolean;
   showError: boolean;
   showSyncCheckError: boolean;
-  showDeleteCheckError:boolean;
   errors: Record<string, string>;
   timestampLogo: number;
   review: ReviewStatus | null;
@@ -138,7 +137,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     originalIsVisible: undefined,
     showError: false,
     showSyncCheckError: false,
-    showDeleteCheckError:false,
     errors: {},
     timestampLogo: Date.now(),
     status: "",
@@ -507,23 +505,7 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           type: ToastrType.error
         }
       });
-    }else if (
-      // cannot edit deleted service
-      updateServiceResponse.status === 409 &&
-      updateServiceResponse.detail === "delete_check_error"
-    ) {
-      this.setState({
-        showDeleteCheckError: true,
-        showError: false,
-        toastMessage: {
-          id: Math.random(),
-          title: this.props.t("toasterMessage:save_form"),
-          description: this.props.t("toasterMessage:save_service_error"),
-          type: ToastrType.error
-        }
-      });
-    }
-     else {
+    } else {
       this.setState({
         showError: setShowErrorState,
         toastMessage: {
@@ -720,7 +702,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       errors,
       showError,
       showSyncCheckError,
-      showDeleteCheckError,
       logo,
       logoIsValid,
       logoUploaded,
@@ -765,20 +746,6 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       <span
                         dangerouslySetInnerHTML={{
                           __html: t("sync_check_error_message")
-                        }}
-                      />
-                    </Alert>
-                  </div>
-                )}
-                {showDeleteCheckError && (
-                  <div>
-                    <Alert color="danger">
-                      <span className="dark-text">
-                        {t("delete_check_error_title")} &nbsp;
-                      </span>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: t("delete_check_error_message")
                         }}
                       />
                     </Alert>
