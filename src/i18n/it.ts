@@ -199,6 +199,9 @@ const it = {
     sync_check_error_title: "Attenzione!",
     sync_check_error_message:
       'Non è possibile apportare modifiche a questo servizio tramite Developer Portal perché è già in corso una modifica o il servizio è stato cancellato. Per apportare un\'ulteriore modifica puoi usare le <a style="color: #0073E6;" href="https://docs.pagopa.it/io-guida-tecnica/api/api-servizi" target="_blank">API Manage</a> per questo servizio.',
+    delete_check_error_title: "Attenzione!",
+    delete_check_error_message:
+      "Non è possibile apportare modifiche a questo servizio poiché é stato cancellato.",
     publish_review_title: "Ci Stiamo lavorando!",
     publish_review_message:
       "Il tuo servizio è in corso di revisione, ti aggiorneremo al più presto",
