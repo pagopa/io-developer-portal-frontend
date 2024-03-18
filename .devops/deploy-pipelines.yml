@@ -31,12 +31,6 @@ variables:
   ENDPOINT_NAME: $(PROD_ENDPOINT_NAME)
   RESOURCE_GROUP_NAME: $(PROD_RESOURCE_GROUP_NAME)
   BACKEND_URL: $(PROD_BACKEND_URL)
-  # SelfCare IO  
-  SELFCARE_STORAGE_ACCOUNT_NAME: $(SELFCARE_PROD_STORAGE_ACCOUNT_NAME)
-  SELFCARE_PROFILE_CDN_NAME: $(SELFCARE_PROD_PROFILE_CDN_NAME)
-  SELFCARE_ENDPOINT_NAME: $(SELFCARE_PROD_ENDPOINT_NAME)
-  SELFCARE_RESOURCE_GROUP_NAME: $(SELFCARE_PROD_RESOURCE_GROUP_NAME)
-  SELFCARE_BACKEND_URL: $(SELFCARE_PROD_BACKEND_URL)
 
 resources:
   repositories:
@@ -138,59 +132,3 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g $(RESOURCE_GROUP_NAME) -n $(ENDPOINT_NAME) --profile-name $(PROFILE_CDN_NAME) --content-paths "/*"
-
-
-
-  # Prepare Artifact with application bundle
-  - stage: Prepare_artifact_SelfCareIO
-    dependsOn:
-      - Release
-    pool:
-      vmImage: 'ubuntu-latest'  
-    jobs:
-      - job: 'make_build'
-        steps:
-          # Build application
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-            parameters:
-              # On the assumption that this stage is executed only when Relase stage is,
-              #  with this parameter we set the reference the deploy script must pull changes from.
-              # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/master --> master
-              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
-              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-
-          - template: azure-templates/make-build-selfcare.yml
-
-          - publish: $(System.DefaultWorkingDirectory)/dist
-            artifact: BundleSC
- 
-
-  - stage: 'Deploy_SelfCareIO'
-    dependsOn:
-      - Prepare_artifact_SelfCareIO
-    pool:
-      vmImage: 'windows-2019'  
-    jobs:
-      - job: 'deploy_to_container'
-        steps:
-          - checkout: none
-
-          - download: current
-            artifact: BundleSC
-
-          - task: AzureCLI@1
-            displayName: 'Sync Storage'
-            inputs:
-              azureSubscription: '$(PROD_AZURE_SUBSCRIPTION)'
-              scriptLocation: inlineScript
-              inlineScript: |
-                call az storage blob sync --container $(BLOB_CONTAINER_NAME) --account-name $(SELFCARE_STORAGE_ACCOUNT_NAME) -s "$(Pipeline.Workspace)\BundleSC"
-
-          - task: AzureCLI@1
-            displayName: 'Purge CDN'
-            inputs:
-              azureSubscription: '$(PROD_AZURE_SUBSCRIPTION)'
-              scriptLocation: inlineScript
-              inlineScript: |
-                call az cdn endpoint purge -g $(SELFCARE_RESOURCE_GROUP_NAME) -n $(SELFCARE_ENDPOINT_NAME) --profile-name $(SELFCARE_PROFILE_CDN_NAME) --content-paths "/*"
