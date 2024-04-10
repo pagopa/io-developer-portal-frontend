@@ -203,6 +203,9 @@ const en = {
     delete_check_error_title: "Warning!",
     delete_check_error_message:
       "You cannot make changes because the service has been deleted.",
+    duplicate_check_error_title: "Warning!",
+    duplicate_check_error_message:
+      "You cannot activate the service because there is another active service{duplicateOfServiceId}having this name for the given organization.",
     publish_review_title: "We're working on it!",
     publish_review_message:
       "Your service is under review, we will update you as soon as possible",

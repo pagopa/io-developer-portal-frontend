@@ -87,6 +87,8 @@ type SubscriptionServiceState = {
   showError: boolean;
   showSyncCheckError: boolean;
   showDeleteCheckError: boolean;
+  showDuplicateCheckError: boolean;
+  duplicateOfServiceId?: string;
   errors: Record<string, string>;
   timestampLogo: number;
   review: ReviewStatus | null;
@@ -139,6 +141,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
     showError: false,
     showSyncCheckError: false,
     showDeleteCheckError: false,
+    showDuplicateCheckError: false,
+    duplicateOfServiceId: undefined,
     errors: {},
     timestampLogo: Date.now(),
     status: "",
@@ -522,6 +526,26 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
           type: ToastrType.error
         }
       });
+    } else if (
+      // cannot edit deleted service
+      updateServiceResponse.status === 409 &&
+      updateServiceResponse.detail &&
+      updateServiceResponse.detail.startsWith("duplicate_check_error")
+    ) {
+      const detailSplit = updateServiceResponse.detail.split("|");
+      const duplicateOfServiceId =
+        detailSplit.length > 1 ? detailSplit[1] : undefined;
+      this.setState({
+        showDuplicateCheckError: true,
+        duplicateOfServiceId,
+        showError: false,
+        toastMessage: {
+          id: Math.random(),
+          title: this.props.t("toasterMessage:save_form"),
+          description: this.props.t("toasterMessage:save_service_error"),
+          type: ToastrType.error
+        }
+      });
     } else {
       this.setState({
         showError: setShowErrorState,
@@ -720,6 +744,8 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
       showError,
       showSyncCheckError,
       showDeleteCheckError,
+      showDuplicateCheckError,
+      duplicateOfServiceId,
       logo,
       logoIsValid,
       logoUploaded,
@@ -778,6 +804,25 @@ class SubscriptionService extends Component<Props, SubscriptionServiceState> {
                       <span
                         dangerouslySetInnerHTML={{
                           __html: t("delete_check_error_message")
+                        }}
+                      />
+                    </Alert>
+                  </div>
+                )}
+                {showDuplicateCheckError && (
+                  <div>
+                    <Alert color="danger">
+                      <span className="dark-text">
+                        {t("duplicate_check_error_title")} &nbsp;
+                      </span>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: t("duplicate_check_error_message").replace(
+                            "{duplicateOfServiceId}",
+                            duplicateOfServiceId
+                              ? `, ${duplicateOfServiceId}, `
+                              : " "
+                          )
                         }}
                       />
                     </Alert>
