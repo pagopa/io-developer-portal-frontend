@@ -202,6 +202,9 @@ const it = {
     delete_check_error_title: "Attenzione!",
     delete_check_error_message:
       "Non è possibile apportare modifiche a questo servizio poiché é stato cancellato.",
+    duplicate_check_error_title: "Warning!",
+    duplicate_check_error_message:
+      "Non é possibile attivare il servizio in quanto ne esiste giá uno attivo{duplicateOfServiceId}avente questo nome per questo Ente.",
     publish_review_title: "Ci Stiamo lavorando!",
     publish_review_message:
       "Il tuo servizio è in corso di revisione, ti aggiorneremo al più presto",
