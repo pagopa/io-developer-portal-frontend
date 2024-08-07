@@ -69,7 +69,7 @@ on:
       
 env:
   BUNDLE_NAME: ${inputs.bundle_name}
-  BLOB_CONTAINER_NAME: "$web"
+  BLOB_CONTAINER_NAME: '$web'
 
 concurrency:
   group: ${{ github.workflow }}-cd
@@ -98,7 +98,7 @@ jobs:
 
       - name: Build
         env:
-          IO_DEVELOPER_PORTAL_TITLE: IO Backoffice
+          IO_DEVELOPER_PORTAL_TITLE: "${{ inputs.portal_title }}"
           IO_DEVELOPER_PORTAL_PORT: "${{ inputs.port }}"
           IO_DEVELOPER_PORTAL_BACKEND: "${{ inputs.backend_url }}"
           IO_DEVELOPER_PORTAL_APIM_BASE_URL: "${{ inputs.apim_base_url }}"
