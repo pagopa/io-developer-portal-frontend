@@ -8,9 +8,6 @@ on:
       - "*"
       - "!infra/*"
       - "!.github/*"
-  push:
-    branches:
-      - EC-388-devops-decommissioning
 
 jobs:
   js_code_review:

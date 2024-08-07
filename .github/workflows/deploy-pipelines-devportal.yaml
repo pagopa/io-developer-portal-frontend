@@ -1,0 +1,23 @@
+name: Deploy Pipelines - DEVPORTAL
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - EC-388-devops-decommissioning
+
+jobs:
+  deploy_on_prod_devportal:
+    uses: ./.github/workflows/deploy-pipelines.yaml
+    name: Deploy on DEVPORTAL
+    secrets: inherit
+    with:
+      environment: 'prod'
+      resource_group_name: 'io-p-rg-common'
+      portal_title: 'IO Backoffice'
+      endpoint_name: 'io-p-cdnendpoint-developerportal'
+      profile_cdn_name: 'io-p-cdn-common'
+      storage_account_name: 'iopstcdndeveloperportal'
+      backend_url: 'https://developerportal-backend.io.italia.it'
+      bundle_name: 'bundle'
+      use_private_agent: false

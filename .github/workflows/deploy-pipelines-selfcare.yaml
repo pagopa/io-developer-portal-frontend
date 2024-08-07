@@ -1,0 +1,23 @@
+name: Deploy Pipelines - SELFCARE
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - EC-388-devops-decommissioning
+
+jobs:
+  deploy_on_prod_selfcare:
+    uses: ./.github/workflows/deploy-pipelines.yaml
+    name: Deploy on SELFCARE
+    secrets: inherit
+    with:
+      environment: 'prod'
+      resource_group_name: 'io-p-selfcare-fe-rg'
+      portal_title: 'App IO'
+      endpoint_name: 'io-p-selfcare-cdn-endpoint'
+      profile_cdn_name: 'io-p-selfcare-cdn-profile'
+      storage_account_name: 'iopselfcaresa'
+      backend_url: 'https://api.io.selfcare.pagopa.it'
+      bundle_name: 'bundleSC'
+      use_private_agent: false

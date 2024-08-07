@@ -1,0 +1,165 @@
+name: Deploy Pipelines
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment where the artifact will be deployed.
+        type: string
+        required: true
+      resource_group_name:
+        description: Web App resource group name.
+        type: string
+        required: true
+      use_private_agent:
+        description: Use a private agent to deploy the built artifact.
+        type: boolean
+        required: false
+        default: true
+      apim_base_url:
+        description: APIM base URL.
+        type: string
+        required: false
+        default: https://api.io.italia.it/api/v1
+      backend_url:
+        description: Backend URL.
+        type: string
+        required: true
+      base_url:
+        description: Base URL.
+        type: string
+        required: false
+        default: /
+      public_path:
+        description: Public path.
+        type: string
+        required: false
+        default: /
+      logo_path:
+        description: Logo path.
+        type: string
+        required: false
+        default: https://iopstcdnassets.blob.core.windows.net
+      port:
+        description: Web App port.
+        type: string
+        required: false
+        default: '80'
+      bundle_name:
+        description: Bundle name.
+        type: string
+        required: false
+        default: bundle
+      storage_account_name:
+        description: Storage account name.
+        type: string
+        required: true
+      profile_cdn_name:
+        description: Profile CDN name.
+        type: string
+        required: true
+      endpoint_name:
+        description: Endpoint name.
+        type: string
+        required: true
+      portal_title:
+        description: Portal title.
+        type: string
+        required: true
+      
+env:
+  BUNDLE_NAME: ${inputs.bundle_name}
+  BLOB_CONTAINER_NAME: "$web"
+
+concurrency:
+  group: ${{ github.workflow }}-cd
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    env:
+      WORKSPACE: ${{ github.workspace }}
+
+    steps:
+      - name: Check-out code
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        with:
+          node-version-file: ".node-version"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+
+      - name: Install dependencies
+        run: yarn install --immutable
+        working-directory: .
+
+      - name: Build
+        env:
+          IO_DEVELOPER_PORTAL_TITLE: IO Backoffice
+          IO_DEVELOPER_PORTAL_PORT: "${{ inputs.port }}"
+          IO_DEVELOPER_PORTAL_BACKEND: "${{ inputs.backend_url }}"
+          IO_DEVELOPER_PORTAL_APIM_BASE_URL: "${{ inputs.apim_base_url }}"
+          IO_DEVELOPER_PORTAL_BASE_URL: "${{ inputs.base_url }}"
+          IO_DEVELOPER_PORTAL_PUBLIC_PATH: "${{ inputs.public_path }}"
+          IO_DEVELOPER_PORTAL_LOGO_PATH: "${{ inputs.logo_path }}"
+        run: |-
+          echo 'IO_DEVELOPER_PORTAL_PORT: $IO_DEVELOPER_PORTAL_PORT'
+          echo 'IO_DEVELOPER_PORTAL_BACKEND: $IO_DEVELOPER_PORTAL_BACKEND'
+          echo 'IO_DEVELOPER_PORTAL_APIM_BASE_URL: $IO_DEVELOPER_PORTAL_APIM_BASE_URL'
+          echo 'IO_DEVELOPER_PORTAL_BASE_URL: $IO_DEVELOPER_PORTAL_BASE_URL'
+          echo 'IO_DEVELOPER_PORTAL_PUBLIC_PATH: $IO_DEVELOPER_PORTAL_PUBLIC_PATH'
+          echo 'IO_DEVELOPER_PORTAL_LOGO_PATH: $IO_DEVELOPER_PORTAL_LOGO_PATH'
+          echo 'IO_DEVELOPER_PORTAL_TITLE: $IO_DEVELOPER_PORTAL_TITLE'
+          chmod +x env.sh && source env.sh
+          yarn build
+        working-directory: .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
+        with:
+          name: ${{ env.BUNDLE_NAME }}
+          path: "${{ github.workspace }}/dist"
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    if: ${{ !github.event.act }}
+    needs: [build]
+    runs-on: ${{ inputs.use_private_agent == true && 'self-hosted' || 'ubuntu-22.04' }}
+    environment: ${{ inputs.environment }}-cd
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Download Artifact
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        with:
+          name: ${{ env.BUNDLE_NAME }}
+
+      - name: Azure Login
+        uses: azure/login@v2 # v2.0.0
+        env:
+          ARM_USE_OIDC: true
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+      # - name: Sync Storage
+      #   run: az storage blob sync --container ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }} -s "./${env.BUNDLE_NAME}"
+
+      # - name: Purge CDN
+      #   run: az cdn endpoint purge -g ${{ inputs.resource_group_name }} -n ${{ inputs.endpoint_name }} --profile-name ${{ inputs.profile_cdn_name }} --content-paths "/*"
+
+      - name: Test Storage
+        run: az storage blob list --container ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}
+      
+      - name: Test CDN
+        run: az cdn endpoint list -g ${{ inputs.resource_group_name }} --profile-name ${{ inputs.profile_cdn_name }}
