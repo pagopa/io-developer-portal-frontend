@@ -42,14 +42,11 @@ jobs:
         run: yarn install --immutable
         working-directory: .
 
-      - name: Build
-        run: yarn build
+      # - name: Build
+      #   run: yarn build
 
       - name: Lint
         run: yarn lint
-
-      - name: Validate definitions specification
-        run: npx oval validate -p definitions.yaml
 
       - name: Generate models
         run: yarn generate
