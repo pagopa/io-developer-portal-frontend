@@ -153,13 +153,13 @@ jobs:
           subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       # - name: Sync Storage
-      #   run: az storage blob sync --container ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }} -s "./${env.BUNDLE_NAME}"
+      #   run: az storage blob sync --container-name ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }} -s "./${env.BUNDLE_NAME}"
 
       # - name: Purge CDN
       #   run: az cdn endpoint purge -g ${{ inputs.resource_group_name }} -n ${{ inputs.endpoint_name }} --profile-name ${{ inputs.profile_cdn_name }} --content-paths "/*"
 
       - name: Test Storage
-        run: az storage blob list --container ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}
+        run: az storage blob list --container-name ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}
       
       - name: Test CDN
         run: az cdn endpoint list -g ${{ inputs.resource_group_name }} --profile-name ${{ inputs.profile_cdn_name }}
