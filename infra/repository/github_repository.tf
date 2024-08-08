@@ -23,8 +23,8 @@ resource "github_repository" "this" {
   topics = ["digital-citizenship"]
 
   vulnerability_alerts = true
-  
-  homepage_url                = "https://developer.io.italia.it"
+
+  homepage_url = "https://developer.io.italia.it"
 
   pages {
     build_type = "legacy"

@@ -28,7 +28,7 @@ No modules.
 | [github_actions_environment_secret.env_prod_ci_secrets](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/actions_environment_secret) | resource |
 | [github_actions_secret.repo_secrets](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/actions_secret) | resource |
 | [github_branch_default.default_master](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/branch_default) | resource |
-| [github_branch_protection.protection_gh_pages](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/branch_protection) | resource |
+| [github_branch_protection.protection_master](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/branch_protection) | resource |
 | [github_repository.this](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/repository) | resource |
 | [github_repository_environment.github_repository_environment_github_pages](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/repository_environment) | resource |
 | [github_repository_environment.github_repository_environment_prod_cd](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/repository_environment) | resource |
