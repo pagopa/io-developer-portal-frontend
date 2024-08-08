@@ -160,9 +160,9 @@ jobs:
 
       - name: Test Storage
         run: |
-          echo "print: az storage blob list -c ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}"
-          echo "BLOB_CONTAINER_NAME: ${{ env.BLOB_CONTAINER_NAME }}"
-          az storage blob list -c ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}
+          echo "print: az storage blob list -c '${{ env.BLOB_CONTAINER_NAME }}' --account-name ${{ inputs.storage_account_name }}"
+          echo "BLOB_CONTAINER_NAME: '${{ env.BLOB_CONTAINER_NAME }}'"
+          az storage blob list -c '${{ env.BLOB_CONTAINER_NAME }}' --account-name ${{ inputs.storage_account_name }}
       
       - name: Test CDN
-        run: az cdn endpoint list -g ${{ inputs.resource_group_name }} --profile-name ${{ inputs.profile_cdn_name }}
+        run: az cdn endpoint list -g '${{ inputs.resource_group_name }}' --profile-name ${{ inputs.profile_cdn_name }}
