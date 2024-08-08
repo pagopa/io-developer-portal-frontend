@@ -69,7 +69,7 @@ on:
       
 env:
   BUNDLE_NAME: ${inputs.bundle_name}
-  BLOB_CONTAINER_NAME: "$web"
+  BLOB_CONTAINER_NAME: '\$web'
 
 concurrency:
   group: ${{ github.workflow }}-cd
