@@ -68,7 +68,7 @@ on:
         required: true
       
 env:
-  BUNDLE_NAME: ${inputs.bundle_name}
+  BUNDLE_NAME: ${{ inputs.bundle_name }}
   BLOB_CONTAINER_NAME: '\$web'
 
 concurrency:
