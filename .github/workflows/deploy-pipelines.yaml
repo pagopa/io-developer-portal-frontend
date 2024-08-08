@@ -118,7 +118,7 @@ jobs:
         working-directory: .
 
       - name: TEST CONTENT
-        run: ls -la dist 
+        run: ls -la ${{ github.workspace }}/dist 
 
       - name: Upload Artifact
         uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
@@ -162,7 +162,15 @@ jobs:
       #   run: az cdn endpoint purge -g ${{ inputs.resource_group_name }} -n ${{ inputs.endpoint_name }} --profile-name ${{ inputs.profile_cdn_name }} --content-paths "/*"
 
       - name: TEST CONTENT
-        run: ls -la ./${{ env.BUNDLE_NAME }}
+        run: |
+          echo "BASE FOLDER"
+          pwd
+          echo "CONTENT"
+          ls -ls .
+          echo "BUNDLE1 FOLDER"
+          ls -la ${{ github.workspace }}/${{ env.BUNDLE_NAME }}
+          echo "BUNDLE2 FOLDER"
+          ls -la ./${{ env.BUNDLE_NAME }}
 
       - name: Test Storage
         run: |
