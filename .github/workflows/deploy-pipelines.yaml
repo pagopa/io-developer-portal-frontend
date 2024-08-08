@@ -69,7 +69,7 @@ on:
       
 env:
   BUNDLE_NAME: ${inputs.bundle_name}
-  BLOB_CONTAINER_NAME: '$web'
+  BLOB_CONTAINER_NAME: "$web"
 
 concurrency:
   group: ${{ github.workflow }}-cd
@@ -159,7 +159,10 @@ jobs:
       #   run: az cdn endpoint purge -g ${{ inputs.resource_group_name }} -n ${{ inputs.endpoint_name }} --profile-name ${{ inputs.profile_cdn_name }} --content-paths "/*"
 
       - name: Test Storage
-        run: az storage blob list --container-name ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}
+        run: |
+          echo "print: az storage blob list -c ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}"
+          echo "BLOB_CONTAINER_NAME: ${{ env.BLOB_CONTAINER_NAME }}"
+          az storage blob list -c ${{ env.BLOB_CONTAINER_NAME }} --account-name ${{ inputs.storage_account_name }}
       
       - name: Test CDN
         run: az cdn endpoint list -g ${{ inputs.resource_group_name }} --profile-name ${{ inputs.profile_cdn_name }}

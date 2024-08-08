@@ -2,9 +2,9 @@ name: Deploy Pipelines - SELFCARE
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - EC-388-devops-decommissioning
+  # push:
+  #   branches:
+  #     - EC-388-devops-decommissioning
 
 jobs:
   deploy_on_prod_selfcare:
