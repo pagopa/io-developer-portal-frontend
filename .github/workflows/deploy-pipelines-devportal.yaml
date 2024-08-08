@@ -2,9 +2,6 @@ name: Deploy Pipelines - DEVPORTAL
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - EC-388-devops-decommissioning
 
 jobs:
   deploy_on_prod_devportal:
