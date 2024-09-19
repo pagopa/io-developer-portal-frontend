@@ -1,4 +1,4 @@
-FROM circleci/node:8.16.1 as builder
+FROM circleci/node:8.16.1@sha256:abb3e8244093b75e077f214d32c747ea9d6c39e856d7c00a37abcf191db40761 as builder
 
 WORKDIR /usr/src/app
 
@@ -8,7 +8,7 @@ RUN sudo chmod -R 777 /usr/src/app
 RUN yarn install
 RUN yarn build
 
-FROM nginx:1.16.1
+FROM nginx:1.16.1@sha256:d20aa6d1cae56fd17cd458f4807e0de462caf2336f0b70b5eeb69fcaaf30dd9c
 LABEL maintainer="https://teamdigitale.governo.it"
 
 # Install major CA certificates to cover
