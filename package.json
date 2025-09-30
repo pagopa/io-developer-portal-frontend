@@ -51,7 +51,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "msal": "^1.2.1",
-    "papaparse": "^4.6.0",
+    "papaparse": "^5.0.0",
     "pouchdb": "^7.1.0",
     "pouchdb-browser": "^7.0.0",
     "pouchdb-find": "^7.0.0",
