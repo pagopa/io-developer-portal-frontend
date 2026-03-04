@@ -1,6 +1,7 @@
 name: developer.io.italia.it TLS Certificate
 
 on:
+  pull_request: # inserted to register workflow
   schedule:
     - cron: "0 2 * * 1,3"
   workflow_dispatch:
