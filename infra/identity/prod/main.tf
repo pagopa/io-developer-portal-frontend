@@ -29,5 +29,13 @@ module "federated_identities" {
 
   repositories = [local.repo_name]
 
+  continuos_delivery = {
+    roles = {
+      resource_groups = {
+        "io-p-rg-common" = ["Key Vault Secrets Officer"]
+      }
+    }
+  }
+
   tags = local.tags
 }
