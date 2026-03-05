@@ -21,7 +21,7 @@ jobs:
     environment: prod-cd
     steps:
       - name: developer.io.italia.it
-        uses: pagopa/dx/.github/actions/renew-tls-certificate/action.yaml@main
+        uses: pagopa/dx/actions/renew-tls-certificate/action.yaml@main
         with:
           force_renewal: ${{ inputs.force_renewal || false }}
           key_vault_name: "io-p-kv-common"
