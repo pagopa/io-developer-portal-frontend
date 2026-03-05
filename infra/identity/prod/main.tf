@@ -32,7 +32,7 @@ module "federated_identities" {
   continuos_delivery = {
     roles = {
       resource_groups = {
-        "io-p-rg-common" = ["Key Vault Secrets Officer"]
+        "io-p-rg-common" = ["Key Vault Certificates Officer"]
       }
     }
   }
