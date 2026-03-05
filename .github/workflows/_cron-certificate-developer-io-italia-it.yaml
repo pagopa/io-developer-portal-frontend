@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   prod:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     environment: prod-cd
     steps:
       - name: developer.io.italia.it
