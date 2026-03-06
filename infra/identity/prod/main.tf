@@ -20,7 +20,8 @@ provider "azurerm" {
 }
 
 module "federated_identities" {
-  source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
+  source  = "pagopa-dx/azure-federated-identity-with-github/azurerm"
+  version = "0.0.2"
 
   prefix    = local.prefix
   env_short = local.env_short
@@ -28,6 +29,19 @@ module "federated_identities" {
   domain    = local.domain
 
   repositories = [local.repo_name]
+
+  location = "westeurope"
+
+  continuos_delivery = {
+    enable = true
+    roles = {
+      subscription = ["Contributor"]
+      resource_groups = {
+        "terraform-state-rg" = ["Storage Blob Data Contributor"],
+        "io-p-rg-common"     = ["Key Vault Certificates Officer"]
+      }
+    }
+  }
 
   tags = local.tags
 }
