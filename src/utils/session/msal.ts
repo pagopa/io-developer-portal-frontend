@@ -5,8 +5,12 @@
  * Configuration comes from the remote endpoint.
  * Needs a promise polyfill for old browsers.
  */
+import * as t from "io-ts";
 import { UserAgentApplication } from "msal";
 import { MsalConfig } from "../../../generated/definitions/backend/MsalConfig";
+
+export type MsalSessionConfig = t.TypeOf<typeof MsalSessionConfig>;
+export const MsalSessionConfig = MsalConfig;
 
 export function getUserAgentApplication(configuration: MsalConfig) {
   return new UserAgentApplication({
