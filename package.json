@@ -18,7 +18,7 @@
     "commons-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-commons/v22.0.1/openapi/index.yaml --out-dir ./generated/definitions/commons --no-strict",
     "api-definitions:clean": "shx rm -rf generated/definitions/api",
     "api-definitions:mkdir": "shx mkdir -p generated/definitions/api",
-    "api-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-admin/master/openapi/index.yaml --out-dir generated/definitions/api --no-strict",
+    "api-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-admin/refs/heads/master/apps/io-functions-admin/openapi/index.yaml --out-dir generated/definitions/api --no-strict",
     "backend-definitions:clean": "shx rm -rf generated/definitions/backend",
     "backend-definitions:mkdir": "shx mkdir -p generated/definitions/backend",
     "backend-definitions:generate": "gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-developer-portal-backend/master/definitions.yaml --out-dir generated/definitions/backend --no-strict",

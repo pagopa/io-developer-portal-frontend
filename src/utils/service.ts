@@ -169,12 +169,15 @@ export const getServiceReviewStatus = (service: Service) => {
         const ticketStatus = res.detail && res.detail.toUpperCase();
         switch (ticketStatus) {
           case "NEW":
+          case "NUOVO":
           case "REVIEW":
+          case "REVISIONE":
             return {
               review: res,
               status: ServiceStatus.REVIEW
             };
           case "REJECTED":
+          case "RIFIUTATO":
             return {
               review: res,
               status: ServiceStatus.REJECTED // errors on fields
