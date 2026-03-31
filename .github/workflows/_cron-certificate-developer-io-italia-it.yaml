@@ -25,4 +25,4 @@ jobs:
       csr_common_name: "developer.io.italia.it"
       dns_zone: "io.italia.it"
       dns_zone_resource_group: "io-p-rg-external"
-      environment: "prod"
+      environment: "prod-tls"
