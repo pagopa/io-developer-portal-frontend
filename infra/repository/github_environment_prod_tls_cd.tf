@@ -8,7 +8,7 @@ resource "github_repository_environment" "github_repository_environment_prod_tls
   }
 }
 
-resource "github_actions_environment_secret" "env_prod_cd_secrets" {
+resource "github_actions_environment_secret" "env_prod_tls_cd_secrets" {
   for_each = local.prod-tls-cd.secrets
 
   repository      = github_repository.this.name
