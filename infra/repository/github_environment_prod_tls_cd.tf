@@ -3,8 +3,8 @@ resource "github_repository_environment" "github_repository_environment_prod_tls
   repository  = github_repository.this.name
 
   deployment_branch_policy {
-    protected_branches     = false
-    custom_branch_policies = true
+    protected_branches     = true
+    custom_branch_policies = false
   }
 }
 
