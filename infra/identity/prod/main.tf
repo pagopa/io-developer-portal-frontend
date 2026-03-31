@@ -49,7 +49,7 @@ module "federated_identities" {
 resource "azurerm_federated_identity_credential" "prod_tls_cd" {
   name                = "prod-tls-cd"
   resource_group_name = module.federated_identities.federated_cd_identity.resource_group_name
-  parent_id           = module.federated_identities.federated_cd_identity.id
+  parent_id           = data.azurerm_user_assigned_identity.identity_prod_cd.id
   audience            = ["api://AzureADTokenExchange"]
   issuer              = "https://token.actions.githubusercontent.com"
   subject             = "repo:${local.repo_owner}/${local.repo_name}:environment:prod-tls-cd"
