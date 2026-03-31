@@ -33,10 +33,12 @@ No modules.
 | [github_repository_environment.github_repository_environment_github_pages](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/repository_environment) | resource |
 | [github_repository_environment.github_repository_environment_prod_cd](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/repository_environment) | resource |
 | [github_repository_environment.github_repository_environment_prod_ci](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/repository_environment) | resource |
+| [github_repository_environment.github_repository_environment_prod_tls_cd](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/resources/repository_environment) | resource |
 | [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
 | [azurerm_user_assigned_identity.identity_prod_cd](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/user_assigned_identity) | data source |
 | [azurerm_user_assigned_identity.identity_prod_ci](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/user_assigned_identity) | data source |
+| [azurerm_user_assigned_identity.identity_prod_tls_cd](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/user_assigned_identity) | data source |
 | [github_organization_teams.all](https://registry.terraform.io/providers/integrations/github/6.1.0/docs/data-sources/organization_teams) | data source |
 
 ## Inputs

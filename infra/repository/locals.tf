@@ -20,4 +20,10 @@ locals {
     }
     reviewers_teams = ["io-platform-green-unit", "engineering-team-cloud-eng"]
   }
+
+  prod-tls-cd = {
+    secrets = {
+      "ARM_CLIENT_ID" = data.azurerm_user_assigned_identity.identity_prod_cd.client_id
+    }
+  }
 }

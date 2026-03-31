@@ -6,7 +6,10 @@ locals {
   project   = "${local.prefix}-${local.env_short}"
   domain    = "devportal-frontend"
 
-  repo_name = "io-developer-portal-frontend"
+  repo_name  = "io-developer-portal-frontend"
+  repo_owner = "pagopa"
+
+  identity_resource_group_name = "${local.project}-identity-rg"
 
   tags = {
     CostCenter     = "TS310 - PAGAMENTI & SERVIZI"
