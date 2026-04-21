@@ -2,5 +2,5 @@
 
 * @pagopa/io-platform-green-unit
 
-/infra/ @pagopa/io-app @pagopa/io-platform-green-unit @pagopa/engineering-team-devex
-/.github/ @pagopa/io-app @pagopa/io-platform-green-unit @pagopa/engineering-team-devex
+/infra/ @pagopa/io-platform-green-unit @pagopa/engineering-team-devex
+/.github/ @pagopa/io-platform-green-unit @pagopa/engineering-team-devex
