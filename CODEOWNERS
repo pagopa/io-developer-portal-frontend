@@ -2,6 +2,5 @@
 
 * @pagopa/io-app @pagopa/io-platform-green-unit
 
-# engineering-team-cloud-eng
 /infra/ @pagopa/io-app @pagopa/io-platform-green-unit @pagopa/engineering-team-devex
 /.github/ @pagopa/io-app @pagopa/io-platform-green-unit @pagopa/engineering-team-devex
